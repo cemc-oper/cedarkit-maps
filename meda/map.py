@@ -22,7 +22,7 @@ def get_china_map():
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
         shape_file_name = pkg_resources.resource_filename(
-            "meda", f"resources/maps/portrait/{shape_name}.shp"
+            "nwpc_meda_data", f"resources/maps/portrait/{shape_name}.shp"
         )
         reader = Reader(shape_file_name)
         feature_style = get_map_feature_style(map_type)
@@ -52,7 +52,7 @@ def get_china_nine_map():
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
         shape_file_name = pkg_resources.resource_filename(
-            "meda", f"resources/maps/landscape/NANHAI/{shape_name}.shp"
+            "nwpc_meda_data", f"resources/maps/landscape/NANHAI/{shape_name}.shp"
         )
         reader = Reader(shape_file_name)
         feature_style = get_map_feature_style(map_type)

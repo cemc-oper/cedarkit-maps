@@ -10,7 +10,7 @@ import matplotlib.ticker as mticker
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
-from .color_map import get_colormap_temp_19lev
+from .color_map import get_ncl_colormap
 from .map import get_china_map, get_china_nine_map
 
 
@@ -18,7 +18,7 @@ def draw_china_plot(
         field,
 ):
     projection = ccrs.PlateCarree()
-    temp_19lev = get_colormap_temp_19lev()
+    temp_19lev = get_ncl_colormap("temp_19lev")
     cn_features = get_china_map()
     nine_features = get_china_nine_map()
 
