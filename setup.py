@@ -22,7 +22,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
 
-    url='https://github.com/nwpc-oper/meda',
+    url='https://github.com/perillaroc/meda',
 
     author='perillaroc',
     author_email='perillaroc@gmail.com',
@@ -30,23 +30,21 @@ setup(
     license='GPLv3',
 
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Programming Language :: Python :: 3.7'
-        'Programming Language :: Python :: 3.8'
-        'Programming Language :: Python :: 3.9'
     ],
 
-    keywords='nwpc graphic',
+    keywords='graphic',
 
     packages=find_packages(exclude=['docs', 'tests', 'example']),
 
     include_package_data=True,
 
     install_requires=[
+        "numpy",
+        "pandas",
+        "matplotlib",
+        "cartopy",
         "xarray",
-        "dask",
     ],
 
     extras_require={
