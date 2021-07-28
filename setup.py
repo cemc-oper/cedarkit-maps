@@ -1,4 +1,3 @@
-# coding: utf-8
 from setuptools import setup, find_packages
 import codecs
 from os import path
@@ -18,7 +17,7 @@ setup(
 
     version=version,
 
-    description='A graph tool for NWPC.',
+    description='A graph tool for NWP.',
     long_description=long_description,
     long_description_content_type='text/markdown',
 
@@ -48,9 +47,6 @@ setup(
     ],
 
     extras_require={
-        "cfgrib": [
-            "cfgrib",
-        ],
         "test": ['pytest'],
         "cov": ['pytest-cov', 'codecov']
     },
