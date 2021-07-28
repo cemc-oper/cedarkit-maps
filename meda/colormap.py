@@ -1,12 +1,25 @@
 import pkg_resources
 import re
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import matplotlib.colors as mcolors
 
 
-def get_ncl_colormap(name) -> mcolors.ListedColormap:
+def get_ncl_colormap(name) -> Optional[mcolors.ListedColormap]:
+    """
+    Generate Matplotlib colormap from NCL color map files in resource directory.
+
+    Parameters
+    ----------
+    name
+        ncl color map name without extension.
+
+    Returns
+    -------
+    matplotlib.colors.ListedColormap
+    """
     color_map_dir = pkg_resources.resource_filename("meda", "resources/colormap/ncl")
     color_map_path = Path(color_map_dir, f"{name}.rgb")
     if not color_map_path.exists():

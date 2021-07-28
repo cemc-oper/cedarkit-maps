@@ -10,7 +10,7 @@ import matplotlib.ticker as mticker
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
-from .color_map import get_ncl_colormap
+from .colormap import get_ncl_colormap
 from .map import get_china_map, get_china_nine_map
 
 
@@ -95,7 +95,7 @@ def draw_china_plot(
     contour_lev = [
         -30, -26, -22, -18, -14, -10, -6, -2, 2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 40
     ]
-    field.plot.contourf(
+    cs = field.plot.contourf(
         ax=ax,
         transform=projection,
         vmin=-30,
@@ -104,6 +104,20 @@ def draw_china_plot(
         add_colorbar=False,
         cmap=temp_19lev,
     )
+
+    # 等直线标签
+    # clabels = ax.clabel(
+    #     cs,
+    #     manual=False,
+    #     colors="black",
+    #     inline=True,
+    #     fmt="{:.0f}".format,
+    #     fontsize=7,
+    #     # use_clabeltext=True,
+    # )
+    # [txt.set_backgroundcolor('white') for txt in clabels]
+    # [txt.set_bbox(dict(facecolor='white', edgecolor='none', pad=0)) for txt in clabels]
+
     ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
