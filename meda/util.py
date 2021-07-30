@@ -227,3 +227,27 @@ def clear_xarray_plot_components(ax):
     ax.set_xlabel("")
     ax.set_ylabel("")
     return ax
+
+
+def add_map_box_main_layout(fig, projection):
+    ax = fig.add_axes(
+        [0.1, 0.1, 0.8, 0.8],
+        # projection=ccrs.LambertConformal(
+        #     central_longitude=105,
+        #     central_latitude=90
+        # ),
+        projection=projection
+    )
+    return ax
+
+
+def add_map_box_sub_layout(fig, projection):
+    ax = fig.add_axes(
+        [0.1, 0.18, 0.1, 0.14],
+        # projection=ccrs.LambertConformal(
+        #     central_longitude=114,
+        #     central_latitude=90,
+        # ),
+        projection=projection,
+    )
+    return ax
