@@ -1,6 +1,12 @@
 # meda
 
-气象绘图库
+> MEteorological DAta plotting tool
+
+气象数据绘图库
+
+## 安装
+
+## 使用
 
 ## LICENSE
 
