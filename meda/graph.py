@@ -64,3 +64,31 @@ def add_contour_label(
         **kwargs
     )
     return label
+
+
+def add_barb(
+        ax: matplotlib.axes.Axes,
+        x_field,
+        y_field,
+        projection,
+):
+    lons, lats = np.meshgrid(x_field.longitude, y_field.latitude)
+
+    # 风向杆
+    barb = ax.barbs(
+        lons, lats,
+        x_field.data, y_field.data,
+        transform=projection,
+        barb_increments=dict(half=2, full=4, flag=20),
+        length=4,
+        sizes=dict(
+            # width=0.35,
+            # spacing=0.14,
+        ),
+        linewidth=0.5,
+        pivot='middle',
+        barbcolor="red",
+        flagcolor="red",
+    )
+
+    return barb
