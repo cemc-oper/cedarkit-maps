@@ -1,6 +1,6 @@
 from typing import List
 
-import numpy as np
+import pandas as pd
 import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.colorbar
@@ -33,6 +33,44 @@ def draw_map_box(ax: matplotlib.axes.Axes) -> mpatches.Rectangle:
     rect = ax.add_patch(rect)
     rect.set_clip_on(False)
     return rect
+
+
+def set_title(
+        ax,
+        graph_name,
+        system_name,
+        start_time,
+        forecast_time,
+) -> List:
+    """
+    添加四角标题
+
+    Parameters
+    ----------
+    ax
+    graph_name
+        图片名称，例如 `MSLP (hPa) line`
+    system_name
+        系统名称，例如 `GRAPES_GFS(NMC/CMA)`
+    start_time
+        起报时次
+    forecast_time
+        预报时效
+
+    Returns
+    -------
+
+    """
+    utc_start_time_label = start_time.strftime('%Y%m%d%H')
+    cst_start_time_label = (start_time + pd.Timedelta(hours=3)).strftime('%Y%m%d%H')
+    forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):02}"
+    return set_map_box_title(
+        ax,
+        top_left=graph_name,
+        top_right=system_name,
+        bottom_left=f"{utc_start_time_label} + {forecast_time_label}h\n{cst_start_time_label} + {forecast_time_label}h",
+        bottom_right=f"{utc_start_time_label}(UTC)\n{cst_start_time_label}(CST)"
+    )
 
 
 def set_map_box_title(
@@ -223,6 +261,21 @@ def draw_map_box_gridlines(ax, projection, xlocator=None, ylocator=None, linewid
 
 
 def clear_xarray_plot_components(ax):
+    """
+    清除 Xarray 自动绘图生成的图片组件，包括：
+
+    * 标题
+    * X轴标签
+    * Y轴标签
+
+    Parameters
+    ----------
+    ax
+
+    Returns
+    -------
+
+    """
     ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
