@@ -20,9 +20,9 @@ from meda.util import (
 )
 
 
-def generate_cn_plot():
+def generate_east_asia_plot():
     """
-    生成东亚区域图片地图
+    生成东亚区域图片底图
 
     Returns
     -------

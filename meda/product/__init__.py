@@ -1,1 +1,1 @@
-from .cn import generate_cn_plot
+from .east_asia import generate_east_asia_plot
