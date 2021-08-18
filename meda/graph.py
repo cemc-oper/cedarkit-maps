@@ -2,6 +2,7 @@ import xarray as xr
 import numpy as np
 import matplotlib.axes
 import matplotlib.contour
+import matplotlib.quiver
 import cartopy.crs as ccrs
 
 
@@ -12,6 +13,22 @@ def add_contourf(
         levels: np.ndarray,
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
+    """
+    添加填充图
+
+    Parameters
+    ----------
+    ax
+    field
+        要素场
+    projection
+    levels
+    **kwargs
+
+    Returns
+    -------
+
+    """
     min_level = min(levels)
     max_level = max(levels)
     c = field.plot.contourf(
@@ -34,6 +51,23 @@ def add_contour(
         linestyles="solid",
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
+    """
+    添加等直线图
+
+    Parameters
+    ----------
+    ax
+    field
+        要素场
+    projection
+    levels
+    linestyles
+    **kwargs
+
+    Returns
+    -------
+
+    """
     min_level = min(levels)
     max_level = min(levels)
     c = field.plot.contour(
@@ -55,6 +89,20 @@ def add_contour_label(
         fontsize=7,
         **kwargs,
 ):
+    """
+    添加等直线标签
+
+    Parameters
+    ----------
+    ax
+    contour
+    fontsize
+    **kwargs
+
+    Returns
+    -------
+
+    """
     label = ax.clabel(
         contour,
         manual=False,
@@ -68,10 +116,26 @@ def add_contour_label(
 
 def add_barb(
         ax: matplotlib.axes.Axes,
-        x_field,
-        y_field,
+        x_field: xr.DataArray,
+        y_field: xr.DataArray,
         projection,
-):
+) -> matplotlib.quiver.Barbs:
+    """
+    添加风羽图
+
+    Parameters
+    ----------
+    ax
+    x_field
+        u分量，东西风
+    y_field
+        v分量，南北风
+    projection
+
+    Returns
+    -------
+    matplotlib.quiver.Barbs
+    """
     lons, lats = np.meshgrid(x_field.longitude, y_field.latitude)
 
     # 风向杆
