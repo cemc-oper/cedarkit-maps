@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional, List
 
 import numpy as np
+import pandas as pd
 import matplotlib.colors as mcolors
 
 
@@ -63,3 +64,16 @@ def _get_raw_ncl_colormap(name) -> mcolors.ListedColormap:
         rgbs = np.asarray(r, dtype="i4") / 255
         color_map = mcolors.ListedColormap(rgbs, name)
         return color_map
+
+
+def generate_colormap_using_ncl_colors(color_names, name):
+    color_map_dir = pkg_resources.resource_filename("meda", "resources/colormap/ncl")
+    color_names_csv = Path(color_map_dir, "ncl_colors.csv")
+    df = pd.read_csv(color_names_csv)
+    rgbs = []
+    for color_name in color_names:
+        color_record = df[df["name"] == color_name].iloc[0]
+        rgbs.append(color_record[["R", "G", "B"]].values/255)
+
+    color_map = mcolors.ListedColormap(rgbs, name)
+    return color_map
