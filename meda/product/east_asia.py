@@ -120,7 +120,7 @@ def generate_east_asia_plot():
     # set by user
 
     # 审图号文本框
-    add_map_box_info_text(ax, "Scale 1:20000000 No:GS (2019) 1786", map_type="main")
-    add_map_box_info_text(sub_ax, "Scale 1:40000000", map_type="sub")
+    add_map_box_info_text(ax, "Scale 1:20000000 No:GS (2019) 1786", component_type="main")
+    add_map_box_info_text(sub_ax, "Scale 1:40000000", component_type="sub")
 
     return ax, sub_ax

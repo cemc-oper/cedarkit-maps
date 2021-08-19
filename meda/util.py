@@ -10,7 +10,7 @@ import matplotlib.ticker as mticker
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 
-def draw_map_box(ax: matplotlib.axes.Axes) -> mpatches.Rectangle:
+def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
     """
     Draw a boundary box for map plot.
 
@@ -22,8 +22,19 @@ def draw_map_box(ax: matplotlib.axes.Axes) -> mpatches.Rectangle:
     -------
     mpatches.Rectangle
     """
+    if map_type == "east_asia":
+        point = (-0.05, -0.05)
+        width = 1.08
+        height = 1.08
+    elif map_type == "north_polar":
+        point = (-0.05, -0.05)
+        width = 1.12
+        height = 1.08
+    else:
+        raise ValueError(f"component_type is not supported: {map_type}")
+
     rect = mpatches.Rectangle(
-        (-0.05, -0.05), 1.08, 1.08,
+        point, width, height,
         edgecolor="black",
         fill=False,
         zorder=1000,
@@ -41,6 +52,7 @@ def set_title(
         system_name,
         start_time,
         forecast_time,
+        map_type="east_asia",
 ) -> List:
     """
     添加四角标题
@@ -56,6 +68,8 @@ def set_title(
         起报时次
     forecast_time
         预报时效
+    map_type
+        底图类型
 
     Returns
     -------
@@ -69,7 +83,8 @@ def set_title(
         top_left=graph_name,
         top_right=system_name,
         bottom_left=f"{utc_start_time_label} + {forecast_time_label}h\n{cst_start_time_label} + {forecast_time_label}h",
-        bottom_right=f"{utc_start_time_label}(UTC)\n{cst_start_time_label}(CST)"
+        bottom_right=f"{utc_start_time_label}(UTC)\n{cst_start_time_label}(CST)",
+        map_type=map_type
     )
 
 
@@ -79,6 +94,7 @@ def set_map_box_title(
         top_right: str = None,
         bottom_left: str = None,
         bottom_right: str = None,
+        map_type="east_asia",
 ) -> List:
     """
     Set four corner title for map plot with a box.
@@ -90,18 +106,31 @@ def set_map_box_title(
     top_right
     bottom_left
     bottom_right
+    map_type
 
     Returns
     -------
 
     """
+    if map_type == "east_asia":
+        left = -0.05
+        bottom = -0.055
+        top = 1.03
+        right = 1.03
+    elif map_type == "north_polar":
+        left = -0.05
+        bottom = -0.055
+        top = 1.03
+        right = 1.07
+    else:
+        raise ValueError(f"component_type is not supported: {map_type}")
 
     if top_left is None:
         top_left_text = None
     else:
         top_left_text = ax.text(
-            -0.05,
-            1.03,
+            left,
+            top,
             top_left,
             verticalalignment="bottom",
             horizontalalignment='left',
@@ -113,8 +142,8 @@ def set_map_box_title(
         top_right_text = None
     else:
         top_right_text = ax.text(
-            1.03,
-            1.03,
+            right,
+            top,
             top_right,
             verticalalignment="bottom",
             horizontalalignment='right',
@@ -126,8 +155,8 @@ def set_map_box_title(
         bottom_left_text = None
     else:
         bottom_left_text = ax.text(
-            -0.05,
-            -0.055,
+            left,
+            bottom,
             bottom_left,
             verticalalignment='top',
             horizontalalignment='left',
@@ -139,8 +168,8 @@ def set_map_box_title(
         bottom_right_text = None
     else:
         bottom_right_text = ax.text(
-            1.03,
-            -0.055,
+            right,
+            bottom,
             bottom_right,
             verticalalignment='top',
             horizontalalignment='right',
@@ -151,15 +180,25 @@ def set_map_box_title(
     return [top_left_text, top_right_text, bottom_left_text, bottom_right_text]
 
 
-def add_map_box_info_text(ax: matplotlib.axes.Axes, text: str, map_type: str = "main"):
-    if map_type == "main":
-        x = 0.998
-        y = 0.0022
-    elif map_type == "sub":
-        x = 0.99
-        y = 0.01
+def add_map_box_info_text(
+        ax: matplotlib.axes.Axes, text: str,
+        map_type: str = "east_asia",
+        component_type: str = "main",
+):
+    if map_type == "east_asia":
+        if component_type == "main":
+            x = 0.998
+            y = 0.0022
+        elif component_type == "sub":
+            x = 0.99
+            y = 0.01
+        else:
+            raise ValueError(f"component_type is not supported: {component_type}.")
+    elif map_type == "north_polar":
+        x = 1.065
+        y = -0.045
     else:
-        raise ValueError(f"map_type must be main or sub.")
+        raise ValueError(f"map_type is not supported: {map_type}.")
 
     text_box = ax.text(
         x, y, text,
@@ -178,9 +217,19 @@ def add_map_box_info_text(ax: matplotlib.axes.Axes, text: str, map_type: str = "
 
 
 def add_map_box_colorbar(
-        ax: matplotlib.axes.Axes, colormap: mcolors.ListedColormap, levels: List
+        ax: matplotlib.axes.Axes,
+        colormap: mcolors.ListedColormap,
+        levels: List,
+        map_type: str = "east_asia",
 ) -> matplotlib.colorbar.Colorbar:
-    cax = ax.inset_axes([1.05, 0.02, 0.02, 0.96])
+    if map_type == "east_asia":
+        colorbar_box = [1.05, 0.02, 0.02, 0.96]
+    elif map_type == "north_polar":
+        colorbar_box = [1.08, 0.02, 0.02, 0.96]
+    else:
+        raise ValueError(f"map_type is not supported: {map_type}")
+
+    cax = ax.inset_axes(colorbar_box)
     norm = mcolors.BoundaryNorm(levels, colormap.N, extend="both")
     cbar = ax.get_figure().colorbar(
         mpl.cm.ScalarMappable(norm=norm, cmap=colormap),
