@@ -8,7 +8,14 @@ import pandas as pd
 import matplotlib.colors as mcolors
 
 
-def get_ncl_colormap(name, index: Optional[np.ndarray] = None, face_color="white") -> Optional[mcolors.ListedColormap]:
+def get_ncl_colormap(
+        name,
+        index: Optional[np.ndarray] = None,
+        count: Optional[int] = None,
+        spread_start=None,
+        spread_end=None,
+        face_color="white"
+) -> Optional[mcolors.ListedColormap]:
     """
     Generate Matplotlib colormap from NCL color map files in resource directory.
 
@@ -18,14 +25,26 @@ def get_ncl_colormap(name, index: Optional[np.ndarray] = None, face_color="white
         ncl color map name without extension.
     index
     face_color
+    count
+    spread_start
+    spread_end
 
     Returns
     -------
     matplotlib.colors.ListedColormap
     """
     raw_colormap = _get_raw_ncl_colormap(name)
-    if raw_colormap is None or index is None:
+    if raw_colormap is None or (index is None and count is None):
         return raw_colormap
+
+    if count is not None:
+        # generate index
+        total_colors = raw_colormap.N
+        if spread_start is None:
+            spread_start = 0
+        if spread_end is None:
+            spread_end = len(total_colors) - 1
+        index = np.linspace(spread_start, spread_end, count, endpoint=True, dtype=int)
 
     colors = []
     if index[0] == -1:
