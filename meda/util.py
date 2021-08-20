@@ -24,8 +24,8 @@ def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rec
     mpatches.Rectangle
     """
     if map_type == "east_asia":
-        point = (-0.05, -0.05)
-        width = 1.08
+        point = (-0.06, -0.05)
+        width = 1.09
         height = 1.08
     elif map_type == "north_polar":
         point = (-0.05, -0.05)
@@ -114,12 +114,12 @@ def set_map_box_title(
 
     """
     if map_type == "east_asia":
-        left = -0.05
+        left = -0.06
         bottom = -0.055
         top = 1.03
         right = 1.03
     elif map_type == "north_polar":
-        left = -0.05
+        left = -0.06
         bottom = -0.055
         top = 1.03
         right = 1.07
@@ -332,9 +332,13 @@ def clear_xarray_plot_components(ax):
     return ax
 
 
-def add_map_box_main_layout(fig, projection):
+def add_map_box_main_layout(fig, projection, map_type="east_asia"):
+    if map_type == "east_asia":
+        layout = [0.125, 0.2, 0.75, 0.6]
+    else:
+        raise ValueError(f"map_type is not supported: {map_type}")
     ax = fig.add_axes(
-        [0.1, 0.1, 0.8, 0.8],
+        layout,
         # projection=ccrs.LambertConformal(
         #     central_longitude=105,
         #     central_latitude=90
@@ -346,7 +350,7 @@ def add_map_box_main_layout(fig, projection):
 
 def add_map_box_sub_layout(fig, projection):
     ax = fig.add_axes(
-        [0.1, 0.18, 0.1, 0.14],
+        [0.125, 0.2, 0.1, 0.14],
         # projection=ccrs.LambertConformal(
         #     central_longitude=114,
         #     central_latitude=90,
