@@ -12,11 +12,12 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
     """
-    Draw a boundary box for map plot.
+    添加图形边框
 
     Parameters
     ----------
     ax
+    map_type
 
     Returns
     -------
@@ -55,7 +56,7 @@ def set_title(
         map_type="east_asia",
 ) -> List:
     """
-    添加四角标题
+    添加标题
 
     Parameters
     ----------
@@ -97,7 +98,7 @@ def set_map_box_title(
         map_type="east_asia",
 ) -> List:
     """
-    Set four corner title for map plot with a box.
+    为图形边框设置标题
 
     Parameters
     ----------
