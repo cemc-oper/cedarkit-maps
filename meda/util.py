@@ -10,6 +10,57 @@ import matplotlib.ticker as mticker
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 
+def add_map_box_main_layout(fig, projection, map_type="east_asia") -> mpl.axes.Axes:
+    """
+    添加主绘图区域
+
+    Parameters
+    ----------
+    fig
+    projection
+    map_type
+
+    Returns
+    -------
+    mpl.axes.Axes
+    """
+    if map_type == "east_asia":
+        width = 0.75
+        height = 0.6
+        layout = [(1 - width)/2, (1 - height)/2, width, height]
+    elif map_type == "north_polar" or map_type == "europe_asia":
+        width = 0.75
+        height = 0.6
+        layout = [0.1, 0.1, width, height]
+    else:
+        raise ValueError(f"map_type is not supported: {map_type}")
+    ax = fig.add_axes(
+        layout,
+        # projection=ccrs.LambertConformal(
+        #     central_longitude=105,
+        #     central_latitude=90
+        # ),
+        projection=projection
+    )
+    return ax
+
+
+def add_map_box_sub_layout(fig, projection):
+    main_width = 0.75
+    main_height = 0.6
+    sub_width = 0.1
+    sub_height = 0.14
+    ax = fig.add_axes(
+        [(1 - main_width)/2, (1 - main_height)/2, sub_width, sub_height],
+        # projection=ccrs.LambertConformal(
+        #     central_longitude=114,
+        #     central_latitude=90,
+        # ),
+        projection=projection,
+    )
+    return ax
+
+
 def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
     """
     添加图形边框
@@ -115,12 +166,12 @@ def set_map_box_title(
     """
     if map_type == "east_asia":
         left = -0.06
-        bottom = -0.055
+        bottom = -0.05 - 0.005
         top = 1.03
         right = 1.03
     elif map_type == "north_polar":
         left = -0.06
-        bottom = -0.055
+        bottom = -0.05 - 0.005
         top = 1.03
         right = 1.07
     else:
@@ -224,9 +275,9 @@ def add_map_box_colorbar(
         map_type: str = "east_asia",
 ) -> matplotlib.colorbar.Colorbar:
     if map_type == "east_asia":
-        colorbar_box = [1.05, 0.02, 0.02, 0.96]
+        colorbar_box = [1.05, 0.02, 0.02, 1]
     elif map_type == "north_polar":
-        colorbar_box = [1.08, 0.02, 0.02, 0.96]
+        colorbar_box = [1.08, 0.02, 0.02, 1]
     else:
         raise ValueError(f"map_type is not supported: {map_type}")
 
@@ -329,32 +380,4 @@ def clear_xarray_plot_components(ax):
     ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
-    return ax
-
-
-def add_map_box_main_layout(fig, projection, map_type="east_asia"):
-    if map_type == "east_asia":
-        layout = [0.125, 0.2, 0.75, 0.6]
-    else:
-        raise ValueError(f"map_type is not supported: {map_type}")
-    ax = fig.add_axes(
-        layout,
-        # projection=ccrs.LambertConformal(
-        #     central_longitude=105,
-        #     central_latitude=90
-        # ),
-        projection=projection
-    )
-    return ax
-
-
-def add_map_box_sub_layout(fig, projection):
-    ax = fig.add_axes(
-        [0.125, 0.2, 0.1, 0.14],
-        # projection=ccrs.LambertConformal(
-        #     central_longitude=114,
-        #     central_latitude=90,
-        # ),
-        projection=projection,
-    )
     return ax
