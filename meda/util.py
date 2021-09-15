@@ -28,9 +28,13 @@ def add_map_box_main_layout(fig, projection, map_type="east_asia") -> mpl.axes.A
         width = 0.75
         height = 0.6
         layout = [(1 - width)/2, (1 - height)/2, width, height]
-    elif map_type == "north_polar" or map_type == "europe_asia":
+    elif map_type == "europe_asia":
         width = 0.75
         height = 0.6
+        layout = [0.1, 0.1, width, height]
+    elif map_type == "north_polar":
+        width = 0.75
+        height = 0.8
         layout = [0.1, 0.1, width, height]
     else:
         raise ValueError(f"map_type is not supported: {map_type}")
