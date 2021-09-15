@@ -57,7 +57,7 @@ def generate_east_asia_plot(
     # )
 
     # 主区域
-    ax = add_map_box_main_layout(fig, projection=projection)
+    ax = add_map_box_main_layout(fig, projection=projection, map_type="east_asia")
 
     #   添加底图
     add_common_map_feature(

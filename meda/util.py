@@ -313,7 +313,7 @@ def set_map_box_area(ax, area, projection, aspect=None):
         crs=projection
     )
     if aspect is None:
-        return
+        return ax
     ax.set_aspect((abs(west_lon - east_lon) / aspect) / (abs(north_lat - south_lat) / 1.0), adjustable="box")
     return ax
 
@@ -345,7 +345,11 @@ def set_map_box_axis(ax, xticks, yticks, projection):
     return ax
 
 
-def draw_map_box_gridlines(ax, projection, xlocator=None, ylocator=None, linewidth=0.5):
+def draw_map_box_gridlines(
+        ax, projection,
+        xlocator=None, ylocator=None,
+        linewidth=0.5
+):
     gl = ax.gridlines(
         crs=projection,
         draw_labels=False,
@@ -354,9 +358,9 @@ def draw_map_box_gridlines(ax, projection, xlocator=None, ylocator=None, linewid
         alpha=0.5,
         linestyle='--',
     )
-    if ylocator:
+    if ylocator is not None:
         gl.ylocator = mticker.FixedLocator(ylocator)
-    if xlocator:
+    if xlocator is not None:
         gl.xlocator = mticker.FixedLocator(xlocator)
     return gl
 
