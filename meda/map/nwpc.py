@@ -1,3 +1,10 @@
+"""
+NWPC 官方图片产品使用的中国区域底图，仅限 NWPC 内部使用
+
+需要安装 nwpc-meda-data 库，Metcode 地址(需要访问权限)：
+
+https://metcode.nmic.cn/p/nwpc-meda-data
+"""
 import pkg_resources
 
 from cartopy.io.shapereader import Reader

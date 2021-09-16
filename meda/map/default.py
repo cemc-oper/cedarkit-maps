@@ -1,3 +1,8 @@
+"""
+默认中国区域底图，使用 dongli/china-shapefiles 项目中的 Shapefile，已包含在本项目 resources 目录中。
+
+项目地址：https://github.com/dongli/china-shapefiles
+"""
 import pkg_resources
 
 import cartopy.crs as ccrs
