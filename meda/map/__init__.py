@@ -28,13 +28,22 @@ def get_china_nine_map(map_package=None):
     return package.get_china_nine_map()
 
 
-def add_common_map_feature(ax: matplotlib.axes.Axes, coastline: Dict = None):
+def add_common_map_feature(
+        ax: matplotlib.axes.Axes,
+        coastline: Dict = None,
+        land: Dict = None,
+        ocean: Dict = None,
+        rivers: Dict = None,
+        lakes: Dict = None,
+) -> matplotlib.axes.Axes:
     """
+    添加通用地图特征
 
     Parameters
     ----------
     ax
-    coastline:
+    coastline
+        海岸线
 
         {
             "scale": "50m",
@@ -43,19 +52,34 @@ def add_common_map_feature(ax: matplotlib.axes.Axes, coastline: Dict = None):
                 # ...
             }
         }
+    land
+    ocean
+    rivers
+    lakes
 
     Returns
     -------
-
+    matplotlib.axes.Axes
     """
-    # ax.add_feature(cfeature.LAND.with_scale('50m'))
-    # ax.add_feature(cfeature.OCEAN.with_scale('50m'))
-
     if coastline is not None:
-        scale = coastline.get("scale", "50m")
-        style = coastline.get("style", dict())
-        ax.add_feature(cfeature.COASTLINE.with_scale(scale), **style)
+        _add_feature(ax, coastline, cfeature.COASTLINE)
 
-    # ax.add_feature(cfeature.RIVERS.with_scale('50m'), linewidth=0.5)
-    # ax.add_feature(cfeature.LAKES.with_scale('50m'), linewidth=0.5)
+    if land is not None:
+        _add_feature(ax, land, cfeature.LAND)
+
+    if ocean is not None:
+        _add_feature(ax, land, cfeature.OCEAN)
+
+    if rivers is not None:
+        _add_feature(ax, land, cfeature.RIVERS)
+
+    if lakes is not None:
+        _add_feature(ax, land, cfeature.LAKES)
+
     return ax
+
+
+def _add_feature(ax: matplotlib.axes.Axes, config: Dict, feature_item: cfeature.NaturalEarthFeature):
+    scale = config.get("scale", "50m")
+    style = config.get("style", dict())
+    ax.add_feature(feature_item.with_scale(scale), **style)
