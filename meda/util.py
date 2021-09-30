@@ -119,7 +119,7 @@ def set_title(
     graph_name
         图片名称，例如 `MSLP (hPa) line`
     system_name
-        系统名称，例如 `GRAPES_GFS(NMC/CMA)`
+        系统名称，例如 `CMA-GFS`
     start_time
         起报时次
     forecast_time
