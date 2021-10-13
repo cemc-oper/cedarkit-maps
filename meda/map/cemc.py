@@ -1,7 +1,7 @@
 """
 NWPC 官方图片产品使用的中国区域底图，仅限 NWPC 内部使用
 
-需要安装 nwpc-meda-data 库，Metcode 地址(需要访问权限)：
+需要安装 cemc-meda-data 库，Metcode 地址(需要访问权限)：
 
 https://metcode.nmic.cn/p/nwpc-meda-data
 """
@@ -29,7 +29,7 @@ def get_china_map():
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
         shape_file_name = pkg_resources.resource_filename(
-            "nwpc_meda_data", f"resources/maps/portrait/{shape_name}.shp"
+            "cemc_meda_data", f"resources/maps/portrait/{shape_name}.shp"
         )
         reader = Reader(shape_file_name)
         feature_style = get_map_feature_style(map_type)
@@ -59,7 +59,7 @@ def get_china_nine_map():
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
         shape_file_name = pkg_resources.resource_filename(
-            "nwpc_meda_data", f"resources/maps/landscape/NANHAI/{shape_name}.shp"
+            "cemc_meda_data", f"resources/maps/landscape/NANHAI/{shape_name}.shp"
         )
         reader = Reader(shape_file_name)
         feature_style = get_map_feature_style(map_type)
