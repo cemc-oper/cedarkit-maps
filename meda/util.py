@@ -304,8 +304,8 @@ def add_map_box_colorbar(
         right=False,
         labelsize=7
     )
-    ticklabs = cbar.ax.get_yticklabels()
-    cbar.ax.set_yticklabels(ticklabs, ha='center')
+    # ticklabs = cbar.ax.get_yticklabels()
+    cbar.ax.set_yticklabels(levels, ha='center')
     cbar.ax.yaxis.set_tick_params(pad=7)
     return cbar
 
