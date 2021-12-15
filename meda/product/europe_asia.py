@@ -84,7 +84,7 @@ def generate_europe_asia_plot(
     #   网格线
     draw_map_box_gridlines(
         ax,
-        projection=projection,
+        projection=data_projection,
         ylocator=np.arange(0, 70, 10),
         xlocator=np.arange(20, 170, 10)
     )
@@ -121,6 +121,6 @@ def generate_europe_asia_plot(
     # set by user
 
     # 审图号文本框
-    add_map_box_info_text(ax, "Scale 1:20000000 No:GS (2019) 1786", component_type="main")
+    add_map_box_info_text(ax, "Scale 1:20000000 No:GS (2019) 1786", map_type="europe_asia")
 
     return ax
