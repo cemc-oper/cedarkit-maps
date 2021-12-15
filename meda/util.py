@@ -132,14 +132,16 @@ def set_title(
 
     """
     utc_start_time_label = start_time.strftime('%Y%m%d%H')
-    cst_start_time_label = (start_time + pd.Timedelta(hours=3)).strftime('%Y%m%d%H')
+    utc_valid_time_label = (start_time + forecast_time).strftime('%Y%m%d%H')
+    cst_start_time_label = (start_time + pd.Timedelta(hours=8)).strftime('%Y%m%d%H')
+    cst_valid_time_label = (start_time + forecast_time + pd.Timedelta(hours=8)).strftime('%Y%m%d%H')
     forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):02}"
     return set_map_box_title(
         ax,
         top_left=graph_name,
         top_right=system_name,
-        bottom_left=f"{utc_start_time_label} + {forecast_time_label}h\n{cst_start_time_label} + {forecast_time_label}h",
-        bottom_right=f"{utc_start_time_label}(UTC)\n{cst_start_time_label}(CST)",
+        bottom_left=f"{utc_start_time_label}+{forecast_time_label}h\n{cst_start_time_label}+{forecast_time_label}h",
+        bottom_right=f"{utc_valid_time_label}(UTC)\n{cst_valid_time_label}(CST)",
         map_type=map_type
     )
 
@@ -253,6 +255,9 @@ def add_map_box_info_text(
     elif map_type == "north_polar":
         x = 1.065
         y = -0.045
+    elif map_type == "europe_asia":
+        x = 1.03
+        y = -0.045
     else:
         raise ValueError(f"map_type is not supported: {map_type}.")
 
@@ -352,13 +357,14 @@ def set_map_box_axis(ax, xticks, yticks, projection):
 def draw_map_box_gridlines(
         ax, projection,
         xlocator=None, ylocator=None,
-        linewidth=0.5
+        linewidth=0.5,
+        color="r",
 ):
     gl = ax.gridlines(
         crs=projection,
         draw_labels=False,
         linewidth=linewidth,
-        color='r',
+        color=color,
         alpha=0.5,
         linestyle='--',
     )
