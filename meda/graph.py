@@ -38,6 +38,7 @@ def add_contourf(
         vmax=max_level,
         levels=levels,
         add_colorbar=False,
+        add_labels=False,
         **kwargs
     )
     return c
@@ -78,6 +79,7 @@ def add_contour(
         levels=levels,
         add_colorbar=False,
         linestyles=linestyles,
+        add_labels=False,
         **kwargs,
     )
     return c
