@@ -64,14 +64,23 @@ def generate_east_asia_plot(
         ax,
         coastline=dict(
             scale="50m",
-            style=dict(linewidth=0.5)
+            style=dict(
+                linewidth=0.5,
+                # zorder=50
+            )
         )
     )
 
     for f in cn_features:
-        ax.add_feature(f)
+        ax.add_feature(
+            f,
+            # zorder=100
+        )
     for f in nine_features:
-        ax.add_feature(f)
+        ax.add_feature(
+            f,
+            # zorder=100
+        )
 
     #   坐标轴
     set_map_box_axis(
@@ -104,14 +113,25 @@ def generate_east_asia_plot(
         sub_ax,
         coastline=dict(
             scale="50m",
-            style=dict(linewidth=0.25)
+            style=dict(
+                linewidth=0.25,
+                # zorder=50
+            ),
         )
     )
 
     for f in cn_features:
-        sub_ax.add_feature(f, linewidth=0.5)
+        sub_ax.add_feature(
+            f,
+            linewidth=0.5,
+            # zorder=100
+        )
     for f in nine_features:
-        sub_ax.add_feature(f, linewidth=1)
+        sub_ax.add_feature(
+            f,
+            linewidth=1,
+            # zorder=100
+        )
 
     #   南海子图
     set_map_box_area(
