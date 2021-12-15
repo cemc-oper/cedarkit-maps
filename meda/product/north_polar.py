@@ -106,7 +106,8 @@ def generate_north_polar_plot(
         ax,
         projection=data_projection,
         ylocator=np.arange(0, 90, 15),
-        xlocator=np.arange(-180, 180, 30)
+        xlocator=np.arange(-180, 180, 30),
+        color="k"
     )
 
     # 设置区域范围
@@ -125,5 +126,12 @@ def generate_north_polar_plot(
 
     # 绘制边框
     rect = draw_map_box(ax, map_type="north_polar")
+
+    add_map_box_info_text(
+        ax,
+        "Scale 1:20000000 No:GS (2019) 1786",
+        map_type="north_polar",
+        component_type="main"
+    )
 
     return ax
