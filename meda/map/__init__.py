@@ -8,7 +8,7 @@ import matplotlib.axes
 DEFAULT_MAP_PACKAGE = "meda.map.default"
 
 
-def set_default_map_package(map_package):
+def set_default_map_package(map_package: str):
     """
     设置默认地图包名
 
