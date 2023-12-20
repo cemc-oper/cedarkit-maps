@@ -10,6 +10,6 @@
 
 ## LICENSE
 
-Copyright &copy; 2021, perillaroc at cemc-oper.
+Copyright &copy; 2021-2023, developers at cemc-oper.
 
-`meda` is licensed under [GPL v3.0](LICENSE.md)
+`meda` is licensed under [Apache License V2.0](./LICENSE)

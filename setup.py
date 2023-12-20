@@ -26,13 +26,13 @@ setup(
     author='perillaroc',
     author_email='perillaroc@gmail.com',
 
-    license='GPLv3',
+    license='Apache License 2.0',
 
     classifiers=[
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: Apache Software License',
     ],
 
-    keywords='graphic',
+    keywords='graphic cemc',
 
     packages=find_packages(exclude=['docs', 'tests', 'example']),
 
