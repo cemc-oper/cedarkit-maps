@@ -3,7 +3,7 @@
 
 项目地址：https://github.com/dongli/china-shapefiles
 """
-import pkg_resources
+import importlib.resources
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -11,34 +11,32 @@ from cartopy.io.shapereader import Reader
 
 
 def get_china_map():
-    china_shape_file = pkg_resources.resource_filename(
-        "meda", "resources/map/china-shapefiles/shapefiles/china.shp"
-    )
-    china_shape_reader = Reader(china_shape_file)
+    ref = importlib.resources.files("meda") / "resources/map/china-shapefiles/shapefiles/china.shp"
+    with importlib.resources.as_file(ref) as china_shape_file:
+        china_shape_reader = Reader(china_shape_file)
 
-    projection = ccrs.PlateCarree()
-    cn_feature = cfeature.ShapelyFeature(
-        china_shape_reader.geometries(),
-        projection,
-        edgecolor='k',
-        facecolor='none'
-    )
+        projection = ccrs.PlateCarree()
+        cn_feature = cfeature.ShapelyFeature(
+            china_shape_reader.geometries(),
+            projection,
+            edgecolor='k',
+            facecolor='none'
+        )
 
     return [cn_feature]
 
 
 def get_china_nine_map():
-    china_nine_dotted_shape_file = pkg_resources.resource_filename(
-        "meda", "resources/map/china-shapefiles/shapefiles/china_nine_dotted_line.shp"
-    )
-    china_nine_dotted_shape_reader = Reader(china_nine_dotted_shape_file)
+    ref = importlib.resources.files("meda") / "resources/map/china-shapefiles/shapefiles/china_nine_dotted_line.shp"
+    with importlib.resources.as_file(ref) as china_nine_dotted_shape_file:
+        china_nine_dotted_shape_reader = Reader(china_nine_dotted_shape_file)
 
-    projection = ccrs.PlateCarree()
-    nine_feature = cfeature.ShapelyFeature(
-        china_nine_dotted_shape_reader.geometries(),
-        projection,
-        edgecolor='k',
-        facecolor='none'
-    )
+        projection = ccrs.PlateCarree()
+        nine_feature = cfeature.ShapelyFeature(
+            china_nine_dotted_shape_reader.geometries(),
+            projection,
+            edgecolor='k',
+            facecolor='none'
+        )
 
     return [nine_feature]

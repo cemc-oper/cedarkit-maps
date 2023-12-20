@@ -1,15 +1,20 @@
 """
-NWPC 官方图片产品使用的中国区域底图，仅限 NWPC 内部使用
+CEMC 官方图片产品使用的中国区域底图，仅限 CEMC 内部使用
 
-需要安装 cemc-meda-data 库，Metcode 地址(需要访问权限)：
+需要安装 cemc-meda-data 库，Metcode 地址 (仅 CEMC 内部访问，需要访问权限)
 
-https://metcode.nmic.cn/p/nwpc-meda-data
+http://e.mc.met.cma/codingcorp/cemc-meda/cemc-meda-data.git
+
+如需使用，请联系 CEMC 获取。
 """
-import pkg_resources
+import importlib.resources
 
 from cartopy.io.shapereader import Reader
 import cartopy.feature as cfeature
 import cartopy.crs as ccrs
+
+
+MAP_PACKAGE_NAME = "cemc_meda_data"
 
 
 def get_china_map():
@@ -28,18 +33,18 @@ def get_china_map():
     for shape_item in shape_names:
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
-        shape_file_name = pkg_resources.resource_filename(
-            "cemc_meda_data", f"resources/maps/portrait/{shape_name}.shp"
-        )
-        reader = Reader(shape_file_name)
-        feature_style = get_map_feature_style(map_type)
-        feature = cfeature.ShapelyFeature(
-            reader.geometries(),
-            projection,
-            facecolor="none",
-            **feature_style
-        )
-        features.append(feature)
+
+        ref = importlib.resources.files(MAP_PACKAGE_NAME) / f"resources/maps/portrait/{shape_name}.shp"
+        with importlib.resources.as_file(ref) as shape_file_name:
+            reader = Reader(shape_file_name)
+            feature_style = get_map_feature_style(map_type)
+            feature = cfeature.ShapelyFeature(
+                reader.geometries(),
+                projection,
+                facecolor="none",
+                **feature_style
+            )
+            features.append(feature)
 
     return features
 
@@ -58,18 +63,18 @@ def get_china_nine_map():
     for shape_item in shape_names:
         shape_name = shape_item["name"]
         map_type = shape_item["type"]
-        shape_file_name = pkg_resources.resource_filename(
-            "cemc_meda_data", f"resources/maps/landscape/NANHAI/{shape_name}.shp"
-        )
-        reader = Reader(shape_file_name)
-        feature_style = get_map_feature_style(map_type)
-        feature = cfeature.ShapelyFeature(
-            reader.geometries(),
-            projection,
-            facecolor="none",
-            **feature_style
-        )
-        features.append(feature)
+
+        ref = importlib.resources.files(MAP_PACKAGE_NAME) / f"resources/maps/landscape/NANHAI/{shape_name}.shp"
+        with importlib.resources.as_file(ref) as shape_file_name:
+            reader = Reader(shape_file_name)
+            feature_style = get_map_feature_style(map_type)
+            feature = cfeature.ShapelyFeature(
+                reader.geometries(),
+                projection,
+                facecolor="none",
+                **feature_style
+            )
+            features.append(feature)
 
     return features
 
