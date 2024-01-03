@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 
-from meda.chart.chart import Chart
+from meda.style import Style
+
+from .chart import Chart
+from .map_domain import MapDomain
 
 
 @dataclass
@@ -13,7 +16,7 @@ class Schema:
 
 
 class Panel:
-    def __init__(self, domain: str):
+    def __init__(self, domain: Union[str, type[MapDomain], MapDomain]):
         self.schema = Schema()
 
         self._fig: Optional[plt.figure] = None
@@ -35,10 +38,10 @@ class Panel:
     def show(self):
         plt.show()
 
-    def add_chart(self, domain: str):
+    def add_chart(self, domain: Union[str, type[MapDomain], MapDomain]):
         chart = Chart(self, domain=domain)
         self.charts.append(chart)
 
-    def plot(self, data, style):
+    def plot(self, data, style: Style):
         self.charts[0].plot(data=data, style=style)
 

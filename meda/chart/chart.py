@@ -1,8 +1,8 @@
-from typing import List, TYPE_CHECKING
+from typing import List, Union, TYPE_CHECKING
 
 from meda.style import Style, ContourStyle
 
-from .map_domain import parse_domain
+from .map_domain import parse_domain, MapDomain
 from .layer import Layer
 
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Chart:
-    def __init__(self, panel: "Panel", domain: str):
+    def __init__(self, panel: "Panel", domain: Union[str, type[MapDomain], MapDomain]):
         self.panel = panel
         self.layers: List["Layer"] = []
 

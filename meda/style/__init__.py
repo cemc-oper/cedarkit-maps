@@ -26,7 +26,7 @@ class Style:
         pass
 
 
-class ContourStyle:
+class ContourStyle(Style):
     def __init__(
             self,
             colors: Optional[Union[str, List, mcolors.ListedColormap]] = None,

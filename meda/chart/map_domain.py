@@ -1,8 +1,8 @@
-from typing import List, Optional, Tuple, TYPE_CHECKING
+import inspect
+from typing import List, Union, TYPE_CHECKING
 
 import cartopy.crs as ccrs
 import numpy as np
-from matplotlib import pyplot as plt
 
 from meda.map import (
     add_common_map_feature,
@@ -13,7 +13,8 @@ from meda.util import (
     set_map_box_axis,
     draw_map_box_gridlines,
     set_map_box_area,
-    draw_map_box
+    draw_map_box,
+    set_title
 )
 
 from .layer import Layer
@@ -43,11 +44,18 @@ class MapDomain:
         return self._projection
 
 
-def parse_domain(domain: str) -> MapDomain:
-    if domain == "cemc.east_asia":
-        map_domain = EastAsiaMapDomain()
+def parse_domain(domain: Union[str, type[MapDomain], MapDomain]) -> MapDomain:
+    if inspect.isclass(domain):
+        map_domain = domain()
+    elif isinstance(domain, MapDomain):
+        map_domain = domain
+    elif isinstance(domain, str):
+        if domain == "cemc.east_asia":
+            map_domain = EastAsiaMapDomain()
+        else:
+            raise ValueError(f"invalid domain: {domain}")
     else:
-        raise ValueError(f"invalid domain: {domain}")
+        raise TypeError(f"invalid domain type")
 
     return map_domain
 
@@ -143,7 +151,7 @@ class EastAsiaMapDomain(MapDomain):
         x = 0.998
         y = 0.0022
         text = "Scale 1:20000000 No:GS (2019) 1786"
-        self.add_text(ax=ax, x=x, y=y, text=text)
+        self.add_map_info(ax=ax, x=x, y=y, text=text)
 
     def render_sub_box(self):
         fig = self.chart.fig
@@ -206,10 +214,10 @@ class EastAsiaMapDomain(MapDomain):
         x = 0.99
         y = 0.01
         text = "Scale 1:40000000"
-        self.add_text(ax=ax, x=x, y=y, text=text)
+        self.add_map_info(ax=ax, x=x, y=y, text=text)
 
     @staticmethod
-    def add_text(ax, x, y, text):
+    def add_map_info(ax, x: float, y: float, text: str):
         text_box = ax.text(
             x, y, text,
             verticalalignment='bottom',
@@ -224,3 +232,13 @@ class EastAsiaMapDomain(MapDomain):
             )
         )
         return text_box
+
+    @staticmethod
+    def set_title(chart, graph_name, system_name, start_time, forecast_time):
+        set_title(
+            chart.layers[0].ax,
+            graph_name=graph_name,
+            system_name=system_name,
+            start_time=start_time,
+            forecast_time=forecast_time,
+        )
