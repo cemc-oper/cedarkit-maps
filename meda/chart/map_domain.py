@@ -91,9 +91,8 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = SubChart(chart=self.chart)
+        sub_chart = SubChart(chart=self.chart, projection=self.projection)
         sub_chart.add_axes(ax)
-
 
         add_common_map_feature(
             ax,
@@ -144,21 +143,7 @@ class EastAsiaMapDomain(MapDomain):
         x = 0.998
         y = 0.0022
         text = "Scale 1:20000000 No:GS (2019) 1786"
-        text_box = ax.text(
-            x, y, text,
-            verticalalignment='bottom',
-            horizontalalignment='right',
-            transform=ax.transAxes,
-            fontsize=3,
-            bbox=dict(
-                boxstyle="round",
-                edgecolor="black",
-                facecolor="white",
-                linewidth=0.5,
-            )
-        )
-
-
+        self.add_text(ax=ax, x=x, y=y, text=text)
 
     def render_sub_box(self):
         fig = self.chart.fig
@@ -174,7 +159,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = SubChart(chart=self.chart)
+        sub_chart = SubChart(chart=self.chart, projection=self.projection)
         sub_chart.add_axes(ax)
 
         add_common_map_feature(
@@ -221,6 +206,10 @@ class EastAsiaMapDomain(MapDomain):
         x = 0.99
         y = 0.01
         text = "Scale 1:40000000"
+        self.add_text(ax=ax, x=x, y=y, text=text)
+
+    @staticmethod
+    def add_text(ax, x, y, text):
         text_box = ax.text(
             x, y, text,
             verticalalignment='bottom',
@@ -234,3 +223,4 @@ class EastAsiaMapDomain(MapDomain):
                 linewidth=0.5,
             )
         )
+        return text_box

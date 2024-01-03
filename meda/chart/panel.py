@@ -44,5 +44,5 @@ class Panel:
         self.charts.append(chart)
 
     def plot(self, data, style):
-        pass
+        self.charts[0].plot(data=data, style=style)
 
