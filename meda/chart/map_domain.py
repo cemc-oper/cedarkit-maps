@@ -16,7 +16,7 @@ from meda.util import (
     draw_map_box
 )
 
-from .sub_chart import SubChart
+from .layer import Layer
 
 if TYPE_CHECKING:
     from meda.chart.chart import Chart
@@ -72,7 +72,7 @@ class EastAsiaMapDomain(MapDomain):
         self.render_main_box()
         self.render_sub_box()
 
-        rect = draw_map_box(self.chart.subcharts[0].ax)
+        rect = draw_map_box(self.chart.layers[0].ax)
 
     def load_map(self):
         self.cn_features = get_china_map()
@@ -91,7 +91,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = SubChart(chart=self.chart, projection=self.projection)
+        sub_chart = Layer(chart=self.chart, projection=self.projection)
         sub_chart.add_axes(ax)
 
         add_common_map_feature(
@@ -159,7 +159,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = SubChart(chart=self.chart, projection=self.projection)
+        sub_chart = Layer(chart=self.chart, projection=self.projection)
         sub_chart.add_axes(ax)
 
         add_common_map_feature(

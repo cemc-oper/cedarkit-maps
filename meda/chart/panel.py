@@ -1,13 +1,9 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, TYPE_CHECKING
-
-from meda.chart.chart import Chart
-
-if TYPE_CHECKING:
-    from meda.chart import MapDomain
-
+from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
+
+from meda.chart.chart import Chart
 
 
 @dataclass

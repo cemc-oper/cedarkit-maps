@@ -1,18 +1,18 @@
 from typing import List, TYPE_CHECKING
 
-from .map_domain import parse_domain
-
 from meda.style import Style, ContourStyle
+
+from .map_domain import parse_domain
+from .layer import Layer
 
 if TYPE_CHECKING:
     from .panel import Panel
-    from .sub_chart import SubChart
 
 
 class Chart:
     def __init__(self, panel: "Panel", domain: str):
         self.panel = panel
-        self.subcharts: List["SubChart"] = []
+        self.layers: List["Layer"] = []
 
         self.map_domain = parse_domain(domain)
         self.map_domain.set_chart(self)
@@ -22,15 +22,15 @@ class Chart:
     def fig(self):
         return self.panel.fig
 
-    def add_subchart(self, sub_chart: "SubChart"):
-        self.subcharts.append(sub_chart)
+    def add_layer(self, layer: "Layer"):
+        self.layers.append(layer)
 
     def plot(self, data, style: "Style"):
-        for sub_chart in self.subcharts:
+        for layer in self.layers:
             if isinstance(style, ContourStyle):
                 if style.fill:
-                    sub_chart.contourf(data=data, style=style)
+                    layer.contourf(data=data, style=style)
                 else:
-                    sub_chart.contour(data=data, style=style)
+                    layer.contour(data=data, style=style)
             else:
                 raise NotImplementedError("style is not implemented")
