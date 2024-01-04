@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+from dataclasses import dataclass
 
 import pandas as pd
 import matplotlib as mpl
@@ -102,74 +103,41 @@ def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rec
     return rect
 
 
-def set_title(
-        ax,
-        graph_name,
-        system_name,
-        start_time,
-        forecast_time,
-        map_type="east_asia",
-) -> List:
-    """
-    添加标题
+@dataclass
+class GraphTitle:
+    top_left_label: Optional[str] = None
+    top_right_label: Optional[str] = None
+    bottom_left_label: Optional[str] = None
+    bottom_right_label: Optional[str] = None
+    top_left_pos: Optional[str] = None
 
-    Parameters
-    ----------
-    ax
-    graph_name
-        图片名称，例如 `MSLP (hPa) line`
-    system_name
-        系统名称，例如 `CMA-GFS`
-    start_time
-        起报时次
-    forecast_time
-        预报时效
-    map_type
-        底图类型
+    left: Optional[float] = None
+    bottom: Optional[float] = None
+    top: Optional[float] = None
+    right: Optional[float] = None
 
-    Returns
-    -------
 
-    """
+def fill_graph_title(
+        graph_title: GraphTitle,
+        graph_name: str,
+        system_name: str,
+        start_time: pd.Timestamp,
+        forecast_time: pd.Timedelta,
+) -> GraphTitle:
     utc_start_time_label = start_time.strftime('%Y%m%d%H')
     utc_valid_time_label = (start_time + forecast_time).strftime('%Y%m%d%H')
     cst_start_time_label = (start_time + pd.Timedelta(hours=8)).strftime('%Y%m%d%H')
     cst_valid_time_label = (start_time + forecast_time + pd.Timedelta(hours=8)).strftime('%Y%m%d%H')
     forecast_time_label = f"{int(forecast_time / pd.Timedelta(hours=1)):02}"
-    return set_map_box_title(
-        ax,
-        top_left=graph_name,
-        top_right=system_name,
-        bottom_left=f"{utc_start_time_label}+{forecast_time_label}h\n{cst_start_time_label}+{forecast_time_label}h",
-        bottom_right=f"{utc_valid_time_label}(UTC)\n{cst_valid_time_label}(CST)",
-        map_type=map_type
-    )
+    graph_title.top_left_label = graph_name
+    graph_title.top_right_label = system_name
+    graph_title.bottom_left_label = f"{utc_start_time_label}+{forecast_time_label}h\n{cst_start_time_label}+{forecast_time_label}h"
+    graph_title.bottom_right_label = f"{utc_valid_time_label}(UTC)\n{cst_valid_time_label}(CST)"
+
+    return graph_title
 
 
-def set_map_box_title(
-        ax: matplotlib.axes.Axes,
-        top_left: str = None,
-        top_right: str = None,
-        bottom_left: str = None,
-        bottom_right: str = None,
-        map_type="east_asia",
-) -> List:
-    """
-    为图形边框设置标题
-
-    Parameters
-    ----------
-    ax
-    top_left
-    top_right
-    bottom_left
-    bottom_right
-    map_type
-
-    Returns
-    -------
-
-    """
+def fill_graph_title_pos(graph_title: GraphTitle, map_type="east_asia"):
     if map_type == "east_asia":
         left = -0.06
         bottom = -0.05 - 0.005
@@ -182,6 +150,40 @@ def set_map_box_title(
         right = 1.07
     else:
         raise ValueError(f"component_type is not supported: {map_type}")
+
+    graph_title.left = left
+    graph_title.bottom = bottom
+    graph_title.top = top
+    graph_title.right = right
+
+    return graph_title
+
+
+def set_map_box_title(
+        ax: matplotlib.axes.Axes,
+        graph_title: GraphTitle,
+) -> List:
+    """
+    为图形边框设置标题
+
+    Parameters
+    ----------
+    ax
+    graph_title
+
+    Returns
+    -------
+
+    """
+    left = graph_title.left
+    bottom = graph_title.bottom
+    top = graph_title.top
+    right = graph_title.right
+
+    top_left = graph_title.top_left_label
+    top_right = graph_title.top_right_label
+    bottom_left = graph_title.bottom_left_label
+    bottom_right = graph_title.bottom_right_label
 
     if top_left is None:
         top_left_text = None
@@ -238,6 +240,55 @@ def set_map_box_title(
     return [top_left_text, top_right_text, bottom_left_text, bottom_right_text]
 
 
+def set_title(
+        ax,
+        graph_name: str,
+        system_name: str,
+        start_time: pd.Timestamp,
+        forecast_time: pd.Timedelta,
+        map_type="east_asia",
+) -> List:
+    """
+    添加标题
+
+    Parameters
+    ----------
+    ax
+    graph_name
+        图片名称，例如 `MSLP (hPa) line`
+    system_name
+        系统名称，例如 `CMA-GFS`
+    start_time
+        起报时次
+    forecast_time
+        预报时效
+    map_type
+        底图类型
+
+    Returns
+    -------
+
+    """
+    graph_title = GraphTitle()
+    fill_graph_title(
+        graph_title=graph_title,
+        graph_name=graph_name,
+        system_name=system_name,
+        start_time=start_time,
+        forecast_time=forecast_time,
+    )
+
+    fill_graph_title_pos(
+        graph_title=graph_title,
+        map_type=map_type
+    )
+
+    return set_map_box_title(
+        ax,
+        graph_title=graph_title
+    )
+
+
 def add_map_box_info_text(
         ax: matplotlib.axes.Axes, text: str,
         map_type: str = "east_asia",
@@ -277,18 +328,28 @@ def add_map_box_info_text(
     return text_box
 
 
-def add_map_box_colorbar(
-        ax: matplotlib.axes.Axes,
-        colormap: mcolors.ListedColormap,
-        levels: List,
-        map_type: str = "east_asia",
-) -> matplotlib.colorbar.Colorbar:
+@dataclass
+class GraphColorbar:
+    colormap: Optional[mcolors.ListedColormap] = None
+    levels: Optional[List] = None
+    box: Optional[List] = None
+
+
+def fill_colorbar_pos(graph_colorbar: GraphColorbar, map_type: str):
     if map_type == "east_asia":
         colorbar_box = [1.05, 0.02, 0.02, 1]
     elif map_type == "north_polar":
         colorbar_box = [1.08, 0.02, 0.02, 1]
     else:
         raise ValueError(f"map_type is not supported: {map_type}")
+    graph_colorbar.box = colorbar_box
+    return graph_colorbar
+
+
+def add_map_box_colorbar(ax: matplotlib.axes.Axes, graph_colorbar: GraphColorbar) -> matplotlib.colorbar.Colorbar:
+    colorbar_box = graph_colorbar.box
+    levels = graph_colorbar.levels
+    colormap = graph_colorbar.colormap
 
     cax = ax.inset_axes(colorbar_box)
     norm = mcolors.BoundaryNorm(levels, colormap.N, extend="both")
@@ -312,6 +373,29 @@ def add_map_box_colorbar(
     # ticklabs = cbar.ax.get_yticklabels()
     cbar.ax.set_yticklabels(levels, ha='center')
     cbar.ax.yaxis.set_tick_params(pad=7)
+    return cbar
+
+
+def add_colorbar(
+        ax: matplotlib.axes.Axes,
+        colormap: mcolors.ListedColormap,
+        levels: List,
+        map_type: str = "east_asia",
+) -> matplotlib.colorbar.Colorbar:
+    if map_type == "east_asia":
+        colorbar_box = [1.05, 0.02, 0.02, 1]
+    elif map_type == "north_polar":
+        colorbar_box = [1.08, 0.02, 0.02, 1]
+    else:
+        raise ValueError(f"map_type is not supported: {map_type}")
+
+    graph_colorbar = GraphColorbar(
+        colormap=colormap,
+        levels=levels,
+        box=colorbar_box,
+    )
+
+    cbar = add_map_box_colorbar(ax, graph_colorbar=graph_colorbar)
     return cbar
 
 

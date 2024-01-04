@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+import pandas as pd
 from cartopy import crs as ccrs
 
 from meda.style import ContourStyle
@@ -15,8 +16,11 @@ from meda.util import (
     set_map_box_axis,
     draw_map_box_gridlines,
     set_map_box_area,
-    set_title,
-    add_map_box_colorbar
+    GraphTitle,
+    fill_graph_title,
+    set_map_box_title,
+    GraphColorbar,
+    add_map_box_colorbar,
 )
 
 from .map_domain import MapDomain
@@ -203,22 +207,52 @@ class EastAsiaMapDomain(MapDomain):
         )
         return text_box
 
-    @staticmethod
-    def set_title(chart: "Chart", graph_name, system_name, start_time, forecast_time):
-        set_title(
-            chart.layers[0].ax,
+    def set_title(
+            self,
+            graph_name: str,
+            system_name: str,
+            start_time: pd.Timestamp,
+            forecast_time: pd.Timedelta
+    ):
+        chart = self.chart
+
+        left = -0.06
+        bottom = -0.05 - 0.005
+        top = 1.03
+        right = 1.03
+        graph_title = GraphTitle(
+            left=left,
+            bottom=bottom,
+            top=top,
+            right=right,
+        )
+
+        fill_graph_title(
+            graph_title=graph_title,
             graph_name=graph_name,
             system_name=system_name,
             start_time=start_time,
             forecast_time=forecast_time,
         )
 
-    @staticmethod
-    def add_color_bar(chart: "Chart", style: ContourStyle):
+        set_map_box_title(
+            chart.layers[0].ax,
+            graph_title=graph_title,
+        )
+
+    def add_colorbar(self, style: ContourStyle):
+        chart = self.chart
+
+        colorbar_box = [1.05, 0.02, 0.02, 1]
+
+        graph_colorbar = GraphColorbar(
+            colormap=style.colors,
+            levels=style.levels,
+            box=colorbar_box,
+        )
+
         color_bar = add_map_box_colorbar(
             chart.layers[0].ax,
-            levels=style.levels,
-            colormap=style.colors,
-            map_type="east_asia",
+            graph_colorbar=graph_colorbar,
         )
         return color_bar
