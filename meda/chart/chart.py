@@ -1,8 +1,8 @@
 from typing import List, Union, TYPE_CHECKING
 
 from meda.style import Style, ContourStyle
+from meda.domains import parse_domain, MapDomain
 
-from .map_domain import parse_domain, MapDomain
 from .layer import Layer
 
 if TYPE_CHECKING:

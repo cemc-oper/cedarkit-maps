@@ -4,9 +4,9 @@ from typing import Optional, Tuple, Union
 import matplotlib.pyplot as plt
 
 from meda.style import Style
+from meda.domains import MapDomain
 
 from .chart import Chart
-from .map_domain import MapDomain
 
 
 @dataclass

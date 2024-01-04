@@ -1,63 +1,28 @@
-import inspect
-from typing import List, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-import cartopy.crs as ccrs
 import numpy as np
+from cartopy import crs as ccrs
 
+from meda.style import ContourStyle
+from meda.chart import Layer
 from meda.map import (
-    add_common_map_feature,
     get_china_map,
     get_china_nine_map,
+    add_common_map_feature
 )
 from meda.util import (
+    draw_map_box,
     set_map_box_axis,
     draw_map_box_gridlines,
     set_map_box_area,
-    draw_map_box,
-    set_title
+    set_title,
+    add_map_box_colorbar
 )
 
-from .layer import Layer
+from .map_domain import MapDomain
 
 if TYPE_CHECKING:
-    from meda.chart.chart import Chart
-
-
-class MapDomain:
-    def __init__(self, projection: ccrs.Projection, domain: List[float]):
-        self._projection = projection
-        self._domain = domain
-        self.chart = None
-
-    def set_chart(self, chart: "Chart"):
-        self.chart = chart
-
-    def render_chart(self):
-        raise NotImplementedError
-
-    @property
-    def domain(self):
-        return self._domain
-
-    @property
-    def projection(self):
-        return self._projection
-
-
-def parse_domain(domain: Union[str, type[MapDomain], MapDomain]) -> MapDomain:
-    if inspect.isclass(domain):
-        map_domain = domain()
-    elif isinstance(domain, MapDomain):
-        map_domain = domain
-    elif isinstance(domain, str):
-        if domain == "cemc.east_asia":
-            map_domain = EastAsiaMapDomain()
-        else:
-            raise ValueError(f"invalid domain: {domain}")
-    else:
-        raise TypeError(f"invalid domain type")
-
-    return map_domain
+    from meda.chart import Chart
 
 
 class EastAsiaMapDomain(MapDomain):
@@ -71,6 +36,11 @@ class EastAsiaMapDomain(MapDomain):
         self.sub_domain = [105, 123, 2, 23]
         self.cn_features = None
         self.nine_features = None
+
+        self.width = 0.75
+        self.height = 0.6
+        self.sub_width = 0.1
+        self.sub_height = 0.14
 
     def set_chart(self, chart: "Chart"):
         super().set_chart(chart=chart)
@@ -88,8 +58,8 @@ class EastAsiaMapDomain(MapDomain):
 
     def render_main_box(self):
         fig = self.chart.fig
-        width = 0.75
-        height = 0.6
+        width = self.width
+        height = self.height
         layout = [(1 - width) / 2, (1 - height) / 2, width, height]
         ax = fig.add_axes(
             layout,
@@ -155,10 +125,10 @@ class EastAsiaMapDomain(MapDomain):
 
     def render_sub_box(self):
         fig = self.chart.fig
-        main_width = 0.75
-        main_height = 0.6
-        sub_width = 0.1
-        sub_height = 0.14
+        main_width = self.width
+        main_height = self.height
+        sub_width = self.sub_width
+        sub_height = self.sub_height
         ax = fig.add_axes(
             [(1 - main_width) / 2, (1 - main_height) / 2, sub_width, sub_height],
             # projection=ccrs.LambertConformal(
@@ -234,7 +204,7 @@ class EastAsiaMapDomain(MapDomain):
         return text_box
 
     @staticmethod
-    def set_title(chart, graph_name, system_name, start_time, forecast_time):
+    def set_title(chart: "Chart", graph_name, system_name, start_time, forecast_time):
         set_title(
             chart.layers[0].ax,
             graph_name=graph_name,
@@ -242,3 +212,13 @@ class EastAsiaMapDomain(MapDomain):
             start_time=start_time,
             forecast_time=forecast_time,
         )
+
+    @staticmethod
+    def add_color_bar(chart: "Chart", style: ContourStyle):
+        color_bar = add_map_box_colorbar(
+            chart.layers[0].ax,
+            levels=style.levels,
+            colormap=style.colors,
+            map_type="east_asia",
+        )
+        return color_bar

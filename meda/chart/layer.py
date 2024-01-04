@@ -5,7 +5,11 @@ import matplotlib.axes
 import matplotlib.contour
 
 from meda.style import ContourStyle
-from meda.graph import add_contourf, add_contour, add_contour_label
+from meda.graph import (
+    add_contourf,
+    add_contour,
+    add_contour_label,
+)
 
 if TYPE_CHECKING:
     from meda.chart import Chart
