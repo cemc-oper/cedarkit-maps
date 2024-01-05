@@ -1,7 +1,7 @@
 from typing import List, Union, TYPE_CHECKING
 
-from meda.style import Style, ContourStyle
-from meda.domains import parse_domain, MapDomain
+from cedarkit.maps.style import Style, ContourStyle
+from cedarkit.maps.domains import parse_domain, MapDomain
 
 from .layer import Layer
 

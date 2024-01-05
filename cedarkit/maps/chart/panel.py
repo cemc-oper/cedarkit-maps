@@ -3,8 +3,8 @@ from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 
-from meda.style import Style
-from meda.domains import MapDomain
+from cedarkit.maps.style import Style
+from cedarkit.maps.domains import MapDomain
 
 from .chart import Chart
 

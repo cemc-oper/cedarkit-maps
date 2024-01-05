@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "meda"
+name = "cedarkit-maps"
 authors = [
     {name="Wang Dapeng", email="perillaroc@gmail.com"}
 ]
@@ -31,8 +31,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/perillaroc/meda"
-Repository = "https://github.com/perillaroc/meda.git"
+Homepage = "https://github.com/perillaroc/cedarkit-maps"
+Repository = "https://github.com/perillaroc/cedarkit-maps.git"
 
 [project.optional-dependencies]
 test = ["pytest"]
@@ -40,8 +40,7 @@ cov = ["pytest-cov", "codecov"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-exclude = ["tests*", "docs", "example"]
-namespaces = false
+include = ["cedarkit.maps"]
 
 [tool.setuptools]
 include-package-data = true

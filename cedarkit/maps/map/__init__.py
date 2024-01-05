@@ -5,7 +5,7 @@ import cartopy.feature as cfeature
 import matplotlib.axes
 
 
-DEFAULT_MAP_PACKAGE = "meda.map.default"
+DEFAULT_MAP_PACKAGE = "cedarkit.maps.map.default"
 
 
 def set_default_map_package(map_package: str):

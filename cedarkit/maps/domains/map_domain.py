@@ -3,7 +3,7 @@ from typing import List, TYPE_CHECKING
 import cartopy.crs as ccrs
 
 if TYPE_CHECKING:
-    from meda.chart import Chart
+    from cedarkit.maps.chart import Chart
 
 
 class MapDomain:

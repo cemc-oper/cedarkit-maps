@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
 
-from meda.style import ContourStyle
-from meda.chart import Layer
-from meda.map import (
+from cedarkit.maps.style import ContourStyle
+from cedarkit.maps.chart import Layer
+from cedarkit.maps.map import (
     get_china_map,
     get_china_nine_map,
     add_common_map_feature
 )
-from meda.util import (
+from cedarkit.maps.util import (
     draw_map_box,
     set_map_box_axis,
     draw_map_box_gridlines,

@@ -5,12 +5,12 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import matplotlib.axes
 
-from meda.map import (
+from cedarkit.maps.map import (
     get_china_map,
     get_china_nine_map,
     add_common_map_feature
 )
-from meda.util import (
+from cedarkit.maps.util import (
     draw_map_box,
     add_map_box_info_text,
     set_map_box_area,
@@ -133,7 +133,7 @@ def generate_east_asia_plot(
             # zorder=100
         )
 
-    #   南海子图
+    #   区域：南海子图
     set_map_box_area(
         sub_ax,
         area=[105, 123, 2, 23],

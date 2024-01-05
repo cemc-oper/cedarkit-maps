@@ -1,1 +1,1 @@
-recursive-include meda/resources *
+recursive-include cedarkit/maps/resources *

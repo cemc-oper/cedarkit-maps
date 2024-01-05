@@ -1,7 +1,6 @@
-import pkg_resources
+import importlib.resources
 import re
-from pathlib import Path
-from typing import Optional, List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -56,7 +55,7 @@ def get_ncl_colormap(
     return color_map
 
 
-def _get_raw_ncl_colormap(name) -> mcolors.ListedColormap:
+def _get_raw_ncl_colormap(name) -> Optional[mcolors.ListedColormap]:
     """
     Generate Matplotlib colormap from NCL color map files in resource directory.
 
@@ -69,11 +68,19 @@ def _get_raw_ncl_colormap(name) -> mcolors.ListedColormap:
     -------
     matplotlib.colors.ListedColormap
     """
-    color_map_dir = pkg_resources.resource_filename("meda", "resources/colormap/ncl")
-    color_map_path = Path(color_map_dir, f"{name}.rgb")
-    if not color_map_path.exists():
-        color_map_path = Path(color_map_dir, f"{name}.gp")
-    if not color_map_path.exists():
+    color_map_path = None
+
+    ref = importlib.resources.files("cedarkit.maps") / "resources/colormap/ncl"
+    if color_map_path is None:
+        with importlib.resources.as_file(ref / f"{name}.rgb") as file_path:
+            if file_path.exists():
+                color_map_path = file_path
+    if color_map_path is None:
+        with importlib.resources.as_file(ref / f"{name}.gp") as file_path:
+            if file_path.exists():
+                color_map_path = file_path
+
+    if color_map_path is None:
         return None
 
     prog = re.compile(r"\s+(\d+)\s+(\d+)\s+(\d+)")
@@ -86,13 +93,13 @@ def _get_raw_ncl_colormap(name) -> mcolors.ListedColormap:
 
 
 def generate_colormap_using_ncl_colors(color_names, name):
-    color_map_dir = pkg_resources.resource_filename("meda", "resources/colormap/ncl")
-    color_names_csv = Path(color_map_dir, "ncl_colors.csv")
-    df = pd.read_csv(color_names_csv)
-    rgbs = []
-    for color_name in color_names:
-        color_record = df[df["name"] == color_name].iloc[0]
-        rgbs.append(color_record[["R", "G", "B"]].values/255)
+    color_map_dir = importlib.resources.files("cedarkit.maps") / "resources/colormap/ncl"
+    with importlib.resources.as_file(color_map_dir / f"ncl_colors.csv") as color_names_csv:
+        df = pd.read_csv(color_names_csv)
+        rgbs = []
+        for color_name in color_names:
+            color_record = df[df["name"] == color_name].iloc[0]
+            rgbs.append(color_record[["R", "G", "B"]].values/255)
 
-    color_map = mcolors.ListedColormap(rgbs, name)
-    return color_map
+        color_map = mcolors.ListedColormap(rgbs, name)
+        return color_map

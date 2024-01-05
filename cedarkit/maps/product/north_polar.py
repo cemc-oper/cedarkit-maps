@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import matplotlib.axes
 import matplotlib.path as mpath
 
-from meda.map import (
+from cedarkit.maps.map import (
     get_china_map,
     get_china_nine_map,
     add_common_map_feature
 )
-from meda.util import (
+from cedarkit.maps.util import (
     draw_map_box,
     add_map_box_info_text,
     set_map_box_area,

@@ -4,8 +4,8 @@ import xarray as xr
 import matplotlib.axes
 import matplotlib.contour
 
-from meda.style import ContourStyle
-from meda.graph import (
+from cedarkit.maps.style import ContourStyle
+from cedarkit.maps.graph import (
     add_contourf,
     add_contour,
     add_contour_label,
