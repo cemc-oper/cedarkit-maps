@@ -127,3 +127,5 @@ celerybeat-schedule
 celerybeat.pid
 
 .vscode
+
+cedarkit/maps/_version.py

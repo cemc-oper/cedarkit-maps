@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,7 +10,7 @@ authors = [
 description = "A graph tool for CEMC/CMA."
 readme = "README.md"
 keywords = ["graphic", "cemc"]
-version = "0.0.1"
+dynamic = ["version"]
 classifiers = [
     "Development Status :: 3 - Alpha",
 
@@ -44,3 +44,6 @@ include = ["cedarkit.maps"]
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.setuptools_scm]
+version_file = "cedarkit/maps/_version.py"
