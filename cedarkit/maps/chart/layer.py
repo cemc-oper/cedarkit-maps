@@ -3,16 +3,18 @@ from typing import Optional, TYPE_CHECKING
 import xarray as xr
 import matplotlib.axes
 import matplotlib.contour
+import matplotlib.quiver
 
-from cedarkit.maps.style import ContourStyle
+from cedarkit.maps.style import ContourStyle, BarbStyle
 from cedarkit.maps.graph import (
     add_contourf,
     add_contour,
     add_contour_label,
+    add_barb,
 )
 
 if TYPE_CHECKING:
-    from meda.chart import Chart
+    from cedarkit.maps.chart import Chart
 
 
 class Layer:
@@ -56,3 +58,20 @@ class Layer:
             colors=colors
         )
         return label
+
+    def barb(self, x: xr.DataArray, y: xr.DataArray, style: BarbStyle, **kwargs) -> matplotlib.quiver.Barbs:
+        barb = add_barb(
+            self.ax,
+            x_field=x,
+            y_field=y,
+            projection=self.projection,
+            barb_increments=style.barb_increments,
+            length=style.length,
+            linewidth=style.linewidth,
+            pivot=style.pivot,
+            barbcolor=style.barbcolor,
+            flagcolor=style.flagcolor,
+            **kwargs,
+        )
+        return barb
+

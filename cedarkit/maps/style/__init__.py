@@ -1,4 +1,5 @@
-from typing import Union, Optional, List
+from dataclasses import dataclass
+from typing import Union, Optional, List, Dict
 
 import numpy as np
 import matplotlib.colors as mcolors
@@ -21,24 +22,28 @@ PLOT_STYLE = dict(
 )
 
 
+@dataclass
 class Style:
-    def __init__(self):
-        pass
+    pass
 
 
+@dataclass
 class ContourStyle(Style):
-    def __init__(
-            self,
-            colors: Optional[Union[str, List, mcolors.ListedColormap]] = None,
-            levels: Optional[Union[List, np.ndarray]] = None,
-            linewidths: Optional[Union[List, np.ndarray]] = None,
-            fill: Optional[bool] = None,
-    ):
-        super().__init__()
-        self.colors = colors
-        self.levels = levels
-        self.linewidths = linewidths
-        if fill is None:
-            self.fill = False
-        else:
-            self.fill = fill
+    colors: Optional[Union[str, List, mcolors.ListedColormap]] = None
+    levels: Optional[Union[List, np.ndarray]] = None
+    linewidths: Optional[Union[List, np.ndarray]] = None
+    fill: bool = False
+
+
+@dataclass
+class BarbStyle(Style):
+    length: float = 4
+    linewidth: float = 0.5
+    pivot: str = "middle"
+    barbcolor: str = "red"
+    flagcolor: str = "red"
+    barb_increments: Optional[Dict] = None
+
+    def __post_init__(self):
+        if self.barb_increments is None:
+            self.barb_increments = dict(half=2, full=4, flag=20)

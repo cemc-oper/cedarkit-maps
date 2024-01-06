@@ -1,6 +1,6 @@
 from typing import List, Union, TYPE_CHECKING
 
-from cedarkit.maps.style import Style, ContourStyle
+from cedarkit.maps.style import Style, ContourStyle, BarbStyle
 from cedarkit.maps.domains import parse_domain, MapDomain
 
 from .layer import Layer
@@ -29,8 +29,10 @@ class Chart:
         for layer in self.layers:
             if isinstance(style, ContourStyle):
                 if style.fill:
-                    layer.contourf(data=data, style=style)
+                    return layer.contourf(data=data, style=style)
                 else:
-                    layer.contour(data=data, style=style)
+                    return layer.contour(data=data, style=style)
+            if isinstance(style, BarbStyle):
+                return layer.barb(x=data[0], y=data[1], style=style)
             else:
                 raise NotImplementedError("style is not implemented")

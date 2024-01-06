@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 import xarray as xr
 import numpy as np
 import matplotlib.axes
@@ -121,6 +123,13 @@ def add_barb(
         x_field: xr.DataArray,
         y_field: xr.DataArray,
         projection,
+        length: float = 4,
+        linewidth: float = 0.5,
+        pivot: str = 'middle',
+        barbcolor: str = "red",
+        flagcolor: str = "red",
+        barb_increments: Optional[Dict] = None,
+        **kwargs
 ) -> matplotlib.quiver.Barbs:
     """
     添加风羽图
@@ -145,16 +154,17 @@ def add_barb(
         lons, lats,
         x_field.data, y_field.data,
         transform=projection,
-        barb_increments=dict(half=2, full=4, flag=20),
-        length=4,
+        barb_increments=barb_increments,
+        length=length,
+        linewidth=linewidth,
+        pivot=pivot,
+        barbcolor=barbcolor,
+        flagcolor=flagcolor,
         sizes=dict(
             # width=0.35,
             # spacing=0.14,
         ),
-        linewidth=0.5,
-        pivot='middle',
-        barbcolor="red",
-        flagcolor="red",
+        **kwargs
     )
 
     return barb
