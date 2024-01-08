@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, List, Any
 
 import matplotlib.pyplot as plt
 
@@ -42,6 +42,18 @@ class Panel:
         chart = Chart(self, domain=domain)
         self.charts.append(chart)
 
-    def plot(self, data, style: Style):
-        self.charts[0].plot(data=data, style=style)
+    def plot(self, data, style: Style, layer: Optional[List[Any]] = None):
+        """
+
+        Parameters
+        ----------
+        data
+        style
+        layer
+            layer index list, default is None
+        Returns
+        -------
+
+        """
+        self.charts[0].plot(data=data, style=style, layer=layer)
 

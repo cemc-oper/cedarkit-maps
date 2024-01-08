@@ -1,4 +1,4 @@
-from typing import List, Union, TYPE_CHECKING
+from typing import List, Union, Optional, Any, TYPE_CHECKING
 
 from cedarkit.maps.style import Style, ContourStyle, BarbStyle
 from cedarkit.maps.domains import parse_domain, MapDomain
@@ -25,9 +25,13 @@ class Chart:
     def add_layer(self, layer: "Layer"):
         self.layers.append(layer)
 
-    def plot(self, data, style: "Style"):
+    def plot(self, data, style: "Style", layer: Optional[List[Any]] = None):
         results = []
-        for layer in self.layers:
+        if layer is None:
+            layers = self.layers
+        else:
+            layers = [self.layers[i] for i in layer]
+        for layer in layers:
             if isinstance(style, ContourStyle):
                 if style.fill:
                     result = layer.contourf(data=data, style=style)
