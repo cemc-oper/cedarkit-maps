@@ -5,7 +5,7 @@ import matplotlib.axes
 import matplotlib.contour
 import matplotlib.quiver
 
-from cedarkit.maps.style import ContourStyle, BarbStyle
+from cedarkit.maps.style import ContourStyle, BarbStyle, ContourLabelStyle
 from cedarkit.maps.graph import (
     add_contourf,
     add_contour,
@@ -36,6 +36,8 @@ class Layer:
             cmap=style.colors,
             **kwargs
         )
+        if style.label:
+            label = Layer.contour_label(self.ax, contour, style.label_style)
         return contour
 
     def contour(self, data: xr.DataArray, style: ContourStyle, **kwargs) -> matplotlib.contour.QuadContourSet:
@@ -48,14 +50,27 @@ class Layer:
             linewidths=style.linewidths,
             **kwargs
         )
+        if style.label:
+            label = Layer.contour_label(self.ax, contour, style.label_style)
 
         return contour
 
-    def contour_label(self, contour, colors):
+    @classmethod
+    def contour_label(cls, ax, contour, style: ContourLabelStyle):
+        kwargs = dict(
+            fontsize=style.fontsize,
+            inline=style.inline,
+            inline_spacing=style.inline_spacing,
+            fmt=style.fmt,
+            colors=style.colors,
+            manual=style.manual,
+            zorder=style.zorder,
+        )
+
         label = add_contour_label(
-            self.ax,
+            ax,
             contour=contour,
-            colors=colors
+            **kwargs
         )
         return label
 
@@ -71,6 +86,7 @@ class Layer:
             pivot=style.pivot,
             barbcolor=style.barbcolor,
             flagcolor=style.flagcolor,
+            regrid_shape=20,
             **kwargs,
         )
         return barb

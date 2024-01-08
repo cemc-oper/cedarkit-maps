@@ -90,7 +90,10 @@ def add_contour(
 def add_contour_label(
         ax: matplotlib.axes.Axes,
         contour: matplotlib.contour.QuadContourSet,
-        fontsize=7,
+        fontsize: float = 7,
+        manual: bool = False,
+        inline: bool = True,
+        fmt = "{:.0f}".format,
         **kwargs,
 ):
     """
@@ -109,10 +112,10 @@ def add_contour_label(
     """
     label = ax.clabel(
         contour,
-        manual=False,
-        inline=True,
-        fmt="{:.0f}".format,
         fontsize=fontsize,
+        manual=manual,
+        inline=inline,
+        fmt=fmt,
         **kwargs
     )
     return label

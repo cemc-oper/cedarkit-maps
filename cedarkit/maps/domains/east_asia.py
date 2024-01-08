@@ -26,7 +26,7 @@ from cedarkit.maps.util import (
 from .map_domain import MapDomain
 
 if TYPE_CHECKING:
-    from meda.chart import Chart
+    from cedarkit.maps.chart import Chart
 
 
 class EastAsiaMapDomain(MapDomain):
@@ -73,8 +73,8 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = Layer(chart=self.chart, projection=self.projection)
-        sub_chart.add_axes(ax)
+        layer = Layer(chart=self.chart, projection=self.projection)
+        layer.add_axes(ax)
 
         add_common_map_feature(
             ax,
@@ -141,8 +141,8 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        sub_chart = Layer(chart=self.chart, projection=self.projection)
-        sub_chart.add_axes(ax)
+        layer = Layer(chart=self.chart, projection=self.projection)
+        layer.add_axes(ax)
 
         add_common_map_feature(
             ax,

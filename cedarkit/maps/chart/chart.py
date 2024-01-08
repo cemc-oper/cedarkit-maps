@@ -26,13 +26,16 @@ class Chart:
         self.layers.append(layer)
 
     def plot(self, data, style: "Style"):
+        results = []
         for layer in self.layers:
             if isinstance(style, ContourStyle):
                 if style.fill:
-                    return layer.contourf(data=data, style=style)
+                    result = layer.contourf(data=data, style=style)
                 else:
-                    return layer.contour(data=data, style=style)
-            if isinstance(style, BarbStyle):
-                return layer.barb(x=data[0], y=data[1], style=style)
+                    result = layer.contour(data=data, style=style)
+            elif isinstance(style, BarbStyle):
+                result = layer.barb(x=data[0], y=data[1], style=style)
             else:
-                raise NotImplementedError("style is not implemented")
+                raise NotImplementedError(f"style is not implemented: {type(style)}")
+            results.append(result)
+        return results
