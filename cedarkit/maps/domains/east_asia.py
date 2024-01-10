@@ -26,7 +26,7 @@ from cedarkit.maps.util import (
 from .map_domain import MapDomain
 
 if TYPE_CHECKING:
-    from cedarkit.maps.chart import Chart
+    from cedarkit.maps.chart import Chart, Panel
 
 
 class EastAsiaMapDomain(MapDomain):
@@ -46,22 +46,23 @@ class EastAsiaMapDomain(MapDomain):
         self.sub_width = 0.1
         self.sub_height = 0.14
 
-    def set_chart(self, chart: "Chart"):
-        super().set_chart(chart=chart)
+    def render_panel(self, panel: "Panel"):
+        chart = panel.add_chart(domain=self)
+        self.render_chart(chart=chart)
 
-    def render_chart(self):
+    def render_chart(self, chart: "Chart"):
         self.load_map()
-        self.render_main_box()
-        self.render_sub_box()
+        self.render_main_box(chart=chart)
+        self.render_sub_box(chart=chart)
 
-        rect = draw_map_box(self.chart.layers[0].ax)
+        rect = draw_map_box(chart.layers[0].ax)
 
     def load_map(self):
         self.cn_features = get_china_map()
         self.nine_features = get_china_nine_map()
 
-    def render_main_box(self):
-        fig = self.chart.fig
+    def render_main_box(self, chart: "Chart"):
+        fig = chart.fig
         width = self.width
         height = self.height
         layout = [(1 - width) / 2, (1 - height) / 2, width, height]
@@ -73,7 +74,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        layer = Layer(chart=self.chart, projection=self.projection)
+        layer = Layer(chart=chart, projection=self.projection)
         layer.add_axes(ax)
 
         add_common_map_feature(
@@ -127,8 +128,8 @@ class EastAsiaMapDomain(MapDomain):
         text = "Scale 1:20000000 No:GS (2019) 1786"
         self.add_map_info(ax=ax, x=x, y=y, text=text)
 
-    def render_sub_box(self):
-        fig = self.chart.fig
+    def render_sub_box(self, chart: "Chart"):
+        fig = chart.fig
         main_width = self.width
         main_height = self.height
         sub_width = self.sub_width
@@ -141,7 +142,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        layer = Layer(chart=self.chart, projection=self.projection)
+        layer = Layer(chart=chart, projection=self.projection)
         layer.add_axes(ax)
 
         add_common_map_feature(
@@ -209,13 +210,12 @@ class EastAsiaMapDomain(MapDomain):
 
     def set_title(
             self,
+            panel: "Panel",
             graph_name: str,
             system_name: str,
             start_time: pd.Timestamp,
             forecast_time: pd.Timedelta
     ):
-        chart = self.chart
-
         left = -0.06
         bottom = -0.05 - 0.005
         top = 1.03
@@ -236,13 +236,11 @@ class EastAsiaMapDomain(MapDomain):
         )
 
         set_map_box_title(
-            chart.layers[0].ax,
+            panel.charts[0].layers[0].ax,
             graph_title=graph_title,
         )
 
-    def add_colorbar(self, style: ContourStyle):
-        chart = self.chart
-
+    def add_colorbar(self, panel: "Panel", style: ContourStyle):
         colorbar_box = [1.05, 0.02, 0.02, 1]
 
         graph_colorbar = GraphColorbar(
@@ -252,7 +250,7 @@ class EastAsiaMapDomain(MapDomain):
         )
 
         color_bar = add_map_box_colorbar(
-            chart.layers[0].ax,
+            panel.charts[0].layers[0].ax,
             graph_colorbar=graph_colorbar,
         )
         return color_bar

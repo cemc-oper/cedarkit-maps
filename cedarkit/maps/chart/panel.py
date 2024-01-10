@@ -1,17 +1,18 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union, List, Any
+from typing import Optional, Tuple, Union, List, Any, Iterable
 
 import matplotlib.pyplot as plt
+import xarray as xr
 
 from cedarkit.maps.style import Style
-from cedarkit.maps.domains import MapDomain
+from cedarkit.maps.domains import MapDomain, parse_domain
 
 from .chart import Chart
 
 
 @dataclass
 class Schema:
-    figsize: Tuple[float, float] = (6, 6)
+    figsize: Tuple[float, float] = (8, 8)
     dpi: float = 400
 
 
@@ -23,7 +24,8 @@ class Panel:
 
         self.charts = []
 
-        self.add_chart(domain=domain)
+        self.map_domain = parse_domain(domain)
+        self.map_domain.render_panel(self)
 
     @property
     def fig(self) -> plt.Figure:
@@ -38,11 +40,12 @@ class Panel:
     def show(self):
         plt.show()
 
-    def add_chart(self, domain: Union[str, type[MapDomain], MapDomain]):
+    def add_chart(self, domain: Union[str, type[MapDomain], MapDomain]) -> Chart:
         chart = Chart(self, domain=domain)
         self.charts.append(chart)
+        return chart
 
-    def plot(self, data, style: Style, layer: Optional[List[Any]] = None):
+    def plot(self, data: Union[xr.DataArray, Iterable], style: Style, layer: Optional[List[Any]] = None):
         """
 
         Parameters
@@ -55,5 +58,8 @@ class Panel:
         -------
 
         """
-        self.charts[0].plot(data=data, style=style, layer=layer)
+        if isinstance(data, xr.DataArray):
+            data = [data]
 
+        for i, d in enumerate(data):
+            self.charts[i].plot(data=d, style=style, layer=layer)

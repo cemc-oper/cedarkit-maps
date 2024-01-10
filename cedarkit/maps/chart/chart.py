@@ -1,7 +1,7 @@
 from typing import List, Union, Optional, Any, TYPE_CHECKING
 
 from cedarkit.maps.style import Style, ContourStyle, BarbStyle
-from cedarkit.maps.domains import parse_domain, MapDomain
+from cedarkit.maps.domains import MapDomain
 
 from .layer import Layer
 
@@ -14,9 +14,9 @@ class Chart:
         self.panel = panel
         self.layers: List["Layer"] = []
 
-        self.map_domain = parse_domain(domain)
-        self.map_domain.set_chart(self)
-        self.map_domain.render_chart()
+        self.map_domain = domain
+        # NOTE: MapDomain creates axes.
+        # self.map_domain.render_chart(chart=self)
 
     @property
     def fig(self):
