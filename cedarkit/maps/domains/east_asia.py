@@ -32,12 +32,12 @@ if TYPE_CHECKING:
 class EastAsiaMapDomain(MapDomain):
     def __init__(self):
         projection = ccrs.PlateCarree()
-        domain = [70, 140, 15, 55]
+        area = [70, 140, 15, 55]
         super().__init__(
             projection=projection,
-            domain=domain
+            area=area
         )
-        self.sub_domain = [105, 123, 2, 23]
+        self.sub_area = [105, 123, 2, 23]
         self.cn_features = None
         self.nine_features = None
 
@@ -48,10 +48,10 @@ class EastAsiaMapDomain(MapDomain):
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
+        self.load_map()
         self.render_chart(chart=chart)
 
     def render_chart(self, chart: "Chart"):
-        self.load_map()
         self.render_main_box(chart=chart)
         self.render_sub_box(chart=chart)
 
@@ -74,7 +74,7 @@ class EastAsiaMapDomain(MapDomain):
             # ),
             projection=self.projection,
         )
-        layer = Layer(chart=chart, projection=self.projection)
+        layer = Layer(projection=self.projection, chart=chart)
         layer.add_axes(ax)
 
         add_common_map_feature(
@@ -118,7 +118,7 @@ class EastAsiaMapDomain(MapDomain):
         #   设置区域范围和长宽比
         set_map_box_area(
             ax,
-            area=self.domain,
+            area=self.area,
             projection=self.projection,
             aspect=1.25  # 0.75/0.6
         )
@@ -172,7 +172,7 @@ class EastAsiaMapDomain(MapDomain):
         #   区域：南海子图
         set_map_box_area(
             ax,
-            area=self.sub_domain,
+            area=self.sub_area,
             projection=self.projection,
             aspect=0.1 / 0.14
         )

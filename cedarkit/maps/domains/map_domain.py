@@ -7,9 +7,9 @@ if TYPE_CHECKING:
 
 
 class MapDomain:
-    def __init__(self, projection: ccrs.Projection, domain: List[float]):
+    def __init__(self, projection: ccrs.Projection, area: List[float]):
         self._projection = projection
-        self._domain = domain
+        self._area = area
 
     def render_panel(self, panel: "Panel"):
         raise NotImplementedError
@@ -18,11 +18,15 @@ class MapDomain:
         raise NotImplementedError
 
     @property
-    def domain(self):
-        return self._domain
+    def area(self) -> List[float]:
+        """
+        Map area, [start_longitude, end_longitude, start_latitude, end_latitude].
+        For example, ``[70, 140, 15, 55]``.
+        """
+        return self._area
 
     @property
-    def projection(self):
+    def projection(self) -> ccrs.Projection:
         return self._projection
 
 

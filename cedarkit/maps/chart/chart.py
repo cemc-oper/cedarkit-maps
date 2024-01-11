@@ -10,11 +10,23 @@ if TYPE_CHECKING:
 
 
 class Chart:
-    def __init__(self, panel: "Panel", domain: Union[str, type[MapDomain], MapDomain]):
+    """
+    A sub graph in a Panel.
+    A ``Chart`` may contain several ``Layer``s, such as a main layer for China and a sub layer for north china sea.
+
+    Attributes
+    ----------
+    panel : Panel
+    map_domain : MapDomain
+    layers : List[Layer]
+        layer list. Each layer has a map.
+    """
+    def __init__(self, panel: "Panel", domain: MapDomain):
         self.panel = panel
+        self.map_domain = domain
+
         self.layers: List["Layer"] = []
 
-        self.map_domain = domain
         # NOTE: MapDomain creates axes.
         # self.map_domain.render_chart(chart=self)
 

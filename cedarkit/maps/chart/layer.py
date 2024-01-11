@@ -4,6 +4,7 @@ import xarray as xr
 import matplotlib.axes
 import matplotlib.contour
 import matplotlib.quiver
+import cartopy.crs as ccrs
 
 from cedarkit.maps.style import ContourStyle, BarbStyle, ContourLabelStyle
 from cedarkit.maps.graph import (
@@ -18,14 +19,37 @@ if TYPE_CHECKING:
 
 
 class Layer:
-    def __init__(self, chart: "Chart", projection):
+    """
+    A layer is a map box in a ``Chart``. Each layer has a ``matplotlib.axes.Axes`` attribute to draw plots.
+
+    Attributes
+    ----------
+    ax
+    projection
+    chart
+    """
+    def __init__(self, projection: ccrs.Projection, chart: Optional["Chart"] = None):
         self.ax: Optional[matplotlib.axes.Axes] = None
-        self.chart = chart
-        self.chart.add_layer(self)
         self.projection = projection
+
+        if chart is not None:
+            self.set_chart(chart)
+        else:
+            self.chart = None
 
     def add_axes(self, ax: matplotlib.axes.Axes):
         self.ax = ax
+
+    def set_chart(self, chart: "Chart"):
+        """
+        Add ``Layer`` to a ``Chart``.
+
+        Parameters
+        ----------
+        chart
+        """
+        self.chart = chart
+        self.chart.add_layer(self)
 
     def contourf(self, data: xr.DataArray, style: ContourStyle, **kwargs) -> matplotlib.contour.QuadContourSet:
         contour = add_contourf(
