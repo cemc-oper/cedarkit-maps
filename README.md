@@ -1,4 +1,4 @@
-# cedarkit-map
+# cedarkit-maps
 
 气象数据绘图库
 
@@ -10,7 +10,7 @@
 
 Copyright &copy; 2021-2024, developers at cemc-oper.
 
-`cedarkit-map` is licensed under [Apache License V2.0](./LICENSE)
+`cedarkit-maps` is licensed under [Apache License V2.0](./LICENSE)
 
 ### Third party
 
