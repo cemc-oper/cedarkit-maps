@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
@@ -32,19 +33,23 @@ if TYPE_CHECKING:
 class EastAsiaMapDomain(MapDomain):
     def __init__(self):
         projection = ccrs.PlateCarree()
-        area = [70, 140, 15, 55]
+        area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
         super().__init__(
             projection=projection,
             area=area
         )
-        self.sub_area = [105, 123, 2, 23]
-        self.cn_features = None
-        self.nine_features = None
 
         self.width = 0.75
         self.height = 0.6
+        self.main_aspect = 1.25
+
+        self.sub_area = [105, 123, 2, 23]
         self.sub_width = 0.1
         self.sub_height = 0.14
+        self.sub_aspect = 0.1 / 0.14
+
+        self.cn_features = None
+        self.nine_features = None
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
@@ -52,8 +57,8 @@ class EastAsiaMapDomain(MapDomain):
         self.render_chart(chart=chart)
 
     def render_chart(self, chart: "Chart"):
-        self.render_main_box(chart=chart)
-        self.render_sub_box(chart=chart)
+        self.render_main_layer(chart=chart)
+        self.render_sub_layer(chart=chart)
 
         rect = draw_map_box(chart.layers[0].ax)
 
@@ -61,17 +66,13 @@ class EastAsiaMapDomain(MapDomain):
         self.cn_features = get_china_map()
         self.nine_features = get_china_nine_map()
 
-    def render_main_box(self, chart: "Chart"):
+    def render_main_layer(self, chart: "Chart"):
         fig = chart.fig
         width = self.width
         height = self.height
         layout = [(1 - width) / 2, (1 - height) / 2, width, height]
         ax = fig.add_axes(
             layout,
-            # projection=ccrs.LambertConformal(
-            #     central_longitude=105,
-            #     central_latitude=90
-            # ),
             projection=self.projection,
         )
         layer = Layer(projection=self.projection, chart=chart)
@@ -101,18 +102,23 @@ class EastAsiaMapDomain(MapDomain):
             )
 
         #   坐标轴
+        main_xticks_interval = 10
+        main_xticks = np.arange(70, 141, main_xticks_interval)
+        main_yticks_interval = 5
+        main_yticks = np.arange(15, 56, main_yticks_interval)
         set_map_box_axis(
             ax,
-            xticks=np.arange(70, 141, 10),
-            yticks=np.arange(15, 56, 5),
+            xticks=main_xticks,
+            yticks=main_yticks,
             projection=self.projection
         )
 
         #   网格线
+        main_ylocator = [20, 30, 40, 50]
         draw_map_box_gridlines(
             ax,
             projection=self.projection,
-            ylocator=[20, 30, 40, 50]
+            ylocator=main_ylocator
         )
 
         #   设置区域范围和长宽比
@@ -120,7 +126,7 @@ class EastAsiaMapDomain(MapDomain):
             ax,
             area=self.area,
             projection=self.projection,
-            aspect=1.25  # 0.75/0.6
+            aspect=self.main_aspect  # 0.75/0.6
         )
 
         x = 0.998
@@ -128,7 +134,7 @@ class EastAsiaMapDomain(MapDomain):
         text = "Scale 1:20000000 No:GS (2019) 1786"
         self.add_map_info(ax=ax, x=x, y=y, text=text)
 
-    def render_sub_box(self, chart: "Chart"):
+    def render_sub_layer(self, chart: "Chart"):
         fig = chart.fig
         main_width = self.width
         main_height = self.height
@@ -174,15 +180,17 @@ class EastAsiaMapDomain(MapDomain):
             ax,
             area=self.sub_area,
             projection=self.projection,
-            aspect=0.1 / 0.14
+            aspect=self.sub_aspect
         )
 
         #   网格线
+        sub_xlocator = [110, 120]
+        sub_ylocator = [10, 20]
         draw_map_box_gridlines(
             ax,
             projection=self.projection,
-            xlocator=[110, 120],
-            ylocator=[10, 20],
+            xlocator=sub_xlocator,
+            ylocator=sub_ylocator,
             linewidth=0.2,
         )
 
@@ -192,7 +200,11 @@ class EastAsiaMapDomain(MapDomain):
         self.add_map_info(ax=ax, x=x, y=y, text=text)
 
     @staticmethod
-    def add_map_info(ax, x: float, y: float, text: str):
+    def add_map_info(
+            ax: cartopy.mpl.geoaxes.GeoAxes,
+            x: float, y: float,
+            text: str,
+    ):
         text_box = ax.text(
             x, y, text,
             verticalalignment='bottom',

@@ -8,6 +8,7 @@ import matplotlib.colorbar
 import matplotlib.patches as mpatches
 import matplotlib.colors as mcolors
 import matplotlib.ticker as mticker
+from cartopy import crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 
@@ -399,7 +400,11 @@ def add_colorbar(
     return cbar
 
 
-def set_map_box_area(ax, area, projection, aspect=None):
+def set_map_box_area(
+        ax: matplotlib.axes.Axes,
+        area: List[float],
+        projection: ccrs.Projection,
+        aspect: Optional[float] = None):
     east_lon, west_lon, south_lat, north_lat = area
     ax.set_extent(
         area,
@@ -411,7 +416,11 @@ def set_map_box_area(ax, area, projection, aspect=None):
     return ax
 
 
-def set_map_box_axis(ax, xticks, yticks, projection):
+def set_map_box_axis(
+        ax,
+        xticks, yticks,
+        projection: ccrs.Projection
+):
     # 坐标轴样式
     lon_formatter = LongitudeFormatter(
         zero_direction_label=True,
@@ -442,15 +451,17 @@ def draw_map_box_gridlines(
         ax, projection,
         xlocator=None, ylocator=None,
         linewidth=0.5,
-        color="r",
+        color="grey",
+        alpha: float = 0.5,
+        linetyle: str = "--",
 ):
     gl = ax.gridlines(
         crs=projection,
         draw_labels=False,
         linewidth=linewidth,
         color=color,
-        alpha=0.5,
-        linestyle='--',
+        alpha=alpha,
+        linestyle=linetyle,
     )
     if ylocator is not None:
         gl.ylocator = mticker.FixedLocator(ylocator)
