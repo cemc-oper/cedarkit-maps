@@ -98,6 +98,9 @@ def generate_colormap_using_ncl_colors(color_names, name):
         df = pd.read_csv(color_names_csv)
         rgbs = []
         for color_name in color_names:
+            if color_name == "transparent":
+                rgbs.append([1, 1, 1, 1])
+                continue
             color_record = df[df["name"] == color_name].iloc[0]
             rgbs.append(color_record[["R", "G", "B"]].values/255)
 
