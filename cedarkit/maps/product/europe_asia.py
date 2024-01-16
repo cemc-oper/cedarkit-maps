@@ -12,7 +12,7 @@ from cedarkit.maps.map import (
     add_common_map_feature
 )
 from cedarkit.maps.util import (
-    draw_map_box,
+    draw_map_box_by_map_type,
     add_map_box_info_text,
     set_map_box_area,
     set_map_box_axis,
@@ -115,7 +115,7 @@ def generate_europe_asia_plot(
     ax.set_boundary(proj_to_data.transform_path(path))
 
     # 绘制边框
-    rect = draw_map_box(ax)
+    rect = draw_map_box_by_map_type(ax)
 
     # 四角标题
     # set by user

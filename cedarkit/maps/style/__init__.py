@@ -29,6 +29,13 @@ class Style:
     pass
 
 
+
+@dataclass
+class ColorbarStyle(Style):
+    label: Optional[str] = None
+    loc: Optional[str] = None
+
+
 @dataclass
 class ContourLabelStyle(Style):
     fontsize: Optional[Union[str, float]] = None
@@ -48,6 +55,7 @@ class ContourStyle(Style):
     fill: bool = False
     label: bool = False
     label_style: Optional[ContourLabelStyle] = None
+    colorbar_style: Optional[ColorbarStyle] = None
 
 
 @dataclass
@@ -58,6 +66,7 @@ class BarbStyle(Style):
     barbcolor: str = "red"
     flagcolor: str = "red"
     barb_increments: Optional[Dict] = None
+    colorbar_style: Optional[ContourLabelStyle] = None
 
     def __post_init__(self):
         if self.barb_increments is None:

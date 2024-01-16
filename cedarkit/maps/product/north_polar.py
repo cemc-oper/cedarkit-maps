@@ -12,7 +12,7 @@ from cedarkit.maps.map import (
     add_common_map_feature
 )
 from cedarkit.maps.util import (
-    draw_map_box,
+    draw_map_box_by_map_type,
     add_map_box_info_text,
     set_map_box_area,
     set_map_box_axis,
@@ -125,7 +125,7 @@ def generate_north_polar_plot(
     ax.set_boundary(circle, transform=ax.transAxes)
 
     # 绘制边框
-    rect = draw_map_box(ax, map_type="north_polar")
+    rect = draw_map_box_by_map_type(ax, map_type="north_polar")
 
     add_map_box_info_text(
         ax,

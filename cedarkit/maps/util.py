@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
 import pandas as pd
@@ -67,7 +67,37 @@ def add_map_box_sub_layout(fig, projection):
     return ax
 
 
-def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
+def draw_map_box(ax: matplotlib.axes.Axes, bottom_left_point, top_right_point) -> mpatches.Rectangle:
+    """
+    添加图形边框
+
+    Parameters
+    ----------
+    ax
+    bottom_left_point
+    top_right_point
+
+    Returns
+    -------
+    mpatches.Rectangle
+    """
+    width = top_right_point[0] - bottom_left_point[0]
+    height = top_right_point[1] - bottom_left_point[1]
+
+    rect = mpatches.Rectangle(
+        bottom_left_point, width, height,
+        transform=ax.transAxes,
+        edgecolor="black",
+        fill=False,
+        zorder=1000,
+        lw=1.3,
+    )
+    rect = ax.add_patch(rect)
+    rect.set_clip_on(False)
+    return rect
+
+
+def draw_map_box_by_map_type(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
     """
     添加图形边框
 
@@ -81,18 +111,20 @@ def draw_map_box(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rec
     mpatches.Rectangle
     """
     if map_type == "east_asia":
-        point = (-0.06, -0.05)
-        width = 1.09
-        height = 1.08
+        bottom_left_point = (-0.06, -0.05)
+        top_right_point = (1.03, 1.03)
+        width = top_right_point[0] - bottom_left_point[0]
+        height = top_right_point[1] - bottom_left_point[1]
     elif map_type == "north_polar":
-        point = (-0.05, -0.05)
-        width = 1.12
-        height = 1.08
+        bottom_left_point = (-0.05, -0.05)
+        top_right_point = (1.07, 1.03)
+        width = top_right_point[0] - bottom_left_point[0]
+        height = top_right_point[1] - bottom_left_point[1]
     else:
         raise ValueError(f"component_type is not supported: {map_type}")
 
     rect = mpatches.Rectangle(
-        point, width, height,
+        bottom_left_point, width, height,
         edgecolor="black",
         fill=False,
         zorder=1000,
@@ -329,11 +361,15 @@ def add_map_box_info_text(
     return text_box
 
 
+# color bar
+
 @dataclass
 class GraphColorbar:
     colormap: Optional[mcolors.ListedColormap] = None
     levels: Optional[List] = None
     box: Optional[List] = None
+    label: Optional[str] = None
+    label_loc: Optional[str] = None
 
 
 def fill_colorbar_pos(graph_colorbar: GraphColorbar, map_type: str):
@@ -374,6 +410,17 @@ def add_map_box_colorbar(ax: matplotlib.axes.Axes, graph_colorbar: GraphColorbar
     # ticklabs = cbar.ax.get_yticklabels()
     cbar.ax.set_yticklabels(levels, ha='center')
     cbar.ax.yaxis.set_tick_params(pad=7)
+
+    if graph_colorbar.label is not None:
+        if graph_colorbar.label_loc is not None:
+            label_loc = graph_colorbar.label_loc
+        else:
+            label_loc = None
+        cbar.set_label(
+            label=graph_colorbar.label,
+            loc=label_loc,
+        )
+
     return cbar
 
 
@@ -398,6 +445,9 @@ def add_colorbar(
 
     cbar = add_map_box_colorbar(ax, graph_colorbar=graph_colorbar)
     return cbar
+
+
+# area
 
 
 def set_map_box_area(

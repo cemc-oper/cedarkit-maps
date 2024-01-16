@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import Union, List, TYPE_CHECKING
 
 import cartopy.mpl.geoaxes
 import numpy as np
@@ -51,6 +51,9 @@ class EastAsiaMapDomain(MapDomain):
         self.cn_features = None
         self.nine_features = None
 
+        self.map_box_bottom_left_point = (-0.06, -0.05)
+        self.map_box_top_right_point = (1.03, 1.03)
+
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
         self.load_map()
@@ -60,7 +63,12 @@ class EastAsiaMapDomain(MapDomain):
         self.render_main_layer(chart=chart)
         self.render_sub_layer(chart=chart)
 
-        rect = draw_map_box(chart.layers[0].ax)
+
+        rect = draw_map_box(
+            chart.layers[0].ax,
+            bottom_left_point=self.map_box_bottom_left_point,
+            top_right_point=self.map_box_top_right_point,
+        )
 
     def load_map(self):
         self.cn_features = get_china_map()
@@ -228,10 +236,10 @@ class EastAsiaMapDomain(MapDomain):
             start_time: pd.Timestamp,
             forecast_time: pd.Timedelta
     ):
-        left = -0.06
-        bottom = -0.05 - 0.005
-        top = 1.03
-        right = 1.03
+        left = self.map_box_bottom_left_point[0]
+        bottom = self.map_box_bottom_left_point[1] - 0.005
+        top = self.map_box_top_right_point[1]
+        right = self.map_box_top_right_point[0]
         graph_title = GraphTitle(
             left=left,
             bottom=bottom,
@@ -252,17 +260,66 @@ class EastAsiaMapDomain(MapDomain):
             graph_title=graph_title,
         )
 
-    def add_colorbar(self, panel: "Panel", style: ContourStyle):
-        colorbar_box = [1.05, 0.02, 0.02, 1]
+    def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
+        """
+                                 |  | left_padding_to_map_box_right_bound
+                                    ---
+        --------------------------  | |
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |   colorbar
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |
+        --------------------------  | |  --
+               map box              ---  -- bottom_padding_to_map_box_bottom_bound
 
-        graph_colorbar = GraphColorbar(
-            colormap=style.colors,
-            levels=style.levels,
-            box=colorbar_box,
-        )
 
-        color_bar = add_map_box_colorbar(
-            panel.charts[0].layers[0].ax,
-            graph_colorbar=graph_colorbar,
-        )
-        return color_bar
+        """
+        if isinstance(style, ContourStyle):
+            style = [style]
+        count = len(style)
+
+        left_padding_to_map_box_right_bound = 0.02
+        bottom_padding_to_map_box_bottom_bound = -0.02
+        width = 0.02
+        total_height = 1 + 2*abs(bottom_padding_to_map_box_bottom_bound)
+
+        if count > 0:
+            height_padding = 0.02
+        else:
+            height_padding = 0
+
+        height = total_height / count
+
+        color_bars = []
+
+        for index, current_style in enumerate(style):
+            colorbar_box = [
+                self.map_box_top_right_point[0] + left_padding_to_map_box_right_bound,  # 1.03 + 0.02 = 1.05
+                bottom_padding_to_map_box_bottom_bound + index * height,
+                width, height - height_padding
+            ]
+
+            graph_colorbar = GraphColorbar(
+                colormap=current_style.colors,
+                levels=current_style.levels,
+                box=colorbar_box,
+            )
+
+            colorbar_style = current_style.colorbar_style
+            if colorbar_style is not None:
+                if colorbar_style.label is not None:
+                    graph_colorbar.label = colorbar_style.label
+                if colorbar_style.loc is not None:
+                    graph_colorbar.label_loc = colorbar_style.loc
+
+            color_bar = add_map_box_colorbar(
+                panel.charts[0].layers[0].ax,
+                graph_colorbar=graph_colorbar,
+            )
+
+            color_bars.append(color_bar)
+
+        return color_bars
