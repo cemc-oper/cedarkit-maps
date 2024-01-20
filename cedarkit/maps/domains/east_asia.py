@@ -4,6 +4,7 @@ import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
+import cartopy.feature as cfeature
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
@@ -94,7 +95,16 @@ class EastAsiaMapDomain(MapDomain):
                     linewidth=0.5,
                     # zorder=50
                 )
-            )
+            ),
+            lakes=dict(
+                scale="50m",
+                style=dict(
+                    linewidth=0.25,
+                    facecolor='none',
+                    edgecolor="black",
+                    alpha=0.5
+                ),
+            ),
         )
 
         for f in self.cn_features:
@@ -167,7 +177,7 @@ class EastAsiaMapDomain(MapDomain):
                     linewidth=0.25,
                     # zorder=50
                 ),
-            )
+            ),
         )
 
         for f in self.cn_features:

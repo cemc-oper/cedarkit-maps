@@ -103,13 +103,13 @@ def add_common_map_feature(
         _add_feature(ax, land, cfeature.LAND)
 
     if ocean is not None:
-        _add_feature(ax, land, cfeature.OCEAN)
+        _add_feature(ax, ocean, cfeature.OCEAN)
 
     if rivers is not None:
-        _add_feature(ax, land, cfeature.RIVERS)
+        _add_feature(ax, rivers, cfeature.RIVERS)
 
     if lakes is not None:
-        _add_feature(ax, land, cfeature.LAKES)
+        _add_feature(ax, lakes, cfeature.LAKES)
 
     return ax
 
