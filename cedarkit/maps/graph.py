@@ -41,6 +41,7 @@ def add_contourf(
         levels=levels,
         add_colorbar=False,
         add_labels=False,
+        extend="both",
         **kwargs
     )
     return c
