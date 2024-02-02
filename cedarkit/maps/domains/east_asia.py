@@ -4,7 +4,6 @@ import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
-import cartopy.feature as cfeature
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
@@ -32,13 +31,21 @@ if TYPE_CHECKING:
 
 
 class EastAsiaMapDomain(MapDomain):
-    def __init__(self):
+    def __init__(
+            self,
+            area: list[float] = None,
+            with_sub_area: bool = True,
+    ):
+        if area is None:
+            area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+
         projection = ccrs.PlateCarree()
-        area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
         super().__init__(
             projection=projection,
             area=area
         )
+
+        self.with_sub_area = with_sub_area
 
         self.width = 0.75
         self.height = 0.6
@@ -55,6 +62,9 @@ class EastAsiaMapDomain(MapDomain):
         self.map_box_bottom_left_point = (-0.06, -0.05)
         self.map_box_top_right_point = (1.03, 1.03)
 
+        self.main_xticks_interval = 10
+        self.main_yticks_interval = 5
+
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
         self.load_map()
@@ -62,8 +72,8 @@ class EastAsiaMapDomain(MapDomain):
 
     def render_chart(self, chart: "Chart"):
         self.render_main_layer(chart=chart)
-        self.render_sub_layer(chart=chart)
-
+        if self.with_sub_area:
+            self.render_sub_layer(chart=chart)
 
         rect = draw_map_box(
             chart.layers[0].ax,
@@ -76,6 +86,17 @@ class EastAsiaMapDomain(MapDomain):
         self.nine_features = get_china_nine_map()
 
     def render_main_layer(self, chart: "Chart"):
+        """
+        绘制主地图
+
+        Parameters
+        ----------
+        chart
+
+        Returns
+        -------
+
+        """
         fig = chart.fig
         width = self.width
         height = self.height
@@ -120,10 +141,8 @@ class EastAsiaMapDomain(MapDomain):
             )
 
         #   坐标轴
-        main_xticks_interval = 10
-        main_xticks = np.arange(70, 141, main_xticks_interval)
-        main_yticks_interval = 5
-        main_yticks = np.arange(15, 56, main_yticks_interval)
+        main_xticks = np.arange(70, 140 + self.main_xticks_interval, self.main_xticks_interval)
+        main_yticks = np.arange(15, 55 + self.main_yticks_interval, self.main_yticks_interval)
         set_map_box_axis(
             ax,
             xticks=main_xticks,
@@ -151,8 +170,20 @@ class EastAsiaMapDomain(MapDomain):
         y = 0.0022
         text = "Scale 1:20000000 No:GS (2019) 1786"
         self.add_map_info(ax=ax, x=x, y=y, text=text)
+        return layer
 
     def render_sub_layer(self, chart: "Chart"):
+        """
+        绘制南海子图
+
+        Parameters
+        ----------
+        chart
+
+        Returns
+        -------
+
+        """
         fig = chart.fig
         main_width = self.width
         main_height = self.height
@@ -216,6 +247,8 @@ class EastAsiaMapDomain(MapDomain):
         y = 0.01
         text = "Scale 1:40000000"
         self.add_map_info(ax=ax, x=x, y=y, text=text)
+
+        return layer
 
     @staticmethod
     def add_map_info(
@@ -333,3 +366,18 @@ class EastAsiaMapDomain(MapDomain):
             color_bars.append(color_bar)
 
         return color_bars
+
+
+class CnAreaMapDomain(EastAsiaMapDomain):
+    def __init__(
+            self,
+            area: list[float] = None,
+            with_sub_area: bool = False,
+    ):
+        super().__init__(area=area, with_sub_area=with_sub_area)
+
+        self.main_xticks_interval = 4
+        self.main_yticks_interval = 2
+        self.width = 0.8
+        self.height = 0.6
+

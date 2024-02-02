@@ -2,7 +2,7 @@ import inspect
 from typing import Union
 
 from .map_domain import MapDomain
-from .east_asia import EastAsiaMapDomain
+from .east_asia import EastAsiaMapDomain, CnAreaMapDomain
 
 
 def parse_domain(domain: Union[str, type[MapDomain], MapDomain]) -> MapDomain:
