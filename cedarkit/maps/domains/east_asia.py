@@ -36,8 +36,9 @@ class EastAsiaMapDomain(MapDomain):
             area: list[float] = None,
             with_sub_area: bool = True,
     ):
+        self.default_area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
         if area is None:
-            area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+            area = self.default_area  # [start_longitude, end_longitude, start_latitude, end_latitude]
 
         projection = ccrs.PlateCarree()
         super().__init__(
@@ -141,8 +142,18 @@ class EastAsiaMapDomain(MapDomain):
             )
 
         #   坐标轴
-        main_xticks = np.arange(70, 140 + self.main_xticks_interval, self.main_xticks_interval)
-        main_yticks = np.arange(15, 55 + self.main_yticks_interval, self.main_yticks_interval)
+        # area = self.default_area
+        area = self.area
+        main_xticks = np.arange(
+            area[0],
+            area[1] + self.main_xticks_interval,
+            self.main_xticks_interval
+        )
+        main_yticks = np.arange(
+            area[2],
+            area[3] + self.main_yticks_interval,
+            self.main_yticks_interval
+        )
         set_map_box_axis(
             ax,
             xticks=main_xticks,
@@ -151,11 +162,12 @@ class EastAsiaMapDomain(MapDomain):
         )
 
         #   网格线
-        main_ylocator = [20, 30, 40, 50]
+        # main_ylocator = [20, 30, 40, 50]
         draw_map_box_gridlines(
             ax,
             projection=self.projection,
-            ylocator=main_ylocator
+            xlocator=main_xticks[1:-1],
+            ylocator=main_yticks[1:-1],
         )
 
         #   设置区域范围和长宽比
