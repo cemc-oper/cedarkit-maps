@@ -1,5 +1,5 @@
 import importlib
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import cartopy.feature as cfeature
 import matplotlib.axes
@@ -65,11 +65,11 @@ def get_china_nine_map(map_package=None) -> List[cfeature.Feature]:
 
 def add_common_map_feature(
         ax: matplotlib.axes.Axes,
-        coastline: Dict = None,
-        land: Dict = None,
-        ocean: Dict = None,
-        rivers: Dict = None,
-        lakes: Dict = None,
+        coastline: Optional[Dict] = None,
+        land: Optional[Dict] = None,
+        ocean: Optional[Dict] = None,
+        rivers: Optional[Dict] = None,
+        lakes: Optional[Dict] = None,
 ) -> matplotlib.axes.Axes:
     """
     添加通用地图特征

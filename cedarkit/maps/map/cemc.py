@@ -3,11 +3,12 @@ CEMC 官方图片产品使用的中国区域底图，仅限 CEMC 内部使用
 
 需要安装 cemc-meda-data 库，Metcode 地址 (仅 CEMC 内部访问，需要访问权限)
 
-http://e.mc.met.cma/codingcorp/cemc-meda/cemc-meda-data.git
+http://e.mc.met.cma/codingcorp/cedarkit/cemc-meda-data.git
 
 如需使用，请联系 CEMC 获取。
 """
 import importlib.resources
+from typing import Dict, List
 
 from cartopy.io.shapereader import Reader
 import cartopy.feature as cfeature
@@ -17,17 +18,17 @@ import cartopy.crs as ccrs
 MAP_PACKAGE_NAME = "cemc_meda_data"
 
 
-def get_china_map():
+def get_china_map() -> List[cfeature.Feature]:
     projection = ccrs.PlateCarree()
     shape_names = [
-        dict(name="BOUL_G", type="g"),
-        dict(name="BOUL_JDX", type="g"),
-        dict(name="BOUL_GU", type="gu"),
-        dict(name="HAX", type="h"),
-        dict(name="BOUL_S", type="s"),
-        dict(name="BOUL_S2", type="s2"),
-        dict(name="HYDL", type="r"),
-        dict(name="HFCP_NH", type="h")
+        dict(name="BOUL_G", type="g"),      # 陆地国界
+        dict(name="BOUL_JDX", type="g"),    # 南海断续线
+        dict(name="BOUL_GU", type="gu"),    # 未定国界
+        dict(name="HAX", type="h"),         # 海岸线
+        dict(name="BOUL_S", type="s"),      # 省界
+        dict(name="BOUL_S2", type="s2"),    # 特别行政区界
+        dict(name="HYDL", type="r"),        # 主要河流
+        dict(name="HFCP_NH", type="h")      # 南海岛屿岸线
     ]
     features = []
     for shape_item in shape_names:
@@ -49,15 +50,15 @@ def get_china_map():
     return features
 
 
-def get_china_nine_map():
+def get_china_nine_map() -> List[cfeature.Feature]:
     projection = ccrs.PlateCarree()
     shape_names = [
-        dict(name="BOUL_G", type="g"),
-        dict(name="BOUL_JDX", type="g"),
-        dict(name="HAX", type="h"),
-        dict(name="BOUL_S", type="s"),
-        dict(name="BOUL_S2", type="s2"),
-        dict(name="HFCP_NH", type="h")
+        dict(name="BOUL_G", type="g"),      # 陆地国界
+        dict(name="BOUL_JDX", type="g"),    # 南海断续线
+        dict(name="HAX", type="h"),         # 海岸线
+        dict(name="BOUL_S", type="s"),      # 省界
+        dict(name="BOUL_S2", type="s2"),    # 特别行政区界
+        dict(name="HFCP_NH", type="h")      # 南海岛屿岸线
     ]
     features = []
     for shape_item in shape_names:
@@ -79,7 +80,7 @@ def get_china_nine_map():
     return features
 
 
-def get_map_feature_style(map_type):
+def get_map_feature_style(map_type: str) -> Dict:
     m = dict(
         g=dict(
             edgecolor="k",
