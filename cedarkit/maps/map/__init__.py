@@ -14,6 +14,36 @@ class MapType(Enum):
     SouthChinaSea = "south_china_sea"
 
 
+class MapBase:
+    def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
+        self.map_type = map_type
+        self.kwargs = kwargs
+
+    def coastline(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        ...
+
+    def rivers(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        ...
+
+    def lakes(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        ...
+
+    def china_coastline(self) -> List[cfeature.Feature]:
+        ...
+
+    def china_borders(self) -> List[cfeature.Feature]:
+        ...
+
+    def china_provinces(self) -> List[cfeature.Feature]:
+        ...
+
+    def china_rivers(self) -> List[cfeature.Feature]:
+        ...
+
+    def china_nine_lines(self) -> List[cfeature.Feature]:
+        ...
+
+
 def set_default_map_package(map_package: str):
     """
     设置默认地图包名
@@ -32,8 +62,9 @@ def set_default_map_package(map_package: str):
     return map_package
 
 
-def get_map_class(map_package=None):
+def get_map_class(map_package: Optional[str] = None):
     """
+    get map class object.
     """
     if map_package is None:
         map_package = DEFAULT_MAP_PACKAGE

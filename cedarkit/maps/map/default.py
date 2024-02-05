@@ -10,14 +10,13 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.io.shapereader import Reader
 
-from . import MapType
+from . import MapType, MapBase
 
 
-class DefaultMap:
+class DefaultMap(MapBase):
     def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
-        self.map_type = map_type
+        super().__init__(map_type=map_type, **kwargs)
         self.default_scale = "50m"
-        self.kwargs = kwargs
 
     def coastline(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
         if scale is None:

@@ -7,10 +7,7 @@ from cartopy import crs as ccrs
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
-from cedarkit.maps.map import (
-    get_map_class,
-    MapType
-)
+from cedarkit.maps.map import get_map_class, MapType
 from cedarkit.maps.util import (
     draw_map_box,
     set_map_box_axis,

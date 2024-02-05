@@ -18,7 +18,7 @@ class Schema:
 
 class Panel:
     """
-    A plot panel which contains several charts.
+    A plot ``Panel`` which contains several ``Chart``s.
 
     Attributes
     ----------
