@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.axes
+import matplotlib.figure
 import matplotlib.colorbar
 import matplotlib.patches as mpatches
 import matplotlib.colors as mcolors
@@ -195,6 +196,7 @@ def fill_graph_title_pos(graph_title: GraphTitle, map_type="east_asia"):
 def set_map_box_title(
         ax: matplotlib.axes.Axes,
         graph_title: GraphTitle,
+        fontsize: Optional[float] = None,
 ) -> List:
     """
     为图形边框设置标题
@@ -208,6 +210,9 @@ def set_map_box_title(
     -------
 
     """
+    if fontsize is None:
+        fontsize = 7
+
     left = graph_title.left
     bottom = graph_title.bottom
     top = graph_title.top
@@ -228,7 +233,7 @@ def set_map_box_title(
             verticalalignment="bottom",
             horizontalalignment='left',
             transform=ax.transAxes,
-            fontsize=7,
+            fontsize=fontsize,
         )
 
     if top_right is None:
@@ -241,7 +246,7 @@ def set_map_box_title(
             verticalalignment="bottom",
             horizontalalignment='right',
             transform=ax.transAxes,
-            fontsize=7,
+            fontsize=fontsize,
         )
 
     if bottom_left is None:
@@ -254,7 +259,7 @@ def set_map_box_title(
             verticalalignment='top',
             horizontalalignment='left',
             transform=ax.transAxes,
-            fontsize=7
+            fontsize=fontsize
         )
 
     if bottom_right is None:
@@ -267,7 +272,7 @@ def set_map_box_title(
             verticalalignment='top',
             horizontalalignment='right',
             transform=ax.transAxes,
-            fontsize=7
+            fontsize=fontsize
         )
 
     return [top_left_text, top_right_text, bottom_left_text, bottom_right_text]
@@ -383,14 +388,24 @@ def fill_colorbar_pos(graph_colorbar: GraphColorbar, map_type: str):
     return graph_colorbar
 
 
-def add_map_box_colorbar(ax: matplotlib.axes.Axes, graph_colorbar: GraphColorbar) -> matplotlib.colorbar.Colorbar:
+def add_map_box_colorbar(
+        graph_colorbar: GraphColorbar,
+        ax: Optional[matplotlib.axes.Axes] = None,
+        fig: Optional[matplotlib.figure.Figure] = None,
+) -> matplotlib.colorbar.Colorbar:
     colorbar_box = graph_colorbar.box
     levels = graph_colorbar.levels
     colormap = graph_colorbar.colormap
 
-    cax = ax.inset_axes(colorbar_box)
+    if ax is not None:
+        cax = ax.inset_axes(colorbar_box)
+    elif fig is not None:
+        cax = fig.add_axes(colorbar_box)
+    else:
+        raise ValueError(f"either ax or fig should be provided.")
+
     norm = mcolors.BoundaryNorm(levels, colormap.N, extend="both")
-    cbar = ax.get_figure().colorbar(
+    cbar = cax.get_figure().colorbar(
         mpl.cm.ScalarMappable(norm=norm, cmap=colormap),
         cax=cax,
         orientation="vertical",
@@ -443,7 +458,7 @@ def add_colorbar(
         box=colorbar_box,
     )
 
-    cbar = add_map_box_colorbar(ax, graph_colorbar=graph_colorbar)
+    cbar = add_map_box_colorbar(graph_colorbar=graph_colorbar, ax=ax)
     return cbar
 
 

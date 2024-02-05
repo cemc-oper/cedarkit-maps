@@ -405,8 +405,8 @@ class EastAsiaMapDomain(MapDomain):
                     graph_colorbar.label_loc = colorbar_style.loc
 
             color_bar = add_map_box_colorbar(
-                panel.charts[0].layers[0].ax,
                 graph_colorbar=graph_colorbar,
+                ax=panel.charts[0].layers[0].ax,
             )
 
             color_bars.append(color_bar)
