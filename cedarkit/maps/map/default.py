@@ -4,10 +4,89 @@
 项目地址：https://github.com/dongli/china-shapefiles
 """
 import importlib.resources
+from typing import List, Dict, Optional
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.io.shapereader import Reader
+
+from . import MapType
+
+
+class DefaultMap:
+    def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
+        self.map_type = map_type
+        self.default_scale = "50m"
+        self.kwargs = kwargs
+
+    def coastline(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        if scale is None:
+            scale = self.default_scale
+        feature_style = dict(
+            edgecolor='black',
+            facecolor='never',
+        )
+        if style is not None:
+            feature_style.update(style)
+
+        f = cfeature.NaturalEarthFeature(
+            'physical', 'coastline',
+            scale,
+            **feature_style
+        )
+        return [f]
+
+    def rivers(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        if scale is None:
+            scale = self.default_scale
+        feature_style = dict(
+            edgecolor=cfeature.COLORS['water'],
+            facecolor='never',
+        )
+        if style is not None:
+            feature_style.update(style)
+
+        f = cfeature.NaturalEarthFeature(
+            'physical', 'rivers_lake_centerlines',
+            scale,
+            **feature_style
+        )
+        return [f]
+
+    def lakes(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        if scale is None:
+            scale = self.default_scale
+        feature_style = dict(
+            edgecolor='none',
+            facecolor=cfeature.COLORS['water'],
+        )
+        if style is not None:
+            feature_style.update(style)
+
+        f = cfeature.NaturalEarthFeature(
+            'physical', 'lakes',
+            scale,
+            **feature_style
+        )
+        return [f]
+
+    def china_coastline(self) -> List[cfeature.Feature]:
+        return list()
+
+    def china_borders(self) -> List[cfeature.Feature]:
+        return get_china_map()
+
+    def china_provinces(self) -> List[cfeature.Feature]:
+        return list()
+
+    def china_rivers(self) -> List[cfeature.Feature]:
+        return list()
+
+    def china_nine_lines(self) -> List[cfeature.Feature]:
+        return get_china_nine_map()
+
+
+map_class = DefaultMap
 
 
 def get_china_map():

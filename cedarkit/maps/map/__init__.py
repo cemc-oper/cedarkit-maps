@@ -1,4 +1,5 @@
 import importlib
+from enum import Enum
 from typing import Dict, List, Optional
 
 import cartopy.feature as cfeature
@@ -8,6 +9,11 @@ import matplotlib.axes
 DEFAULT_MAP_PACKAGE = "cedarkit.maps.map.default"
 
 
+class MapType(Enum):
+    Portrait = "portrait"
+    SouthChinaSea = "south_china_sea"
+
+
 def set_default_map_package(map_package: str):
     """
     设置默认地图包名
@@ -15,7 +21,7 @@ def set_default_map_package(map_package: str):
     Parameters
     ----------
     map_package
-        地图包字符串，例如 ``meda.map.default``
+        地图包字符串，例如 ``cedarkit.maps.map.default``
 
     Returns
     -------
@@ -24,6 +30,15 @@ def set_default_map_package(map_package: str):
     global DEFAULT_MAP_PACKAGE
     DEFAULT_MAP_PACKAGE = map_package
     return map_package
+
+
+def get_map_class(map_package=None):
+    """
+    """
+    if map_package is None:
+        map_package = DEFAULT_MAP_PACKAGE
+    package = importlib.import_module(map_package)
+    return package.map_class
 
 
 def get_china_map(map_package=None) -> List[cfeature.Feature]:

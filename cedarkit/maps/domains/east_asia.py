@@ -8,9 +8,8 @@ from cartopy import crs as ccrs
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.map import (
-    get_china_map,
-    get_china_nine_map,
-    add_common_map_feature
+    get_map_class,
+    MapType
 )
 from cedarkit.maps.util import (
     draw_map_box,
@@ -66,6 +65,8 @@ class EastAsiaMapDomain(MapDomain):
         self.main_xticks_interval = 10
         self.main_yticks_interval = 5
 
+        self.map_class = get_map_class()
+
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
         self.load_map()
@@ -83,8 +84,8 @@ class EastAsiaMapDomain(MapDomain):
         )
 
     def load_map(self):
-        self.cn_features = get_china_map()
-        self.nine_features = get_china_nine_map()
+        self.main_map = self.map_class(map_type=MapType.Portrait)
+        self.sub_map = self.map_class(map_type=MapType.SouthChinaSea)
 
     def render_main_layer(self, chart: "Chart"):
         """
@@ -109,33 +110,44 @@ class EastAsiaMapDomain(MapDomain):
         layer = Layer(projection=self.projection, chart=chart)
         layer.add_axes(ax)
 
-        add_common_map_feature(
-            ax,
-            coastline=dict(
-                scale="50m",
-                style=dict(
-                    linewidth=0.5,
-                    # zorder=50
-                )
-            ),
-            lakes=dict(
-                scale="50m",
-                style=dict(
-                    linewidth=0.25,
-                    facecolor='none',
-                    edgecolor="black",
-                    alpha=0.5
-                ),
-            ),
-        )
+        features = []
+        # coastline
+        fs = self.main_map.coastline(scale="50m", style=dict(
+            linewidth=0.5,
+            # zorder=50
+        ))
+        features.extend(fs)
 
-        for f in self.cn_features:
-            ax.add_feature(
-                f,
-                # zorder=100
-            )
+        # lakes
+        fs = self.main_map.lakes(scale="50m", style=dict(
+            linewidth=0.25,
+            facecolor='none',
+            edgecolor="black",
+            alpha=0.5
+        ))
+        features.extend(fs)
 
-        for f in self.nine_features:
+        # china coastline
+        fs = self.main_map.china_coastline()
+        features.extend(fs)
+
+        # china borders
+        fs = self.main_map.china_borders()
+        features.extend(fs)
+
+        # china provinces
+        fs = self.main_map.china_provinces()
+        features.extend(fs)
+
+        # china rivers
+        fs = self.main_map.china_rivers()
+        features.extend(fs)
+
+        # south china sea
+        fs = self.main_map.china_nine_lines()
+        features.extend(fs)
+
+        for f in features:
             ax.add_feature(
                 f,
                 # zorder=100
@@ -212,29 +224,54 @@ class EastAsiaMapDomain(MapDomain):
         layer = Layer(chart=chart, projection=self.projection)
         layer.add_axes(ax)
 
-        add_common_map_feature(
-            ax,
-            coastline=dict(
-                scale="50m",
-                style=dict(
-                    linewidth=0.25,
-                    # zorder=50
-                ),
-            ),
-        )
+        features = []
+        # coastline
+        fs = self.sub_map.coastline(scale="50m", style=dict(
+            linewidth=0.25,
+            # zorder=50
+        ))
+        features.extend(fs)
 
-        for f in self.cn_features:
+        # lakes
+
+        # china coastline
+        fs = self.sub_map.china_coastline()
+        features.extend(fs)
+
+        # china borders
+        fs = self.sub_map.china_borders()
+        features.extend(fs)
+
+        # china provinces
+        fs = self.sub_map.china_provinces()
+        features.extend(fs)
+
+        # china rivers
+        fs = self.sub_map.china_rivers()
+        features.extend(fs)
+
+        # south china sea
+        fs = self.sub_map.china_nine_lines()
+        features.extend(fs)
+
+        for f in features:
             ax.add_feature(
                 f,
-                linewidth=0.5,
                 # zorder=100
             )
-        for f in self.nine_features:
-            ax.add_feature(
-                f,
-                linewidth=1,
-                # zorder=100
-            )
+
+        # for f in self.cn_features:
+        #     ax.add_feature(
+        #         f,
+        #         linewidth=0.5,
+        #         # zorder=100
+        #     )
+        # for f in self.nine_features:
+        #     ax.add_feature(
+        #         f,
+        #         linewidth=1,
+        #         # zorder=100
+        #     )
 
         #   区域：南海子图
         set_map_box_area(
