@@ -4,8 +4,6 @@ import numpy as np
 import pandas as pd
 import cartopy.mpl.geoaxes
 from cartopy import crs as ccrs
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
@@ -15,8 +13,6 @@ from cedarkit.maps.map import (
     add_common_map_feature
 )
 from cedarkit.maps.util import (
-    draw_map_box_by_map_type,
-    set_map_box_axis,
     draw_map_box_gridlines,
     set_map_box_area,
     GraphTitle,
@@ -24,6 +20,7 @@ from cedarkit.maps.util import (
     set_map_box_title,
     GraphColorbar,
     add_map_box_colorbar,
+    clear_axes,
 )
 
 from .map_domain import MapDomain
@@ -366,17 +363,3 @@ class EnsCNMapDomain(MapDomain):
             ax=ax,
         )
         return color_bar
-
-
-def clear_axes(ax):
-    """
-    隐藏坐标轴、边框线、坐标短线、坐标标签
-    """
-    ax.axis('off')
-
-    # ax.get_xaxis().set_visible(False)
-    # ax.get_yaxis().set_visible(False)
-    # ax.spines['top'].set_visible(False)
-    # ax.spines['right'].set_visible(False)
-    # ax.spines['bottom'].set_visible(False)
-    # ax.spines['left'].set_visible(False)
