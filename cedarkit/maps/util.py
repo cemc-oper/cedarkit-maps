@@ -1,21 +1,34 @@
 from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.figure
 import matplotlib.colorbar
+import matplotlib.text
 import matplotlib.patches as mpatches
 import matplotlib.colors as mcolors
 import matplotlib.ticker as mticker
+import cartopy.mpl.geoaxes
+import cartopy.mpl.gridliner
 from cartopy import crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 
-def add_map_box_main_layout(fig, projection, map_type="east_asia") -> mpl.axes.Axes:
+# -----------------
+# Layout
+# -----------------
+
+
+def add_map_box_main_layout(
+        fig: matplotlib.figure.Figure,
+        projection: ccrs.Projection,
+        map_type: str = "east_asia"
+) -> cartopy.mpl.geoaxes.GeoAxes:
     """
-    添加主绘图区域
+    根据底图类型添加主绘图区域
 
     Parameters
     ----------
@@ -23,22 +36,26 @@ def add_map_box_main_layout(fig, projection, map_type="east_asia") -> mpl.axes.A
     projection
     map_type
 
+        * east_asia
+        * europe_asia
+        * north_polar
+
     Returns
     -------
-    mpl.axes.Axes
+    cartopy.mpl.geoaxes.GeoAxes
     """
     if map_type == "east_asia":
         width = 0.75
         height = 0.6
-        layout = [(1 - width)/2, (1 - height)/2, width, height]
+        layout = ((1 - width) / 2, (1 - height) / 2, width, height)
     elif map_type == "europe_asia":
         width = 0.75
         height = 0.6
-        layout = [0.1, 0.1, width, height]
+        layout = (0.1, 0.1, width, height)
     elif map_type == "north_polar":
         width = 0.75
         height = 0.8
-        layout = [0.1, 0.1, width, height]
+        layout = (0.1, 0.1, width, height)
     else:
         raise ValueError(f"map_type is not supported: {map_type}")
     ax = fig.add_axes(
@@ -52,13 +69,25 @@ def add_map_box_main_layout(fig, projection, map_type="east_asia") -> mpl.axes.A
     return ax
 
 
-def add_map_box_sub_layout(fig, projection):
+def add_map_box_sub_layout(fig: matplotlib.figure.Figure, projection: ccrs.Projection) -> cartopy.mpl.geoaxes.GeoAxes:
+    """
+    为 east_asia 添加子绘图区域
+
+    Parameters
+    ----------
+    fig
+    projection
+
+    Returns
+    -------
+    cartopy.mpl.geoaxes.GeoAxes
+    """
     main_width = 0.75
     main_height = 0.6
     sub_width = 0.1
     sub_height = 0.14
     ax = fig.add_axes(
-        [(1 - main_width)/2, (1 - main_height)/2, sub_width, sub_height],
+        ((1 - main_width) / 2, (1 - main_height) / 2, sub_width, sub_height),
         # projection=ccrs.LambertConformal(
         #     central_longitude=114,
         #     central_latitude=90,
@@ -68,15 +97,34 @@ def add_map_box_sub_layout(fig, projection):
     return ax
 
 
-def draw_map_box(ax: matplotlib.axes.Axes, bottom_left_point, top_right_point) -> mpatches.Rectangle:
+# ----------------
+# Map box
+# ----------------
+
+
+def draw_map_box(
+        ax: matplotlib.axes.Axes,
+        bottom_left_point: Tuple[float, float],
+        top_right_point: Tuple[float, float],
+        edgecolor="black",
+        fill=False,
+        linewidth=1.3,
+        zorder=1000,
+        **kwargs,
+) -> mpatches.Rectangle:
     """
-    添加图形边框
+    为图形添加矩形边框
 
     Parameters
     ----------
     ax
     bottom_left_point
     top_right_point
+    edgecolor
+    fill
+    linewidth
+    zorder
+    kwargs
 
     Returns
     -------
@@ -88,24 +136,28 @@ def draw_map_box(ax: matplotlib.axes.Axes, bottom_left_point, top_right_point) -
     rect = mpatches.Rectangle(
         bottom_left_point, width, height,
         transform=ax.transAxes,
-        edgecolor="black",
-        fill=False,
-        zorder=1000,
-        lw=1.3,
+        edgecolor=edgecolor,
+        fill=fill,
+        zorder=zorder,
+        lw=linewidth,
+        **kwargs
     )
     rect = ax.add_patch(rect)
     rect.set_clip_on(False)
     return rect
 
 
-def draw_map_box_by_map_type(ax: matplotlib.axes.Axes, map_type="east_asia") -> mpatches.Rectangle:
+def draw_map_box_by_map_type(ax: matplotlib.axes.Axes, map_type: str = "east_asia") -> mpatches.Rectangle:
     """
-    添加图形边框
+    为特定底图类型添加图形边框
 
     Parameters
     ----------
     ax
     map_type
+
+        * east_asia
+        * north_polar
 
     Returns
     -------
@@ -137,8 +189,26 @@ def draw_map_box_by_map_type(ax: matplotlib.axes.Axes, map_type="east_asia") -> 
     return rect
 
 
+# -------------------------
+# Title
+# -------------------------
+
+
 @dataclass
 class GraphTitle:
+    """
+    Graph title in four corners of box.
+
+    top_left_label                           top_right_label
+    ————————————————————————————————————————————————————————
+    |                                                      |
+    |                                                      |
+    |                     Axes box                         |
+    |                                                      |
+    |                                                      |
+    ————————————————————————————————————————————————————————
+    bottom_left_label                     bottom_right_label
+    """
     top_left_label: Optional[str] = None
     top_right_label: Optional[str] = None
     bottom_left_label: Optional[str] = None
@@ -158,6 +228,33 @@ def fill_graph_title(
         start_time: pd.Timestamp,
         forecast_time: pd.Timedelta,
 ) -> GraphTitle:
+    """
+    Fill four corner titles in ``GraphTitle`` object.
+
+    graph_name                                   system_name
+    ————————————————————————————————————————————————————————
+    |                                                      |
+    |                                                      |
+    |                     Axes box                         |
+    |                                                      |
+    |                                                      |
+    ————————————————————————————————————————————————————————
+    start time + forecast hour (UTC)        valid time (UTC)
+    start time + forecast hour (CST)        valid time (CST)
+
+
+    Parameters
+    ----------
+    graph_title
+    graph_name
+    system_name
+    start_time
+    forecast_time
+
+    Returns
+    -------
+    GraphTitle
+    """
     utc_start_time_label = start_time.strftime('%Y%m%d%H')
     utc_valid_time_label = (start_time + forecast_time).strftime('%Y%m%d%H')
     cst_start_time_label = (start_time + pd.Timedelta(hours=8)).strftime('%Y%m%d%H')
@@ -171,33 +268,11 @@ def fill_graph_title(
     return graph_title
 
 
-def fill_graph_title_pos(graph_title: GraphTitle, map_type="east_asia"):
-    if map_type == "east_asia":
-        left = -0.06
-        bottom = -0.05 - 0.005
-        top = 1.03
-        right = 1.03
-    elif map_type == "north_polar":
-        left = -0.06
-        bottom = -0.05 - 0.005
-        top = 1.03
-        right = 1.07
-    else:
-        raise ValueError(f"component_type is not supported: {map_type}")
-
-    graph_title.left = left
-    graph_title.bottom = bottom
-    graph_title.top = top
-    graph_title.right = right
-
-    return graph_title
-
-
 def set_map_box_title(
         ax: matplotlib.axes.Axes,
         graph_title: GraphTitle,
         fontsize: Optional[float] = None,
-) -> List:
+) -> List[matplotlib.text.Text]:
     """
     为图形边框设置标题
 
@@ -205,10 +280,11 @@ def set_map_box_title(
     ----------
     ax
     graph_title
+    fontsize
 
     Returns
     -------
-
+    List[matplotlib.text.Text]
     """
     if fontsize is None:
         fontsize = 7
@@ -278,20 +354,58 @@ def set_map_box_title(
     return [top_left_text, top_right_text, bottom_left_text, bottom_right_text]
 
 
-def set_title(
-        ax,
+def fill_graph_title_pos_by_map_type(graph_title: GraphTitle, map_type: str = "east_asia") -> GraphTitle:
+    """
+    为特定底图类型设置四角标题位置
+
+    Parameters
+    ----------
+    graph_title
+    map_type
+
+        * east_asia
+        * north_polar
+
+    Returns
+    -------
+    GraphTitle
+    """
+    if map_type == "east_asia":
+        left = -0.06
+        bottom = -0.05 - 0.005
+        top = 1.03
+        right = 1.03
+    elif map_type == "north_polar":
+        left = -0.06
+        bottom = -0.05 - 0.005
+        top = 1.03
+        right = 1.07
+    else:
+        raise ValueError(f"component_type is not supported: {map_type}")
+
+    graph_title.left = left
+    graph_title.bottom = bottom
+    graph_title.top = top
+    graph_title.right = right
+
+    return graph_title
+
+
+def set_title_by_map_type(
+        ax: matplotlib.axes.Axes,
         graph_name: str,
         system_name: str,
         start_time: pd.Timestamp,
         forecast_time: pd.Timedelta,
-        map_type="east_asia",
-) -> List:
+        map_type: str = "east_asia",
+) -> List[matplotlib.text.Text]:
     """
-    添加标题
+    为特定底图类型添加四角标题
 
     Parameters
     ----------
     ax
+
     graph_name
         图片名称，例如 `MSLP (hPa) line`
     system_name
@@ -303,9 +417,13 @@ def set_title(
     map_type
         底图类型
 
+        * east_asia
+        * north_polar
+
+
     Returns
     -------
-
+    List[matplotlib.text.Text]
     """
     graph_title = GraphTitle()
     fill_graph_title(
@@ -316,7 +434,7 @@ def set_title(
         forecast_time=forecast_time,
     )
 
-    fill_graph_title_pos(
+    fill_graph_title_pos_by_map_type(
         graph_title=graph_title,
         map_type=map_type
     )
@@ -327,11 +445,50 @@ def set_title(
     )
 
 
-def add_map_box_info_text(
-        ax: matplotlib.axes.Axes, text: str,
+# ---------------------
+# Map info
+# --------------------
+
+
+def add_map_box_info_text_by_map_type(
+        ax: matplotlib.axes.Axes,
+        text: str,
         map_type: str = "east_asia",
         component_type: str = "main",
-):
+) -> matplotlib.text.Text:
+    """
+    为特定底图类型添加底图说明框
+
+    |---------------------------------------|
+    |                                       |
+    |                                       |
+    |                                       |
+    |                                       |
+    |                                       |
+    |                          /------------|
+    |                          /  map info  |
+    |--------------------------/------------|
+
+    Parameters
+    ----------
+    ax
+    text
+    map_type
+
+        * east_asia
+        * north_polar
+
+    component_type
+
+        when ``map_type`` is "east_asia":
+
+        * main
+        * sub
+
+    Returns
+    -------
+    matplotlib.text.Text
+    """
     if map_type == "east_asia":
         if component_type == "main":
             x = 0.998
@@ -366,7 +523,10 @@ def add_map_box_info_text(
     return text_box
 
 
-# color bar
+# ----------------
+# Colorbar
+# -----------------
+
 
 @dataclass
 class GraphColorbar:
@@ -377,22 +537,26 @@ class GraphColorbar:
     label_loc: Optional[str] = None
 
 
-def fill_colorbar_pos(graph_colorbar: GraphColorbar, map_type: str):
-    if map_type == "east_asia":
-        colorbar_box = [1.05, 0.02, 0.02, 1]
-    elif map_type == "north_polar":
-        colorbar_box = [1.08, 0.02, 0.02, 1]
-    else:
-        raise ValueError(f"map_type is not supported: {map_type}")
-    graph_colorbar.box = colorbar_box
-    return graph_colorbar
-
-
 def add_map_box_colorbar(
         graph_colorbar: GraphColorbar,
         ax: Optional[matplotlib.axes.Axes] = None,
         fig: Optional[matplotlib.figure.Figure] = None,
 ) -> matplotlib.colorbar.Colorbar:
+    """
+    Add colorbar for a axes.
+
+    Parameters
+    ----------
+    graph_colorbar
+    ax
+        if ax is set, colorbar is added based on ax according to ``box`` attribute in ``graph_colorbar``.
+    fig
+        if fig is set, colorbar is added based on figure according to ``box`` attribute in ``graph_colorbar``.
+
+    Returns
+    -------
+    matplotlib.colorbar.Colorbar
+    """
     colorbar_box = graph_colorbar.box
     levels = graph_colorbar.levels
     colormap = graph_colorbar.colormap
@@ -439,12 +603,55 @@ def add_map_box_colorbar(
     return cbar
 
 
-def add_colorbar(
+def fill_colorbar_pos_by_map_type(graph_colorbar: GraphColorbar, map_type: str) -> GraphColorbar:
+    """
+    根据特定底图类型设置颜色条位置
+
+    Parameters
+    ----------
+    graph_colorbar
+    map_type
+
+        * east_asia
+        * north_polar
+
+    Returns
+    -------
+    GraphColorbar
+    """
+    if map_type == "east_asia":
+        colorbar_box = [1.05, 0.02, 0.02, 1]
+    elif map_type == "north_polar":
+        colorbar_box = [1.08, 0.02, 0.02, 1]
+    else:
+        raise ValueError(f"map_type is not supported: {map_type}")
+    graph_colorbar.box = colorbar_box
+    return graph_colorbar
+
+
+def add_colorbar_by_map_type(
         ax: matplotlib.axes.Axes,
         colormap: mcolors.ListedColormap,
         levels: List,
         map_type: str = "east_asia",
 ) -> matplotlib.colorbar.Colorbar:
+    """
+    为特定底图类型添加颜色条
+
+    Parameters
+    ----------
+    ax
+    colormap
+    levels
+    map_type
+
+        * east_asia
+        * north_polar
+
+    Returns
+    -------
+    matplotlib.colorbar.Colorbar
+    """
     if map_type == "east_asia":
         colorbar_box = [1.05, 0.02, 0.02, 1]
     elif map_type == "north_polar":
@@ -462,14 +669,31 @@ def add_colorbar(
     return cbar
 
 
-# area
+# ------------------
+# Area
+# ------------------
 
 
 def set_map_box_area(
-        ax: matplotlib.axes.Axes,
+        ax: cartopy.mpl.geoaxes.GeoAxes,
         area: List[float],
         projection: ccrs.Projection,
-        aspect: Optional[float] = None):
+        aspect: Optional[float] = None
+) -> cartopy.mpl.geoaxes.GeoAxes:
+    """
+    set map box area and aspect.
+
+    Parameters
+    ----------
+    ax
+    area
+    projection
+    aspect
+
+    Returns
+    -------
+    cartopy.mpl.geoaxes.GeoAxes
+    """
     east_lon, west_lon, south_lat, north_lat = area
     ax.set_extent(
         area,
@@ -481,11 +705,31 @@ def set_map_box_area(
     return ax
 
 
+# ----------------------
+# Axis
+# ----------------------
+
+
 def set_map_box_axis(
-        ax,
-        xticks, yticks,
+        ax: cartopy.mpl.geoaxes.GeoAxes,
+        xticks: np.ndarray,
+        yticks: np.ndarray,
         projection: ccrs.Projection
-):
+) -> cartopy.mpl.geoaxes.GeoAxes:
+    """
+    set axis ticks and tick labels for map box.
+
+    Parameters
+    ----------
+    ax
+    xticks
+    yticks
+    projection
+
+    Returns
+    -------
+    cartopy.mpl.geoaxes.GeoAxes
+    """
     # 坐标轴样式
     lon_formatter = LongitudeFormatter(
         zero_direction_label=True,
@@ -513,13 +757,35 @@ def set_map_box_axis(
 
 
 def draw_map_box_gridlines(
-        ax, projection,
-        xlocator=None, ylocator=None,
-        linewidth=0.5,
-        color="grey",
+        ax: cartopy.mpl.geoaxes.GeoAxes,
+        projection: ccrs.Projection,
+        xlocator: Optional[np.ndarray] = None,
+        ylocator: Optional[np.ndarray] = None,
+        linewidth: float = 0.5,
+        color: str = "grey",
         alpha: float = 0.5,
         linetyle: str = "--",
-):
+        **kwargs,
+) -> cartopy.mpl.gridliner.Gridliner:
+    """
+    draw gridlines for map box
+
+    Parameters
+    ----------
+    ax
+    projection
+    xlocator
+    ylocator
+    linewidth
+    color
+    alpha
+    linetyle
+    kwargs
+
+    Returns
+    -------
+    cartopy.mpl.gridliner.Gridliner
+    """
     gl = ax.gridlines(
         crs=projection,
         draw_labels=False,
@@ -527,6 +793,7 @@ def draw_map_box_gridlines(
         color=color,
         alpha=alpha,
         linestyle=linetyle,
+        **kwargs,
     )
     if ylocator is not None:
         gl.ylocator = mticker.FixedLocator(ylocator)
@@ -535,7 +802,12 @@ def draw_map_box_gridlines(
     return gl
 
 
-def clear_xarray_plot_components(ax):
+# -------------------
+# Axes utils
+# -------------------
+
+
+def clear_xarray_plot_components(ax: matplotlib.axes.Axes):
     """
     清除 Xarray 自动绘图生成的图片组件，包括：
 
@@ -546,12 +818,22 @@ def clear_xarray_plot_components(ax):
     Parameters
     ----------
     ax
-
-    Returns
-    -------
-
     """
     ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
     return ax
+
+
+def clear_axes(ax: matplotlib.axes.Axes):
+    """
+    隐藏坐标轴、边框线、坐标短线、坐标标签
+    """
+    ax.axis('off')
+
+    # ax.get_xaxis().set_visible(False)
+    # ax.get_yaxis().set_visible(False)
+    # ax.spines['top'].set_visible(False)
+    # ax.spines['right'].set_visible(False)
+    # ax.spines['bottom'].set_visible(False)
+    # ax.spines['left'].set_visible(False)

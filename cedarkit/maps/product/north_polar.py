@@ -13,7 +13,7 @@ from cedarkit.maps.map import (
 )
 from cedarkit.maps.util import (
     draw_map_box_by_map_type,
-    add_map_box_info_text,
+    add_map_box_info_text_by_map_type,
     set_map_box_area,
     set_map_box_axis,
     draw_map_box_gridlines,
@@ -127,7 +127,7 @@ def generate_north_polar_plot(
     # 绘制边框
     rect = draw_map_box_by_map_type(ax, map_type="north_polar")
 
-    add_map_box_info_text(
+    add_map_box_info_text_by_map_type(
         ax,
         "Scale 1:20000000 No:GS (2019) 1786",
         map_type="north_polar",
