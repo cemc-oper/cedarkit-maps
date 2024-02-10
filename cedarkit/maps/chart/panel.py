@@ -23,7 +23,7 @@ class Panel:
     Attributes
     ----------
     map_domain : MapDomain
-
+        A ``MapDomain`` instance which is used to draw map and other items within a plot.
     schema : Schema
         panel settings, used to create ``matplotlib.pyplot.Figure``
     charts : List[Chart]
@@ -56,6 +56,17 @@ class Panel:
         plt.show()
 
     def add_chart(self, domain: MapDomain) -> Chart:
+        """
+        Add a ``Chart`` to the panel
+
+        Parameters
+        ----------
+        domain
+            ``MapDomain``, different chart may use different domains.
+        Returns
+        -------
+        Chart
+        """
         chart = Chart(self, domain=domain)
         self.charts.append(chart)
         return chart

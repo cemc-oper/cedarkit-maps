@@ -37,7 +37,25 @@ class Chart:
     def add_layer(self, layer: "Layer"):
         self.layers.append(layer)
 
-    def plot(self, data, style: "Style", layer: Optional[List[Any]] = None):
+    def plot(self, data, style: "Style", layer: Optional[List[Any]] = None) -> List[Any]:
+        """
+        Plot data with style in layers.
+
+        Parameters
+        ----------
+        data
+            plot data. Different plot method may require different type of data.
+            Such as contour needs one field, and barb needs a list with two fields.
+        style
+            plot style which is used to select plot method.
+        layer
+            which layer to be plotted on. If not set then all layers will be plotted on.
+
+        Returns
+        -------
+        List[Any]
+            plot results for each used layer.
+        """
         results = []
         if layer is None:
             layers = self.layers
