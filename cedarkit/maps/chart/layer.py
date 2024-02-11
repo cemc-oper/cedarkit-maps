@@ -25,8 +25,11 @@ class Layer:
     Attributes
     ----------
     ax
+        axes to draw plots, which is created outside ``Layer`` object.
     projection
+        ``ccrs.Projection`` for all plots in this layer.
     chart
+        ``Chart`` who owns this ``Layer``.
     """
     def __init__(self, projection: ccrs.Projection, chart: Optional["Chart"] = None):
         self.ax: Optional[matplotlib.axes.Axes] = None
@@ -37,7 +40,7 @@ class Layer:
         else:
             self.chart = None
 
-    def add_axes(self, ax: matplotlib.axes.Axes):
+    def set_axes(self, ax: matplotlib.axes.Axes):
         self.ax = ax
 
     def set_chart(self, chart: "Chart"):

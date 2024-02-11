@@ -91,7 +91,7 @@ class EnsCNMapDomain(MapDomain):
             projection=self.projection
         )
         layer = Layer(chart=panel.charts[current_chart_index], projection=self.projection)
-        layer.add_axes(ax)
+        layer.set_axes(ax)
 
         self.plot_map(ax, name="CTL")
 
@@ -105,7 +105,7 @@ class EnsCNMapDomain(MapDomain):
             )
 
             layer = Layer(chart=panel.charts[current_chart_index], projection=self.projection)
-            layer.add_axes(ax)
+            layer.set_axes(ax)
 
             self.plot_map(ax, name=f"mem{number:02d}")
 
@@ -116,7 +116,7 @@ class EnsCNMapDomain(MapDomain):
                 projection=self.projection
             )
             layer = Layer(chart=panel.charts[15], projection=self.projection)
-            layer.add_axes(ax)
+            layer.set_axes(ax)
             self.plot_map(ax, name="MAX")
 
     def render_chart(self, chart: "Chart"):
@@ -213,7 +213,7 @@ class EnsCNMapDomain(MapDomain):
             projection=self.projection,
         )
         layer = Layer(chart=chart, projection=self.projection)
-        layer.add_axes(ax)
+        layer.set_axes(ax)
 
         add_common_map_feature(
             ax,

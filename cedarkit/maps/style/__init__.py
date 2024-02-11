@@ -26,8 +26,7 @@ PLOT_STYLE = dict(
 
 @dataclass
 class Style:
-    pass
-
+    ...
 
 
 @dataclass

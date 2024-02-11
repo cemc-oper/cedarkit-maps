@@ -1,6 +1,6 @@
 import importlib.resources
 import re
-from typing import Optional
+from typing import Optional, List
 
 import numpy as np
 import pandas as pd
@@ -11,23 +11,27 @@ def get_ncl_colormap(
         name,
         index: Optional[np.ndarray] = None,
         count: Optional[int] = None,
-        spread_start=None,
-        spread_end=None,
+        spread_start: Optional[int] = None,
+        spread_end: Optional[int] = None,
         face_color="white"
 ) -> Optional[mcolors.ListedColormap]:
     """
-    Generate Matplotlib colormap from NCL color map files in resource directory.
+    Generate Matplotlib colormap from NCL colormap files in resources directory.
 
     Parameters
     ----------
     name
         ncl color map name without extension.
     index
-    face_color
+        color index to generate subset from original colormap.
     count
+        color count, used with spread_start and spread_end.
     spread_start
+        start index
     spread_end
-
+        end index
+    face_color
+        add additional face color to colormap. default is white.
     Returns
     -------
     matplotlib.colors.ListedColormap
@@ -92,7 +96,21 @@ def _get_raw_ncl_colormap(name) -> Optional[mcolors.ListedColormap]:
         return color_map
 
 
-def generate_colormap_using_ncl_colors(color_names, name):
+def generate_colormap_using_ncl_colors(color_names: List[str], name: str) -> mcolors.ListedColormap:
+    """
+    Use NCL named colors to generate a colormap.
+
+    Parameters
+    ----------
+    color_names
+        color names list.
+    name
+        colormap name
+
+    Returns
+    -------
+    mcolors.ListedColormap
+    """
     color_map_dir = importlib.resources.files("cedarkit.maps") / "resources/colormap/ncl"
     with importlib.resources.as_file(color_map_dir / f"ncl_colors.csv") as color_names_csv:
         df = pd.read_csv(color_names_csv)

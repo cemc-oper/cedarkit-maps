@@ -29,7 +29,7 @@ def add_contourf(
 
     Returns
     -------
-
+    matplotlib.contour.QuadContourSet
     """
     min_level = min(levels)
     max_level = max(levels)
@@ -70,7 +70,7 @@ def add_contour(
 
     Returns
     -------
-
+    matplotlib.contour.QuadContourSet
     """
     min_level = min(levels)
     max_level = min(levels)
@@ -105,6 +105,9 @@ def add_contour_label(
     ax
     contour
     fontsize
+    manual
+    inline
+    fmt
     **kwargs
 
     Returns
@@ -146,6 +149,12 @@ def add_barb(
     y_field
         v分量，南北风
     projection
+    length
+    linewidth
+    pivot
+    barbcolor
+    flagcolor
+    barb_increments
 
     Returns
     -------

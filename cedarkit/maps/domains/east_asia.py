@@ -105,7 +105,7 @@ class EastAsiaMapDomain(MapDomain):
             projection=self.projection,
         )
         layer = Layer(projection=self.projection, chart=chart)
-        layer.add_axes(ax)
+        layer.set_axes(ax)
 
         features = []
         # coastline
@@ -219,7 +219,7 @@ class EastAsiaMapDomain(MapDomain):
             projection=self.projection,
         )
         layer = Layer(chart=chart, projection=self.projection)
-        layer.add_axes(ax)
+        layer.set_axes(ax)
 
         features = []
         # coastline
