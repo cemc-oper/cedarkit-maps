@@ -103,7 +103,7 @@ def generate_colormap_using_ncl_colors(color_names: List[str], name: str) -> mco
     Parameters
     ----------
     color_names
-        color names list.
+        color names list. ignore the case.
     name
         colormap name
 
@@ -114,8 +114,10 @@ def generate_colormap_using_ncl_colors(color_names: List[str], name: str) -> mco
     color_map_dir = importlib.resources.files("cedarkit.maps") / "resources/colormap/ncl"
     with importlib.resources.as_file(color_map_dir / f"ncl_colors.csv") as color_names_csv:
         df = pd.read_csv(color_names_csv)
+        df["name"] = df["name"].str.lower()
         rgbs = []
         for color_name in color_names:
+            color_name = color_name.lower()
             if color_name == "transparent":
                 rgbs.append([1, 1, 1, 1])
                 continue
