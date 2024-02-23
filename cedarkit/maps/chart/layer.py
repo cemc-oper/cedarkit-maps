@@ -58,8 +58,8 @@ class Layer:
         contour = add_contourf(
             self.ax,
             field=data,
-            projection=self.projection,
             levels=style.levels,
+            projection=self.projection,
             cmap=style.colors,
             **kwargs
         )
@@ -71,8 +71,8 @@ class Layer:
         contour = add_contour(
             self.ax,
             field=data,
-            projection=self.projection,
             levels=style.levels,
+            projection=self.projection,
             colors=style.colors,
             linewidths=style.linewidths,
             **kwargs

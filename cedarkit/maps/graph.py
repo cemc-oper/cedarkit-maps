@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import xarray as xr
 import numpy as np
@@ -11,8 +11,9 @@ import cartopy.crs as ccrs
 def add_contourf(
         ax: matplotlib.axes.Axes,
         field: xr.DataArray,
-        projection: ccrs.Projection,
         levels: np.ndarray,
+        projection: Optional[ccrs.Projection] = None,
+        y_invert: bool = False,
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
     """
@@ -22,9 +23,12 @@ def add_contourf(
     ----------
     ax
     field
-        要素场
-    projection
+        data field
     levels
+        contour level list.
+    projection
+        map projection
+    y_invert
     **kwargs
 
     Returns
@@ -33,6 +37,15 @@ def add_contourf(
     """
     min_level = min(levels)
     max_level = max(levels)
+
+    first_dim = field[field.dims[0]]
+    max_dim_value = max(first_dim).values
+    min_dim_value = min(first_dim).values
+    if y_invert:
+        ylim = (max_dim_value, min_dim_value)
+    else:
+        ylim = None
+
     c = field.plot.contourf(
         ax=ax,
         transform=projection,
@@ -42,6 +55,7 @@ def add_contourf(
         add_colorbar=False,
         add_labels=False,
         extend="both",
+        ylim=ylim,
         **kwargs
     )
     return c
@@ -50,9 +64,10 @@ def add_contourf(
 def add_contour(
         ax: matplotlib.axes.Axes,
         field: xr.DataArray,
-        projection: ccrs.Projection,
         levels: np.ndarray,
-        linestyles="solid",
+        projection: Optional[ccrs.Projection] = None,
+        linestyles: str = "solid",
+        y_invert: bool = False,
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
     """
@@ -66,6 +81,7 @@ def add_contour(
     projection
     levels
     linestyles
+    y_invert
     **kwargs
 
     Returns
@@ -73,7 +89,16 @@ def add_contour(
     matplotlib.contour.QuadContourSet
     """
     min_level = min(levels)
-    max_level = min(levels)
+    max_level = max(levels)
+
+    first_dim = field[field.dims[0]]
+    max_dim_value = max(first_dim).values
+    min_dim_value = min(first_dim).values
+    if y_invert:
+        ylim = (max_dim_value, min_dim_value)
+    else:
+        ylim = None
+
     c = field.plot.contour(
         ax=ax,
         transform=projection,
@@ -83,6 +108,7 @@ def add_contour(
         add_colorbar=False,
         linestyles=linestyles,
         add_labels=False,
+        ylim=ylim,
         **kwargs,
     )
     return c
@@ -94,7 +120,7 @@ def add_contour_label(
         fontsize: float = 7,
         manual: bool = False,
         inline: bool = True,
-        fmt = "{:.0f}".format,
+        fmt="{:.0f}".format,
         **kwargs,
 ):
     """
@@ -129,7 +155,7 @@ def add_barb(
         ax: matplotlib.axes.Axes,
         x_field: xr.DataArray,
         y_field: xr.DataArray,
-        projection,
+        projection: Optional[ccrs.Projection] = None,
         length: float = 4,
         linewidth: float = 0.5,
         pivot: str = 'middle',
@@ -173,10 +199,10 @@ def add_barb(
         pivot=pivot,
         barbcolor=barbcolor,
         flagcolor=flagcolor,
-        sizes=dict(
-            # width=0.35,
-            # spacing=0.14,
-        ),
+        # sizes=dict(
+        #     width=0.35,
+        #     spacing=0.14,
+        # ),
         **kwargs
     )
 
