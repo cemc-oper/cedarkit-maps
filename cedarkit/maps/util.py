@@ -543,7 +543,7 @@ def add_map_box_colorbar(
         fig: Optional[matplotlib.figure.Figure] = None,
 ) -> matplotlib.colorbar.Colorbar:
     """
-    Add colorbar for a axes.
+    Add colorbar for an axes.
 
     Parameters
     ----------

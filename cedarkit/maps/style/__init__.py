@@ -50,7 +50,8 @@ class ContourLabelStyle(Style):
 class ContourStyle(Style):
     colors: Optional[Union[str, List, mcolors.ListedColormap]] = None
     levels: Optional[Union[List, np.ndarray]] = None
-    linewidths: Optional[Union[List, np.ndarray]] = None
+    linewidths: Optional[Union[List, np.ndarray, float]] = None
+    linestyles: Optional[Union[List, str]] = None
     fill: bool = False
     label: bool = False
     label_style: Optional[ContourLabelStyle] = None
@@ -63,7 +64,7 @@ class BarbStyle(Style):
     linewidth: float = 0.5
     pivot: str = "middle"
     barbcolor: str = "red"
-    flagcolor: str = "red"
+    flagcolor: Optional[str] = "red"
     barb_increments: Optional[Dict] = None
     colorbar_style: Optional[ContourLabelStyle] = None
 
