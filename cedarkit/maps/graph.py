@@ -13,7 +13,7 @@ def add_contourf(
         field: xr.DataArray,
         levels: np.ndarray,
         projection: Optional[ccrs.Projection] = None,
-        y_invert: bool = False,
+        y_invert: Optional[bool] = None,
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
     """
@@ -41,10 +41,13 @@ def add_contourf(
     first_dim = field[field.dims[0]]
     max_dim_value = max(first_dim).values
     min_dim_value = min(first_dim).values
-    if y_invert:
-        ylim = (max_dim_value, min_dim_value)
+    if "ylim" in kwargs:
+        ylim = kwargs.pop("ylim")
     else:
-        ylim = None
+        if y_invert is not None and y_invert:
+            ylim = (max_dim_value, min_dim_value)
+        else:
+            ylim = None
 
     c = field.plot.contourf(
         ax=ax,
@@ -67,7 +70,7 @@ def add_contour(
         levels: np.ndarray,
         projection: Optional[ccrs.Projection] = None,
         linestyles: str = "solid",
-        y_invert: bool = False,
+        y_invert: Optional[bool] = None,
         **kwargs
 ) -> matplotlib.contour.QuadContourSet:
     """
@@ -94,10 +97,13 @@ def add_contour(
     first_dim = field[field.dims[0]]
     max_dim_value = max(first_dim).values
     min_dim_value = min(first_dim).values
-    if y_invert:
-        ylim = (max_dim_value, min_dim_value)
+    if "ylim" in kwargs:
+        ylim = kwargs.pop("ylim")
     else:
-        ylim = None
+        if y_invert is not None and y_invert:
+            ylim = (max_dim_value, min_dim_value)
+        else:
+            ylim = None
 
     c = field.plot.contour(
         ax=ax,
@@ -186,13 +192,20 @@ def add_barb(
     -------
     matplotlib.quiver.Barbs
     """
-    lons, lats = np.meshgrid(x_field.longitude, y_field.latitude)
+    x_dim_name = x_field.dims[-1]   # longitude
+    y_dim_name = x_field.dims[-2]   # latitude
+
+    # lons, lats = np.meshgrid(x_field.longitude, y_field.latitude)
+    xx, yy = np.meshgrid(x_field[x_dim_name], x_field[y_dim_name])
+
+    additional_args = dict()
+    if projection is not None:
+        additional_args["transform"] = projection
 
     # 风向杆
     barb = ax.barbs(
-        lons, lats,
+        xx, yy,
         x_field.data, y_field.data,
-        transform=projection,
         barb_increments=barb_increments,
         length=length,
         linewidth=linewidth,
@@ -203,6 +216,7 @@ def add_barb(
         #     width=0.35,
         #     spacing=0.14,
         # ),
+        **additional_args,
         **kwargs
     )
 
