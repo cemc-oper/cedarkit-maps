@@ -31,7 +31,7 @@ class Layer:
     chart
         ``Chart`` who owns this ``Layer``.
     """
-    def __init__(self, projection: ccrs.Projection, chart: Optional["Chart"] = None):
+    def __init__(self, projection: Optional[ccrs.Projection], chart: Optional["Chart"] = None):
         self.ax: Optional[matplotlib.axes.Axes] = None
         self.projection = projection
 
@@ -75,6 +75,7 @@ class Layer:
             projection=self.projection,
             colors=style.colors,
             linewidths=style.linewidths,
+            linestyles=style.linestyles,
             **kwargs
         )
         if style.label:
@@ -102,6 +103,10 @@ class Layer:
         return label
 
     def barb(self, x: xr.DataArray, y: xr.DataArray, style: BarbStyle, **kwargs) -> matplotlib.quiver.Barbs:
+        additional_kwargs = dict()
+        if self.projection is not None:
+            additional_kwargs["regrid_shape"] = 20
+
         barb = add_barb(
             self.ax,
             x_field=x,
@@ -113,7 +118,7 @@ class Layer:
             pivot=style.pivot,
             barbcolor=style.barbcolor,
             flagcolor=style.flagcolor,
-            regrid_shape=20,
+            **additional_kwargs,
             **kwargs,
         )
         return barb

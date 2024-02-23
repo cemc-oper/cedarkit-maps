@@ -1,7 +1,7 @@
 from typing import List, Union, Optional, Any, TYPE_CHECKING
 
 from cedarkit.maps.style import Style, ContourStyle, BarbStyle
-from cedarkit.maps.domains import MapDomain
+from cedarkit.maps.domains import MapDomain, XYDomain
 
 from .layer import Layer
 
@@ -21,7 +21,7 @@ class Chart:
     layers : List[Layer]
         layer list. Each layer has a map.
     """
-    def __init__(self, panel: "Panel", domain: MapDomain):
+    def __init__(self, panel: "Panel", domain: Union[MapDomain, XYDomain]):
         self.panel = panel
         self.map_domain = domain
 
