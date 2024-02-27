@@ -5,6 +5,7 @@ from .xy_domin import XYDomain, TimeStepAndLevelXYDomain
 from .map_domain import MapDomain
 from .east_asia import EastAsiaMapDomain, CnAreaMapDomain
 from .north_polar import NorthPolarMapDomain
+from .europe_asia import EuropeAsiaMapDomain
 
 
 def parse_domain(domain: Union[str, type[XYDomain], XYDomain]) -> XYDomain:
