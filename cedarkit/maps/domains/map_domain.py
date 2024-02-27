@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 import cartopy.crs as ccrs
 
@@ -9,10 +9,19 @@ from .xy_domin import XYDomain
 
 
 class MapDomain(XYDomain):
-    def __init__(self, projection: ccrs.Projection, area: List[float]):
+    def __init__(
+            self,
+            projection: ccrs.Projection,
+            area: List[float],
+            map_projection: Optional[ccrs.Projection] = None,
+    ):
         super().__init__()
-        self._projection = projection
         self._area = area
+        self._projection = projection
+        if map_projection is None:
+            self._map_projection = self._projection
+        else:
+            self._map_projection = map_projection
 
     def render_panel(self, panel: "Panel"):
         raise NotImplementedError
@@ -32,4 +41,6 @@ class MapDomain(XYDomain):
     def projection(self) -> ccrs.Projection:
         return self._projection
 
-
+    @property
+    def map_projection(self) -> ccrs.Projection:
+        return self._map_projection

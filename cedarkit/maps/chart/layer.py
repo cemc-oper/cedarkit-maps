@@ -31,7 +31,11 @@ class Layer:
     chart
         ``Chart`` who owns this ``Layer``.
     """
-    def __init__(self, projection: Optional[ccrs.Projection] = None, chart: Optional["Chart"] = None):
+    def __init__(
+            self,
+            projection: Optional[ccrs.Projection] = None,
+            chart: Optional["Chart"] = None
+    ):
         self.ax: Optional[matplotlib.axes.Axes] = None
         self.projection = projection
 
