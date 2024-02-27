@@ -5,9 +5,12 @@ import cartopy.crs as ccrs
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
+from .xy_domin import XYDomain
 
-class MapDomain:
+
+class MapDomain(XYDomain):
     def __init__(self, projection: ccrs.Projection, area: List[float]):
+        super().__init__()
         self._projection = projection
         self._area = area
 

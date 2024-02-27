@@ -21,7 +21,7 @@ class Chart:
     layers : List[Layer]
         layer list. Each layer has a map.
     """
-    def __init__(self, panel: "Panel", domain: Union[MapDomain, XYDomain]):
+    def __init__(self, panel: "Panel", domain: XYDomain):
         self.panel = panel
         self.map_domain = domain
 

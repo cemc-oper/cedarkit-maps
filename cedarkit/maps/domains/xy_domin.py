@@ -18,6 +18,19 @@ class XYDomain:
 
 
 class TimeStepAndLevelXYDomain(XYDomain):
+    """
+
+
+            ------------------
+            |                |
+            |                |
+      level |                |
+            |                |
+            |                |
+            ------------------
+                 Time step
+
+    """
     def __init__(self, steps: List[float], levels: List[float], start_time: pd.Timestamp):
         super().__init__()
         self.steps = steps
