@@ -199,6 +199,7 @@ class GraphTitle:
     """
     Graph title in four corners of box.
 
+                         main_label
     top_left_label                           top_right_label
     ————————————————————————————————————————————————————————
     |                                                      |
@@ -213,12 +214,13 @@ class GraphTitle:
     top_right_label: Optional[str] = None
     bottom_left_label: Optional[str] = None
     bottom_right_label: Optional[str] = None
-    top_left_pos: Optional[str] = None
+    main_title_label: Optional[str] = None
 
     left: Optional[float] = None
     bottom: Optional[float] = None
     top: Optional[float] = None
     right: Optional[float] = None
+    main_pos: Optional[Tuple[float, float]] = None
 
 
 def fill_graph_title(
@@ -293,11 +295,13 @@ def set_map_box_title(
     bottom = graph_title.bottom
     top = graph_title.top
     right = graph_title.right
+    main_pos = graph_title.main_pos
 
     top_left = graph_title.top_left_label
     top_right = graph_title.top_right_label
     bottom_left = graph_title.bottom_left_label
     bottom_right = graph_title.bottom_right_label
+    main_title = graph_title.main_title_label
 
     if top_left is None:
         top_left_text = None
@@ -351,7 +355,19 @@ def set_map_box_title(
             fontsize=fontsize
         )
 
-    return [top_left_text, top_right_text, bottom_left_text, bottom_right_text]
+    if main_title is None:
+        main_title_text = None
+    else:
+        main_title_text = ax.text(
+            main_pos[0], main_pos[1],
+            main_title,
+            verticalalignment="bottom",
+            horizontalalignment='center',
+            transform=ax.transAxes,
+            fontsize=10,
+        )
+
+    return [top_left_text, top_right_text, bottom_left_text, bottom_right_text, main_title_text]
 
 
 def fill_graph_title_pos_by_map_type(graph_title: GraphTitle, map_type: str = "east_asia") -> GraphTitle:

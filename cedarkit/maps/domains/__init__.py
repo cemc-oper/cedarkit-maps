@@ -6,6 +6,7 @@ from .map_domain import MapDomain
 from .east_asia import EastAsiaMapDomain, CnAreaMapDomain
 from .north_polar import NorthPolarMapDomain
 from .europe_asia import EuropeAsiaMapDomain
+from .global_domain import GlobalMapDomain
 
 
 def parse_domain(domain: Union[str, type[XYDomain], XYDomain]) -> XYDomain:
