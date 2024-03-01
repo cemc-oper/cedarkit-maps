@@ -403,6 +403,8 @@ class EastAsiaMapDomain(MapDomain):
                     graph_colorbar.label = colorbar_style.label
                 if colorbar_style.loc is not None:
                     graph_colorbar.label_loc = colorbar_style.loc
+                if colorbar_style.label_levels is not None:
+                    graph_colorbar.label_levels = colorbar_style.label_levels
 
             color_bar = add_map_box_colorbar(
                 graph_colorbar=graph_colorbar,

@@ -31,8 +31,9 @@ class Style:
 
 @dataclass
 class ColorbarStyle(Style):
-    label: Optional[str] = None
     loc: Optional[str] = None
+    label: Optional[str] = None
+    label_levels: Optional[Union[List, np.ndarray]] = None
 
 
 @dataclass

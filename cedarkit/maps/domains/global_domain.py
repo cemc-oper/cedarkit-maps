@@ -106,7 +106,6 @@ class GlobalMapDomain(MapDomain):
         # coastline
         fs = self.main_map.coastline(scale="50m", style=dict(
             linewidth=0.5,
-            facecolor="lightgray",
             # zorder=50
         ))
         features.extend(fs)
@@ -266,17 +265,20 @@ class GlobalMapDomain(MapDomain):
     def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
         """
                                  |  | left_padding_to_map_box_right_bound
-                                    ---
-        --------------------------  | |
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |   colorbar
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |
-        --------------------------  | |  --
-               map box              ---  -- bottom_padding_to_map_box_bottom_bound
+
+        --------------------------
+        |                        |
+        |                        |
+        |                        |
+        |                        |  map box
+        |                        |
+        |                        |
+        |                        |
+        --------------------------  -- top_padding_to_map_box_bottom_bound
+           ---------------------    --
+           |                   |
+           ---------------------
+        | | left_padding_to_map_box_left_bound
 
 
         """
@@ -284,31 +286,32 @@ class GlobalMapDomain(MapDomain):
             style = [style]
         count = len(style)
 
-        left_padding_to_map_box_right_bound = 0.02
-        bottom_padding_to_map_box_bottom_bound = -0.02
-        width = 0.02
-        total_height = 1 + 2*abs(bottom_padding_to_map_box_bottom_bound)
+        left_padding_to_map_box_left_bound = 0.1
+        top_padding_to_map_box_bottom_bound = -0.1
+        height = 0.02
+        total_width = 1 - 2*abs(top_padding_to_map_box_bottom_bound)
 
         if count > 0:
-            height_padding = 0.02
+            width_padding = 0.02
         else:
-            height_padding = 0
+            width_padding = 0
 
-        height = total_height / count
+        width = total_width / count
 
         color_bars = []
 
         for index, current_style in enumerate(style):
             colorbar_box = [
-                self.map_box_top_right_point[0] + left_padding_to_map_box_right_bound,  # 1.03 + 0.02 = 1.05
-                bottom_padding_to_map_box_bottom_bound + index * height,
-                width, height - height_padding
+                self.map_box_bottom_left_point[0] + left_padding_to_map_box_left_bound + index * width,  # 1.03 + 0.02 = 1.05
+                self.map_box_bottom_left_point[1] + top_padding_to_map_box_bottom_bound,
+                width - width_padding, height
             ]
 
             graph_colorbar = GraphColorbar(
                 colormap=current_style.colors,
                 levels=current_style.levels,
                 box=colorbar_box,
+                orientation="horizontal",
             )
 
             colorbar_style = current_style.colorbar_style
@@ -317,6 +320,8 @@ class GlobalMapDomain(MapDomain):
                     graph_colorbar.label = colorbar_style.label
                 if colorbar_style.loc is not None:
                     graph_colorbar.label_loc = colorbar_style.loc
+                if colorbar_style.label_levels is not None:
+                    graph_colorbar.label_levels = colorbar_style.label_levels
 
             color_bar = add_map_box_colorbar(
                 graph_colorbar=graph_colorbar,

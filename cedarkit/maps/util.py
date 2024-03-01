@@ -551,6 +551,8 @@ class GraphColorbar:
     box: Optional[List] = None
     label: Optional[str] = None
     label_loc: Optional[str] = None
+    label_levels: Optional[List] = None
+    orientation: str = "vertical"
 
 
 def add_map_box_colorbar(
@@ -577,6 +579,12 @@ def add_map_box_colorbar(
     levels = graph_colorbar.levels
     colormap = graph_colorbar.colormap
 
+    orientation = graph_colorbar.orientation
+
+    label_levels = graph_colorbar.label_levels
+    if label_levels is None:
+        label_levels = levels
+
     if ax is not None:
         cax = ax.inset_axes(colorbar_box)
     elif fig is not None:
@@ -588,9 +596,9 @@ def add_map_box_colorbar(
     cbar = cax.get_figure().colorbar(
         mpl.cm.ScalarMappable(norm=norm, cmap=colormap),
         cax=cax,
-        orientation="vertical",
+        orientation=orientation,
         spacing='uniform',
-        ticks=levels,
+        ticks=label_levels,
         drawedges=True,
         extendrect=True,
         extendfrac='auto',  # 延伸相同长度
@@ -603,8 +611,14 @@ def add_map_box_colorbar(
         labelsize=7
     )
     # ticklabs = cbar.ax.get_yticklabels()
-    cbar.ax.set_yticklabels(levels, ha='center')
-    cbar.ax.yaxis.set_tick_params(pad=7)
+    if orientation == "vertical":
+        cbar.ax.set_yticklabels(label_levels, ha='center')
+        cbar.ax.yaxis.set_tick_params(pad=7)
+    elif orientation == "horizontal":
+        cbar.ax.set_xticklabels(label_levels, ha='center')
+        cbar.ax.xaxis.set_tick_params(pad=7)
+    else:
+        ...
 
     if graph_colorbar.label is not None:
         if graph_colorbar.label_loc is not None:
