@@ -31,7 +31,6 @@ class NorthPolarMapDomain(MapDomain):
     def __init__(
             self,
             area: Optional[List[float]] = None,
-            with_sub_area: bool = False,
     ):
         self.central_longitude = 110
 
@@ -47,16 +46,9 @@ class NorthPolarMapDomain(MapDomain):
             map_projection=map_projection,
         )
 
-        self.with_sub_area = with_sub_area
-
         self.width = 0.75
         self.height = 0.8
         self.main_aspect = 1.25
-
-        self.sub_area = [105, 123, 2, 23]
-        self.sub_width = 0.1
-        self.sub_height = 0.14
-        self.sub_aspect = 0.1 / 0.14
 
         self.cn_features = None
         self.nine_features = None
@@ -76,8 +68,6 @@ class NorthPolarMapDomain(MapDomain):
 
     def render_chart(self, chart: "Chart"):
         self.render_main_layer(chart=chart)
-        if self.with_sub_area:
-            self.render_sub_layer(chart=chart)
 
         rect = draw_map_box(
             chart.layers[0].ax,
@@ -214,109 +204,6 @@ class NorthPolarMapDomain(MapDomain):
         y = -0.045
         text = "Scale 1:20000000 No:GS (2019) 1786"
         self.add_map_info(ax=ax, x=x, y=y, text=text)
-        return layer
-
-    def render_sub_layer(self, chart: "Chart"):
-        """
-        绘制南海子图
-
-        Parameters
-        ----------
-        chart
-
-        Returns
-        -------
-
-        """
-        fig = chart.fig
-        main_width = self.width
-        main_height = self.height
-        sub_width = self.sub_width
-        sub_height = self.sub_height
-        ax = fig.add_axes(
-            [(1 - main_width) / 2, (1 - main_height) / 2, sub_width, sub_height],
-            # projection=ccrs.LambertConformal(
-            #     central_longitude=114,
-            #     central_latitude=90,
-            # ),
-            projection=self.projection,
-        )
-        layer = Layer(chart=chart, projection=self.projection)
-        layer.set_axes(ax)
-
-        features = []
-        # coastline
-        fs = self.sub_map.coastline(scale="50m", style=dict(
-            linewidth=0.25,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        # lakes
-
-        # china coastline
-        fs = self.sub_map.china_coastline()
-        features.extend(fs)
-
-        # china borders
-        fs = self.sub_map.china_borders()
-        features.extend(fs)
-
-        # china provinces
-        fs = self.sub_map.china_provinces()
-        features.extend(fs)
-
-        # china rivers
-        fs = self.sub_map.china_rivers()
-        features.extend(fs)
-
-        # south china sea
-        fs = self.sub_map.china_nine_lines()
-        features.extend(fs)
-
-        for f in features:
-            ax.add_feature(
-                f,
-                # zorder=100
-            )
-
-        # for f in self.cn_features:
-        #     ax.add_feature(
-        #         f,
-        #         linewidth=0.5,
-        #         # zorder=100
-        #     )
-        # for f in self.nine_features:
-        #     ax.add_feature(
-        #         f,
-        #         linewidth=1,
-        #         # zorder=100
-        #     )
-
-        #   区域：南海子图
-        set_map_box_area(
-            ax,
-            area=self.sub_area,
-            projection=self.projection,
-            aspect=self.sub_aspect
-        )
-
-        #   网格线
-        sub_xlocator = [110, 120]
-        sub_ylocator = [10, 20]
-        draw_map_box_gridlines(
-            ax,
-            projection=self.projection,
-            xlocator=sub_xlocator,
-            ylocator=sub_ylocator,
-            linewidth=0.2,
-        )
-
-        x = 1.065
-        y = -0.045
-        text = "Scale 1:40000000"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
-
         return layer
 
     @staticmethod
