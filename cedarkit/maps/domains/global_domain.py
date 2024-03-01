@@ -110,6 +110,11 @@ class GlobalMapDomain(MapDomain):
         ))
         features.extend(fs)
 
+        fs = self.main_map.land(scale="50m", style=dict(
+            zorder=-1
+        ))
+        features.extend(fs)
+
         # lakes
         # fs = self.main_map.lakes(scale="50m", style=dict(
         #     linewidth=0.25,

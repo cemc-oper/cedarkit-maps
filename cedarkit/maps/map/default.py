@@ -35,6 +35,22 @@ class DefaultMap(MapBase):
         )
         return [f]
 
+    def land(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
+        if scale is None:
+            scale = self.default_scale
+        feature_style = dict(
+            facecolor='lightgrey',
+        )
+        if style is not None:
+            feature_style.update(style)
+
+        f = cfeature.NaturalEarthFeature(
+            'physical', 'land',
+            scale,
+            **feature_style
+        )
+        return [f]
+
     def rivers(self, scale: Optional[str] = None, style: Optional[Dict] = None) -> List[cfeature.Feature]:
         if scale is None:
             scale = self.default_scale
