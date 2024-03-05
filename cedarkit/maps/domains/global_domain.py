@@ -4,6 +4,7 @@ import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
+import cartopy.feature as cfeature
 import matplotlib.ticker as mticker
 
 from cedarkit.maps.style import ContourStyle
@@ -40,6 +41,7 @@ class GlobalMapDomain(MapDomain):
 
         projection = ccrs.PlateCarree()
         map_projection = ccrs.PlateCarree(central_longitude=self.central_longitude)
+
         super().__init__(
             projection=projection,
             area=area,
@@ -48,10 +50,8 @@ class GlobalMapDomain(MapDomain):
 
         self.width = 0.8
         self.height = 0.6
-        self.main_aspect = 1.25
 
-        self.cn_features = None
-        self.nine_features = None
+        self.main_map = None
 
         self.map_box_bottom_left_point = (0, 0)
         self.map_box_top_right_point = (1, 1)
@@ -101,47 +101,7 @@ class GlobalMapDomain(MapDomain):
         layer = Layer(projection=self.projection, chart=chart)
         layer.set_axes(ax)
 
-        features = []
-        # coastline
-        fs = self.main_map.coastline(scale="50m", style=dict(
-            linewidth=0.5,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        fs = self.main_map.land(scale="50m", style=dict(
-            zorder=-1
-        ))
-        features.extend(fs)
-
-        # lakes
-        # fs = self.main_map.lakes(scale="50m", style=dict(
-        #     linewidth=0.25,
-        #     facecolor='none',
-        #     edgecolor="black",
-        #     alpha=0.5
-        # ))
-        # features.extend(fs)
-
-        # # china coastline
-        # fs = self.main_map.china_coastline()
-        # features.extend(fs)
-        #
-        # # china borders
-        # fs = self.main_map.china_borders()
-        # features.extend(fs)
-        #
-        # # china provinces
-        # fs = self.main_map.china_provinces()
-        # features.extend(fs)
-        #
-        # # china rivers
-        # fs = self.main_map.china_rivers()
-        # features.extend(fs)
-        #
-        # # south china sea
-        # fs = self.main_map.china_nine_lines()
-        # features.extend(fs)
+        features = self.get_main_map_features()
 
         for f in features:
             ax.add_feature(
@@ -212,6 +172,22 @@ class GlobalMapDomain(MapDomain):
         # text = "Scale 1:20000000 No:GS (2019) 1786"
         # self.add_map_info(ax=ax, x=x, y=y, text=text)
         return layer
+
+    def get_main_map_features(self) -> List[cfeature.ShapelyFeature]:
+        features = []
+        # coastline
+        fs = self.main_map.coastline(scale="50m", style=dict(
+            linewidth=0.5,
+            # zorder=50
+        ))
+        features.extend(fs)
+
+        # land
+        fs = self.main_map.land(scale="50m", style=dict(
+            zorder=-1
+        ))
+        features.extend(fs)
+        return features
 
     @staticmethod
     def add_map_info(
@@ -343,33 +319,16 @@ class GlobalAreaMapDomain(GlobalMapDomain):
             area: list[float] = None
     ):
         super().__init__(area=area)
+        self.main_map_type = MapType.Global
+
+        self.main_xticks_interval = 10
+        self.main_yticks_interval = 10
 
     def load_map(self):
-        self.main_map = self.map_class(map_type=MapType.Global)
+        self.main_map = self.map_class(map_type=self.main_map_type)
+        self.china_map = self.map_class(map_type=MapType.Portrait)
 
-    def render_main_layer(self, chart: "Chart"):
-        """
-        绘制主地图
-
-        Parameters
-        ----------
-        chart
-
-        Returns
-        -------
-
-        """
-        fig = chart.fig
-        width = self.width
-        height = self.height
-        layout = [(1 - width) / 2, (1 - height) / 2, width, height]
-        ax = fig.add_axes(
-            layout,
-            projection=self.map_projection,
-        )
-        layer = Layer(projection=self.projection, chart=chart)
-        layer.set_axes(ax)
-
+    def get_main_map_features(self) -> List[cfeature.ShapelyFeature]:
         features = []
         # coastline
         fs = self.main_map.coastline(scale="50m", style=dict(
@@ -378,75 +337,8 @@ class GlobalAreaMapDomain(GlobalMapDomain):
         ))
         features.extend(fs)
 
+        # borders
         fs = self.main_map.global_borders()
         features.extend(fs)
 
-        for f in features:
-            ax.add_feature(
-                f,
-                zorder=100,
-            )
-
-        #   坐标轴
-        # area = self.default_area
-        area = self.area
-        main_xticks = np.concatenate(
-            (
-                np.arange(
-                    area[0], 0,
-                    self.main_xticks_interval
-                ),
-                np.arange(
-                    0, area[1] + self.main_xticks_interval,
-                    self.main_xticks_interval,
-                )
-            ),
-            axis=None,
-        )
-        main_yticks = np.arange(
-            area[2],
-            area[3] + self.main_yticks_interval,
-            self.main_yticks_interval
-        )
-        set_map_box_axis(
-            ax,
-            xticks=main_xticks,
-            yticks=main_yticks,
-            projection=self.projection
-        )
-
-        ax.tick_params(
-            axis='both',
-            which='major',
-            bottom=True,
-            left=True,
-        )
-
-        ax.tick_params(
-            axis='both',
-            which='minor',
-            bottom=True,
-            left=True,
-        )
-
-        #   网格线
-        draw_map_box_gridlines(
-            ax,
-            projection=self.projection,
-            xlocator=main_xticks[1:-1],
-            ylocator=main_yticks[1:-1],
-        )
-
-        #   设置区域范围和长宽比
-        # ax.set_global()
-        set_map_box_area(
-            ax,
-            area=self.area,
-            projection=self.projection,
-        )
-
-        # x = 0.998
-        # y = 0.0022
-        # text = "Scale 1:20000000 No:GS (2019) 1786"
-        # self.add_map_info(ax=ax, x=x, y=y, text=text)
-        return layer
+        return features

@@ -135,11 +135,16 @@ class CemcMap(DefaultMap):
             dict(name="BOUL_G", type="g"),    # 国界
             dict(name="BOUL_Gwd", type="gwd"),    # 未定国界
         ]
-        features = self.get_features(shape_names)
+        features = self.get_features_global(shape_names)
 
         return features
 
-    def get_features(self, shape_names: List[Dict]) -> List[cfeature.Feature]:
+    def get_features(
+            self, shape_names: List[Dict], projection: Optional[ccrs.Projection] = None
+    ) -> List[cfeature.Feature]:
+        if projection is None:
+            projection = self.projection
+
         features = []
         for shape_item in shape_names:
             shape_name = shape_item["name"]
@@ -150,12 +155,16 @@ class CemcMap(DefaultMap):
             feature_style = self.style[feature_type]
             feature = cfeature.ShapelyFeature(
                 reader.geometries(),
-                self.projection,
+                projection,
                 facecolor="none",
                 **feature_style
             )
             features.append(feature)
 
+        return features
+
+    def get_features_global(self, shape_names: List[Dict]) -> List[cfeature.Feature]:
+        features = self.get_features(shape_names=shape_names, projection=ccrs.Mercator())
         return features
 
 
