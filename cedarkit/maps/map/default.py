@@ -100,6 +100,9 @@ class DefaultMap(MapBase):
     def china_nine_lines(self) -> List[cfeature.Feature]:
         return get_china_nine_map()
 
+    def global_borders(self) -> List[cfeature.Feature]:
+        return list()
+
 
 map_class = DefaultMap
 

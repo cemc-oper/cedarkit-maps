@@ -12,6 +12,7 @@ DEFAULT_MAP_PACKAGE = "cedarkit.maps.map.default"
 class MapType(Enum):
     Portrait = "portrait"
     SouthChinaSea = "south_china_sea"
+    Global = "global"
 
 
 class MapBase:
@@ -44,6 +45,9 @@ class MapBase:
         ...
 
     def china_nine_lines(self) -> List[cfeature.Feature]:
+        ...
+
+    def global_borders(self) -> List[cfeature.Feature]:
         ...
 
 

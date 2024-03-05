@@ -31,6 +31,8 @@ class CemcMap(DefaultMap):
             self.map_name = "portrait"
         elif map_type == MapType.SouthChinaSea:
             self.map_name = "landscape/NANHAI"
+        elif map_type == MapType.Global:
+            self.map_name = "global"
         else:
             raise ValueError(f"map type not supported: {map_type}")
 
@@ -44,6 +46,11 @@ class CemcMap(DefaultMap):
             gu=dict(
                 edgecolor="k",
                 linestyle=(0, (2, 1)),
+                linewidth=1.5,
+            ),
+            gwd=dict(
+                edgecolor="k",
+                linestyle=(0, (5, 5)),
                 linewidth=1.5,
             ),
             s=dict(
@@ -118,6 +125,15 @@ class CemcMap(DefaultMap):
     def china_nine_lines(self) -> List[cfeature.Feature]:
         shape_names = [
             dict(name="BOUL_JDX", type="g"),    # 南海断续线
+        ]
+        features = self.get_features(shape_names)
+
+        return features
+
+    def global_borders(self) -> List[cfeature.Feature]:
+        shape_names = [
+            dict(name="BOUL_G", type="g"),    # 国界
+            dict(name="BOUL_Gwd", type="gwd"),    # 未定国界
         ]
         features = self.get_features(shape_names)
 

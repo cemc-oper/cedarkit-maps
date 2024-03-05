@@ -77,7 +77,6 @@ class GlobalMapDomain(MapDomain):
 
     def load_map(self):
         self.main_map = self.map_class(map_type=MapType.Portrait)
-        self.sub_map = self.map_class(map_type=MapType.SouthChinaSea)
 
     def render_main_layer(self, chart: "Chart"):
         """
@@ -201,12 +200,12 @@ class GlobalMapDomain(MapDomain):
         )
 
         #   设置区域范围和长宽比
-        ax.set_global()
-        # set_map_box_area(
-        #     ax,
-        #     area=self.area,
-        #     projection=self.projection,
-        # )
+        # ax.set_global()
+        set_map_box_area(
+            ax,
+            area=self.area,
+            projection=self.projection,
+        )
 
         # x = 0.998
         # y = 0.0022
@@ -336,3 +335,118 @@ class GlobalMapDomain(MapDomain):
             color_bars.append(color_bar)
 
         return color_bars
+
+
+class GlobalAreaMapDomain(GlobalMapDomain):
+    def __init__(
+            self,
+            area: list[float] = None
+    ):
+        super().__init__(area=area)
+
+    def load_map(self):
+        self.main_map = self.map_class(map_type=MapType.Global)
+
+    def render_main_layer(self, chart: "Chart"):
+        """
+        绘制主地图
+
+        Parameters
+        ----------
+        chart
+
+        Returns
+        -------
+
+        """
+        fig = chart.fig
+        width = self.width
+        height = self.height
+        layout = [(1 - width) / 2, (1 - height) / 2, width, height]
+        ax = fig.add_axes(
+            layout,
+            projection=self.map_projection,
+        )
+        layer = Layer(projection=self.projection, chart=chart)
+        layer.set_axes(ax)
+
+        features = []
+        # coastline
+        fs = self.main_map.coastline(scale="50m", style=dict(
+            linewidth=0.5,
+            # zorder=50
+        ))
+        features.extend(fs)
+
+        fs = self.main_map.global_borders()
+        features.extend(fs)
+
+        for f in features:
+            ax.add_feature(
+                f,
+                zorder=100,
+            )
+
+        #   坐标轴
+        # area = self.default_area
+        area = self.area
+        main_xticks = np.concatenate(
+            (
+                np.arange(
+                    area[0], 0,
+                    self.main_xticks_interval
+                ),
+                np.arange(
+                    0, area[1] + self.main_xticks_interval,
+                    self.main_xticks_interval,
+                )
+            ),
+            axis=None,
+        )
+        main_yticks = np.arange(
+            area[2],
+            area[3] + self.main_yticks_interval,
+            self.main_yticks_interval
+        )
+        set_map_box_axis(
+            ax,
+            xticks=main_xticks,
+            yticks=main_yticks,
+            projection=self.projection
+        )
+
+        ax.tick_params(
+            axis='both',
+            which='major',
+            bottom=True,
+            left=True,
+        )
+
+        ax.tick_params(
+            axis='both',
+            which='minor',
+            bottom=True,
+            left=True,
+        )
+
+        #   网格线
+        draw_map_box_gridlines(
+            ax,
+            projection=self.projection,
+            xlocator=main_xticks[1:-1],
+            ylocator=main_yticks[1:-1],
+        )
+
+        #   设置区域范围和长宽比
+        # ax.set_global()
+        set_map_box_area(
+            ax,
+            area=self.area,
+            projection=self.projection,
+        )
+
+        # x = 0.998
+        # y = 0.0022
+        # text = "Scale 1:20000000 No:GS (2019) 1786"
+        # self.add_map_info(ax=ax, x=x, y=y, text=text)
+        return layer
