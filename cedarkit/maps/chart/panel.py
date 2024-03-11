@@ -22,8 +22,8 @@ class Panel:
 
     Attributes
     ----------
-    map_domain : XYDomain
-        A ``MapDomain`` instance which is used to draw map and other items within a plot.
+    domain : XYDomain
+        A ``XYDomain`` instance which is used to draw map and other items within a plot.
     schema : Schema
         panel settings, used to create ``matplotlib.pyplot.Figure``
     charts : List[Chart]
@@ -43,8 +43,8 @@ class Panel:
 
         self.charts = []
 
-        self.map_domain = parse_domain(domain)
-        self.map_domain.render_panel(self)
+        self.domain = parse_domain(domain)
+        self.domain.render_panel(self)
 
     @property
     def fig(self) -> plt.Figure:

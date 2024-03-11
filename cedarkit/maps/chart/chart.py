@@ -12,23 +12,23 @@ if TYPE_CHECKING:
 class Chart:
     """
     A sub graph in a Panel.
-    A ``Chart`` may contain several ``Layer``s, such as a main layer for China and a sub layer for north china sea.
+    A ``Chart`` may contain several ``Layer``s, such as a main layer for China and a sub layer for North China Sea.
 
     Attributes
     ----------
     panel : Panel
-    map_domain : MapDomain
+    domain : XYDomain
     layers : List[Layer]
         layer list. Each layer has a map.
     """
     def __init__(self, panel: "Panel", domain: XYDomain):
         self.panel = panel
-        self.map_domain = domain
+        self.domain = domain
 
         self.layers: List["Layer"] = []
 
-        # NOTE: MapDomain creates axes.
-        # self.map_domain.render_chart(chart=self)
+        # NOTE: XPDomain creates axes.
+        # self.domain.render_chart(chart=self)
 
     @property
     def fig(self):
