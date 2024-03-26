@@ -23,7 +23,7 @@ def get_ncl_colormap(
     name
         ncl color map name without extension.
     index
-        color index to generate subset from original colormap.
+        color index to generate subset from original colormap, starting from 0.
     count
         color count, used with spread_start and spread_end.
     spread_start
@@ -109,7 +109,7 @@ def generate_colormap_using_ncl_colors(color_names: List[str], name: str) -> mco
 
     Returns
     -------
-    mcolors.ListedColormap
+    matplotlib.colors.ListedColormap
     """
     color_map_dir = importlib.resources.files("cedarkit.maps") / "resources/colormap/ncl"
     with importlib.resources.as_file(color_map_dir / f"ncl_colors.csv") as color_names_csv:

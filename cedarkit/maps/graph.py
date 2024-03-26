@@ -29,6 +29,7 @@ def add_contourf(
     projection
         map projection
     y_invert
+        invert Y axis, specially for high profile plots.
     **kwargs
 
     Returns
