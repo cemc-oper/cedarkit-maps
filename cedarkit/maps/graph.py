@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Any
 
 import xarray as xr
 import numpy as np
@@ -128,6 +128,7 @@ def add_contour_label(
         manual: bool = False,
         inline: bool = True,
         fmt="{:.0f}".format,
+        background_color: Optional[Any] = None,
         **kwargs,
 ):
     """
@@ -141,13 +142,14 @@ def add_contour_label(
     manual
     inline
     fmt
+    background_color
     **kwargs
 
     Returns
     -------
 
     """
-    label = ax.clabel(
+    labels = ax.clabel(
         contour,
         fontsize=fontsize,
         manual=manual,
@@ -155,7 +157,11 @@ def add_contour_label(
         fmt=fmt,
         **kwargs
     )
-    return label
+    if background_color is not None:
+        for label in labels:
+            label.set_bbox(dict(facecolor=background_color, edgecolor='none', pad=0.5))
+
+    return labels
 
 
 def add_barb(

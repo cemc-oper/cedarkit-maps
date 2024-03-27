@@ -90,21 +90,23 @@ class Layer:
     @classmethod
     def contour_label(cls, ax, contour, style: ContourLabelStyle):
         kwargs = dict(
+            levels=style.levels,
             fontsize=style.fontsize,
             inline=style.inline,
             inline_spacing=style.inline_spacing,
             fmt=style.fmt,
             colors=style.colors,
+            background_color=style.background_color,
             manual=style.manual,
             zorder=style.zorder,
         )
 
-        label = add_contour_label(
+        labels = add_contour_label(
             ax,
             contour=contour,
             **kwargs
         )
-        return label
+        return labels
 
     def barb(self, x: xr.DataArray, y: xr.DataArray, style: BarbStyle, **kwargs) -> matplotlib.quiver.Barbs:
         additional_kwargs = dict()

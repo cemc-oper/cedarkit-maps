@@ -38,11 +38,13 @@ class ColorbarStyle(Style):
 
 @dataclass
 class ContourLabelStyle(Style):
+    levels: Optional[Union[List, np.ndarray]] = None
     fontsize: Optional[Union[str, float]] = None
     inline: bool = True
     inline_spacing: float = 5
     fmt: Optional[Union[mticker.Formatter, str, Callable]] = None
     colors: Optional[Any] = None
+    background_color: Optional[Any] = None
     manual: bool = False
     zorder: Optional[float] = None
 
