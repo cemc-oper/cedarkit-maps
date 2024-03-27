@@ -47,7 +47,8 @@ def get_ncl_colormap(
             spread_start = 0
         if spread_end is None:
             spread_end = len(total_colors) - 1
-        index = np.linspace(spread_start, spread_end, count, endpoint=True, dtype=int)
+        index = np.linspace(spread_start, spread_end, count, endpoint=True)
+        index = np.array(np.round(index), dtype=int)
 
     colors = []
     if index[0] == -1:
