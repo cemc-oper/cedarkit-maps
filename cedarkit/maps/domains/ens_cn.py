@@ -18,6 +18,7 @@ from cedarkit.maps.util import (
     GraphTitle,
     fill_graph_title,
     set_map_box_title,
+    add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
     clear_axes,
@@ -51,7 +52,6 @@ class EnsCNMapDomain(MapDomain):
         self.ncols = 5
         self.nrows = 1 + int(np.ceil((self.member_count - 1) / self.ncols))
 
-        self.sub_domain = [105, 123, 2, 23]
         self.cn_features = None
         self.nine_features = None
 
@@ -121,9 +121,6 @@ class EnsCNMapDomain(MapDomain):
 
     def render_chart(self, chart: "Chart"):
         self.render_main_box(chart)
-        # self.render_sub_layer()
-
-        # rect = draw_map_box_by_map_type(self.chart.layers[0].ax)
 
     def load_map(self):
         self.cn_features = get_china_map()
@@ -197,86 +194,6 @@ class EnsCNMapDomain(MapDomain):
 
         # 去掉垂直空白
         ax.set_aspect('auto')
-
-    def render_sub_box(self, chart: "Chart"):
-        fig = chart.fig
-        main_width = self.width
-        main_height = self.height
-        sub_width = self.sub_width
-        sub_height = self.sub_height
-        ax = fig.add_axes(
-            [(1 - main_width) / 2, (1 - main_height) / 2, sub_width, sub_height],
-            # projection=ccrs.LambertConformal(
-            #     central_longitude=114,
-            #     central_latitude=90,
-            # ),
-            projection=self.projection,
-        )
-        layer = Layer(chart=chart, projection=self.projection)
-        layer.set_axes(ax)
-
-        add_common_map_feature(
-            ax,
-            coastline=dict(
-                scale="50m",
-                style=dict(
-                    linewidth=0.25,
-                    # zorder=50
-                ),
-            )
-        )
-
-        for f in self.cn_features:
-            ax.add_feature(
-                f,
-                linewidth=0.5,
-                # zorder=100
-            )
-        for f in self.nine_features:
-            ax.add_feature(
-                f,
-                linewidth=1,
-                # zorder=100
-            )
-
-        #   区域：南海子图
-        set_map_box_area(
-            ax,
-            area=self.sub_domain,
-            projection=self.projection,
-            aspect=0.1 / 0.14
-        )
-
-        #   网格线
-        draw_map_box_gridlines(
-            ax,
-            projection=self.projection,
-            xlocator=[110, 120],
-            ylocator=[10, 20],
-            linewidth=0.2,
-        )
-
-        x = 0.99
-        y = 0.01
-        text = "Scale 1:40000000"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
-
-    @staticmethod
-    def add_map_info(ax, x: float, y: float, text: str):
-        text_box = ax.text(
-            x, y, text,
-            verticalalignment='bottom',
-            horizontalalignment='right',
-            transform=ax.transAxes,
-            fontsize=3,
-            bbox=dict(
-                boxstyle="round",
-                edgecolor="black",
-                facecolor="white",
-                linewidth=0.5,
-            )
-        )
-        return text_box
 
     def set_title(
             self,
