@@ -189,27 +189,6 @@ class GlobalMapDomain(MapDomain):
         features.extend(fs)
         return features
 
-    @staticmethod
-    def add_map_info(
-            ax: cartopy.mpl.geoaxes.GeoAxes,
-            x: float, y: float,
-            text: str,
-    ):
-        text_box = ax.text(
-            x, y, text,
-            verticalalignment='bottom',
-            horizontalalignment='right',
-            transform=ax.transAxes,
-            fontsize=3,
-            bbox=dict(
-                boxstyle="round",
-                edgecolor="black",
-                facecolor="white",
-                linewidth=0.5,
-            )
-        )
-        return text_box
-
     def set_title(
             self,
             panel: "Panel",

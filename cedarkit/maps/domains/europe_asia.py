@@ -17,6 +17,7 @@ from cedarkit.maps.util import (
     GraphTitle,
     fill_graph_title,
     set_map_box_title,
+    add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
 )
@@ -200,7 +201,7 @@ class EuropeAsiaMapDomain(MapDomain):
         x = 1.035
         y = -0.035
         text = "Scale 1:20000000 No:GS (2019) 1786"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
+        add_map_info_text(ax=ax, x=x, y=y, text=text)
         return layer
 
     def render_sub_layer(self, chart: "Chart"):
@@ -302,30 +303,9 @@ class EuropeAsiaMapDomain(MapDomain):
         x = 1.065
         y = -0.045
         text = "Scale 1:40000000"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
+        add_map_info_text(ax=ax, x=x, y=y, text=text)
 
         return layer
-
-    @staticmethod
-    def add_map_info(
-            ax: cartopy.mpl.geoaxes.GeoAxes,
-            x: float, y: float,
-            text: str,
-    ):
-        text_box = ax.text(
-            x, y, text,
-            verticalalignment='bottom',
-            horizontalalignment='right',
-            transform=ax.transAxes,
-            fontsize=3,
-            bbox=dict(
-                boxstyle="round",
-                edgecolor="black",
-                facecolor="white",
-                linewidth=0.5,
-            )
-        )
-        return text_box
 
     def set_title(
             self,

@@ -1,6 +1,5 @@
 from typing import Union, List, TYPE_CHECKING
 
-import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
@@ -16,6 +15,7 @@ from cedarkit.maps.util import (
     GraphTitle,
     fill_graph_title,
     set_map_box_title,
+    add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
 )
@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 
 
 class EastAsiaMapDomain(MapDomain):
+    """
+    东亚/中国底图布局，带南海子图
+    """
     def __init__(
             self,
             area: list[float] = None,
@@ -55,6 +58,8 @@ class EastAsiaMapDomain(MapDomain):
 
         self.cn_features = None
         self.nine_features = None
+        self.main_map = None
+        self.sub_map = None
 
         self.map_box_bottom_left_point = (-0.06, -0.05)
         self.map_box_top_right_point = (1.03, 1.03)
@@ -84,7 +89,7 @@ class EastAsiaMapDomain(MapDomain):
         self.main_map = self.map_class(map_type=MapType.Portrait)
         self.sub_map = self.map_class(map_type=MapType.SouthChinaSea)
 
-    def render_main_layer(self, chart: "Chart"):
+    def render_main_layer(self, chart: "Chart") -> Layer:
         """
         绘制主地图
 
@@ -94,7 +99,7 @@ class EastAsiaMapDomain(MapDomain):
 
         Returns
         -------
-
+        Layer
         """
         fig = chart.fig
         width = self.width
@@ -187,13 +192,15 @@ class EastAsiaMapDomain(MapDomain):
             aspect=self.main_aspect  # 0.75/0.6
         )
 
+        #   地图信息标注
         x = 0.998
         y = 0.0022
         text = "Scale 1:20000000 No:GS (2019) 1786"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
+        add_map_info_text(ax=ax, x=x, y=y, text=text)
+
         return layer
 
-    def render_sub_layer(self, chart: "Chart"):
+    def render_sub_layer(self, chart: "Chart") -> Layer:
         """
         绘制南海子图
 
@@ -203,7 +210,7 @@ class EastAsiaMapDomain(MapDomain):
 
         Returns
         -------
-
+        Layer
         """
         fig = chart.fig
         main_width = self.width
@@ -289,33 +296,13 @@ class EastAsiaMapDomain(MapDomain):
             linewidth=0.2,
         )
 
+        #   地图信息标注
         x = 0.99
         y = 0.01
         text = "Scale 1:40000000"
-        self.add_map_info(ax=ax, x=x, y=y, text=text)
+        add_map_info_text(ax=ax, x=x, y=y, text=text)
 
         return layer
-
-    @staticmethod
-    def add_map_info(
-            ax: cartopy.mpl.geoaxes.GeoAxes,
-            x: float, y: float,
-            text: str,
-    ):
-        text_box = ax.text(
-            x, y, text,
-            verticalalignment='bottom',
-            horizontalalignment='right',
-            transform=ax.transAxes,
-            fontsize=3,
-            bbox=dict(
-                boxstyle="round",
-                edgecolor="black",
-                facecolor="white",
-                linewidth=0.5,
-            )
-        )
-        return text_box
 
     def set_title(
             self,
@@ -417,6 +404,9 @@ class EastAsiaMapDomain(MapDomain):
 
 
 class CnAreaMapDomain(EastAsiaMapDomain):
+    """
+    中国区域底图布局，例如华北、华中、华南等
+    """
     def __init__(
             self,
             area: list[float] = None,

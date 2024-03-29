@@ -523,6 +523,16 @@ def add_map_box_info_text_by_map_type(
     else:
         raise ValueError(f"map_type is not supported: {map_type}.")
 
+    text_box = add_map_info_text(ax, x=x, y=y, text=text)
+    return text_box
+
+
+def add_map_info_text(
+        ax: cartopy.mpl.geoaxes.GeoAxes,
+        x: float,
+        y: float,
+        text: str
+):
     text_box = ax.text(
         x, y, text,
         verticalalignment='bottom',
