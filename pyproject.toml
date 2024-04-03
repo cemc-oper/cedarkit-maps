@@ -9,7 +9,8 @@ authors = [
 ]
 description = "A graph tool for CEMC/CMA."
 readme = "README.md"
-keywords = ["graphic", "cemc"]
+keywords = ["graphic", "cemc", "cedarkit"]
+license = { text = "Apache-2.0" }
 dynamic = ["version"]
 classifiers = [
     "Development Status :: 3 - Alpha",
