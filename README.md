@@ -4,6 +4,14 @@
 
 ## 安装
 
+使用 pip 安装
+
+```bash
+pip install cedarkit-maps
+```
+
+或者从 Github 下载源码安装最新开发版。
+
 ## 使用
 
 ## LICENSE
