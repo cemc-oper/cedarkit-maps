@@ -1,5 +1,10 @@
 # cedarkit-maps
 
+![GitHub Release](https://img.shields.io/github/v/release/cemc-oper/cedarkit-maps)
+![PyPI - Version](https://img.shields.io/pypi/v/cedarkit-maps)
+![GitHub License](https://img.shields.io/github/license/cemc-oper/cedarkit-maps)
+![GitHub Action Workflow Status](https://github.com/cemc-oper/cedarkit-maps/actions/workflows/ci.yaml/badge.svg)
+
 气象数据绘图库
 
 ## 安装
