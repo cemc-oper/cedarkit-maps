@@ -151,7 +151,7 @@ class CemcMap(DefaultMap):
             feature_type = shape_item["type"]
 
             shape_file_name = Path(self.resource_base, f"{shape_name}.shp")
-            reader = Reader(shape_file_name)
+            reader = Reader(shape_file_name, encoding="GBK")
             feature_style = self.style[feature_type]
             feature = cfeature.ShapelyFeature(
                 reader.geometries(),
@@ -190,7 +190,7 @@ def get_china_map() -> List[cfeature.Feature]:
 
         ref = importlib.resources.files(MAP_PACKAGE_NAME) / f"resources/maps/portrait/{shape_name}.shp"
         with importlib.resources.as_file(ref) as shape_file_name:
-            reader = Reader(shape_file_name)
+            reader = Reader(shape_file_name, encoding="GBK")
             feature_style = get_map_feature_style(map_type)
             feature = cfeature.ShapelyFeature(
                 reader.geometries(),
@@ -220,7 +220,7 @@ def get_china_nine_map() -> List[cfeature.Feature]:
 
         ref = importlib.resources.files(MAP_PACKAGE_NAME) / f"resources/maps/landscape/NANHAI/{shape_name}.shp"
         with importlib.resources.as_file(ref) as shape_file_name:
-            reader = Reader(shape_file_name)
+            reader = Reader(shape_file_name, encoding="GBK")
             feature_style = get_map_feature_style(map_type)
             feature = cfeature.ShapelyFeature(
                 reader.geometries(),
