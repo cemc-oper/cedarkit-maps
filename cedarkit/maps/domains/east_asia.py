@@ -32,7 +32,7 @@ class EastAsiaMapDomain(MapDomain):
     """
     def __init__(
             self,
-            area: list[float] = None,
+            area: List[float] = None,
             with_sub_area: bool = True,
     ):
         self.default_area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
@@ -409,7 +409,7 @@ class CnAreaMapDomain(EastAsiaMapDomain):
     """
     def __init__(
             self,
-            area: list[float] = None,
+            area: List[float] = None,
             with_sub_area: bool = False,
     ):
         super().__init__(area=area, with_sub_area=with_sub_area)

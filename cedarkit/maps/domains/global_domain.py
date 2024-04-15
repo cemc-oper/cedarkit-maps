@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 class GlobalMapDomain(MapDomain):
     def __init__(
             self,
-            area: list[float] = None,
+            area: List[float] = None,
     ):
         self.default_area = [-180, 180, -90, 90]  # [start_longitude, end_longitude, start_latitude, end_latitude]
         if area is None:
@@ -295,7 +295,7 @@ class GlobalMapDomain(MapDomain):
 class GlobalAreaMapDomain(GlobalMapDomain):
     def __init__(
             self,
-            area: list[float] = None
+            area: List[float] = None
     ):
         super().__init__(area=area)
         self.main_map_type = MapType.Global
