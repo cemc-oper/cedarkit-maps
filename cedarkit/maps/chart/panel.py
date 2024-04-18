@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union, List, Any, Iterable
+from typing import Optional, Tuple, Union, List, Any, Iterable, Type
 
 import matplotlib.pyplot as plt
 import xarray as xr
@@ -31,7 +31,7 @@ class Panel:
     """
     def __init__(
             self,
-            domain: Union[str, type[XYDomain], XYDomain],
+            domain: Union[str, Type[XYDomain], XYDomain],
             schema: Optional[Schema] = None
     ):
         if schema is None:
