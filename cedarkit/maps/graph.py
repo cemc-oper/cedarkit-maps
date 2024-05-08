@@ -36,8 +36,13 @@ def add_contourf(
     -------
     matplotlib.contour.QuadContourSet
     """
-    min_level = min(levels)
-    max_level = max(levels)
+    # TODO: need change
+    if isinstance(levels, np.ndarray):
+        min_level = min(levels)
+        max_level = max(levels)
+    else:
+        min_level = field.min().values
+        max_level = field.max().values
 
     first_dim = field[field.dims[0]]
     max_dim_value = max(first_dim).values
