@@ -32,8 +32,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/perillaroc/cedarkit-maps"
-Repository = "https://github.com/perillaroc/cedarkit-maps.git"
+Homepage = "https://github.com/cemc-oper/cedarkit-maps"
+Repository = "https://github.com/cemc-oper/cedarkit-maps.git"
 
 [project.optional-dependencies]
 test = ["pytest"]
