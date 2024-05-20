@@ -10,10 +10,10 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.io.shapereader import Reader
 
-from . import MapType, MapBase
+from . import MapType, MapLoader
 
 
-class DefaultMap(MapBase):
+class DefaultMapLoader(MapLoader):
     def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
         super().__init__(map_type=map_type, **kwargs)
         self.default_scale = "50m"
@@ -104,7 +104,7 @@ class DefaultMap(MapBase):
         return list()
 
 
-map_class = DefaultMap
+map_class = DefaultMapLoader
 
 
 def get_china_map():

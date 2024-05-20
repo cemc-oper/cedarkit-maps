@@ -9,7 +9,7 @@ import matplotlib.ticker as mticker
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
-from cedarkit.maps.map import get_map_class, MapType
+from cedarkit.maps.map import get_map_loader_class, MapType
 from cedarkit.maps.util import (
     draw_map_box,
     set_map_box_axis,
@@ -59,7 +59,7 @@ class GlobalMapDomain(MapDomain):
         self.main_xticks_interval = 30
         self.main_yticks_interval = 30
 
-        self.map_class = get_map_class()
+        self.map_class = get_map_loader_class()
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)

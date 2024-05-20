@@ -16,13 +16,13 @@ import cartopy.feature as cfeature
 import cartopy.crs as ccrs
 
 from . import MapType
-from .default import DefaultMap
+from .default import DefaultMapLoader
 
 
 MAP_PACKAGE_NAME = "cemc_meda_data"
 
 
-class CemcMap(DefaultMap):
+class CemcMapLoader(DefaultMapLoader):
     def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
         super().__init__(map_type=map_type, **kwargs)
         self.projection = ccrs.PlateCarree()
@@ -168,7 +168,7 @@ class CemcMap(DefaultMap):
         return features
 
 
-map_class = CemcMap
+map_class = CemcMapLoader
 
 
 def get_china_map() -> List[cfeature.Feature]:

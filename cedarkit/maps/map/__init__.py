@@ -6,7 +6,7 @@ import cartopy.feature as cfeature
 import matplotlib.axes
 
 
-DEFAULT_MAP_PACKAGE = "cedarkit.maps.map.default"
+DEFAULT_MAP_LOADER_PACKAGE = "cedarkit.maps.map.default"
 
 
 class MapType(Enum):
@@ -15,7 +15,10 @@ class MapType(Enum):
     Global = "global"
 
 
-class MapBase:
+class MapLoader:
+    """
+    Load map features from map resources (such as Cartopy and shapefiles).
+    """
     def __init__(self, map_type: MapType = MapType.Portrait, **kwargs):
         self.map_type = map_type
         self.kwargs = kwargs
@@ -51,7 +54,7 @@ class MapBase:
         ...
 
 
-def set_default_map_package(map_package: str):
+def set_default_map_loader_package(map_package: str):
     """
     设置默认地图包名
 
@@ -64,22 +67,22 @@ def set_default_map_package(map_package: str):
     -------
 
     """
-    global DEFAULT_MAP_PACKAGE
-    DEFAULT_MAP_PACKAGE = map_package
+    global DEFAULT_MAP_LOADER_PACKAGE
+    DEFAULT_MAP_LOADER_PACKAGE = map_package
     return map_package
 
 
-def get_map_class(map_package: Optional[str] = None):
+def get_map_loader_class(map_loader_package: Optional[str] = None):
     """
-    get map class object.
+    get map loader class object.
     """
-    if map_package is None:
-        map_package = DEFAULT_MAP_PACKAGE
-    package = importlib.import_module(map_package)
+    if map_loader_package is None:
+        map_loader_package = DEFAULT_MAP_LOADER_PACKAGE
+    package = importlib.import_module(map_loader_package)
     return package.map_class
 
 
-def get_china_map(map_package=None) -> List[cfeature.Feature]:
+def get_china_map(map_package: Optional[str] = None) -> List[cfeature.Feature]:
     """
     中国区域
 
@@ -92,7 +95,7 @@ def get_china_map(map_package=None) -> List[cfeature.Feature]:
 
     """
     if map_package is None:
-        map_package = DEFAULT_MAP_PACKAGE
+        map_package = DEFAULT_MAP_LOADER_PACKAGE
     package = importlib.import_module(map_package)
     return package.get_china_map()
 
@@ -111,7 +114,7 @@ def get_china_nine_map(map_package=None) -> List[cfeature.Feature]:
 
     """
     if map_package is None:
-        map_package = DEFAULT_MAP_PACKAGE
+        map_package = DEFAULT_MAP_LOADER_PACKAGE
     package = importlib.import_module(map_package)
     return package.get_china_nine_map()
 
