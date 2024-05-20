@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-class XYDomain:
+class XYTemplate:
     def __init__(self):
         ...
 
@@ -17,7 +17,7 @@ class XYDomain:
         raise NotImplementedError
 
 
-class TimeStepAndLevelXYDomain(XYDomain):
+class TimeStepAndLevelXYTemplate(XYTemplate):
     """
 
 
@@ -49,7 +49,7 @@ class TimeStepAndLevelXYDomain(XYDomain):
 
         ax.set_xticks(np.arange(0, self.steps[-1] + 1, 12))
         ax.set_yticks(self.levels)
-        x_format = TimeStepAndLevelXYDomain.create_x_formatter(
+        x_format = TimeStepAndLevelXYTemplate.create_x_formatter(
             last_step=self.steps[-1],
             start_time=self.start_time,
         )

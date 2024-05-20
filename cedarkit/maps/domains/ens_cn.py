@@ -24,13 +24,13 @@ from cedarkit.maps.util import (
     clear_axes,
 )
 
-from .map_domain import MapDomain
+from .map_template import MapTemplate
 
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-class EnsCNMapDomain(MapDomain):
+class EnsCNMapTemplate(MapTemplate):
     def __init__(self, enable_max: bool = False):
         projection = ccrs.PlateCarree()
         domain = [73, 135, 16, 56]

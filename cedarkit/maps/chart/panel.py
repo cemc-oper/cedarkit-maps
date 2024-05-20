@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import xarray as xr
 
 from cedarkit.maps.style import Style
-from cedarkit.maps.domains import MapDomain, XYDomain, parse_domain
+from cedarkit.maps.domains import MapTemplate, XYTemplate, parse_domain
 
 from .chart import Chart
 
@@ -22,7 +22,7 @@ class Panel:
 
     Attributes
     ----------
-    domain : XYDomain
+    domain : XYTemplate
         A ``XYDomain`` instance which is used to draw map and other items within a plot.
     schema : Schema
         panel settings, used to create ``matplotlib.pyplot.Figure``
@@ -31,8 +31,8 @@ class Panel:
     """
     def __init__(
             self,
-            domain: Union[str, Type[XYDomain], XYDomain],
-            schema: Optional[Schema] = None
+            domain: Union[str, Type[XYTemplate], XYTemplate],
+            schema: Optional[Schema] = None,
     ):
         if schema is None:
             self.schema = Schema()
@@ -59,7 +59,7 @@ class Panel:
     def show(self):
         plt.show()
 
-    def add_chart(self, domain: XYDomain) -> Chart:
+    def add_chart(self, domain: XYTemplate) -> Chart:
         """
         Add a ``Chart`` to the panel
 

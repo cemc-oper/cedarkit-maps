@@ -22,13 +22,13 @@ from cedarkit.maps.util import (
     add_map_box_colorbar,
 )
 
-from .map_domain import MapDomain
+from .map_template import MapTemplate
 
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-class GlobalMapDomain(MapDomain):
+class GlobalMapTemplate(MapTemplate):
     def __init__(
             self,
             area: List[float] = None,
@@ -292,7 +292,7 @@ class GlobalMapDomain(MapDomain):
         return color_bars
 
 
-class GlobalAreaMapDomain(GlobalMapDomain):
+class GlobalAreaMapTemplate(GlobalMapTemplate):
     def __init__(
             self,
             area: List[float] = None

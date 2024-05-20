@@ -20,13 +20,13 @@ from cedarkit.maps.util import (
     add_map_box_colorbar,
 )
 
-from .map_domain import MapDomain
+from .map_template import MapTemplate
 
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-class EastAsiaMapDomain(MapDomain):
+class EastAsiaMapTemplate(MapTemplate):
     """
     东亚/中国底图布局，带南海子图
     """
@@ -403,7 +403,7 @@ class EastAsiaMapDomain(MapDomain):
         return color_bars
 
 
-class CnAreaMapDomain(EastAsiaMapDomain):
+class CnAreaMapTemplate(EastAsiaMapTemplate):
     """
     中国区域底图布局，例如华北、华中、华南等
     """

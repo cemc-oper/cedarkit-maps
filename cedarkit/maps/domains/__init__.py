@@ -1,24 +1,24 @@
 import inspect
 from typing import Union, Type
 
-from .xy_domin import XYDomain, TimeStepAndLevelXYDomain
-from .map_domain import MapDomain
-from .east_asia import EastAsiaMapDomain, CnAreaMapDomain
-from .north_polar import NorthPolarMapDomain
-from .europe_asia import EuropeAsiaMapDomain
-from .global_domain import GlobalMapDomain, GlobalAreaMapDomain
+from .xy_template import XYTemplate, TimeStepAndLevelXYTemplate
+from .map_template import MapTemplate
+from .east_asia import EastAsiaMapTemplate, CnAreaMapTemplate
+from .north_polar import NorthPolarMapTemplate
+from .europe_asia import EuropeAsiaMapTemplate
+from .global_template import GlobalMapTemplate, GlobalAreaMapTemplate
 
 
-def parse_domain(domain: Union[str, Type[XYDomain], XYDomain]) -> XYDomain:
+def parse_domain(domain: Union[str, Type[XYTemplate], XYTemplate]) -> XYTemplate:
     if inspect.isclass(domain):
         d = domain()
-    elif isinstance(domain, XYDomain):
+    elif isinstance(domain, XYTemplate):
         d = domain
     elif isinstance(domain, str):
         if domain == "cemc.east_asia":
-            d = EastAsiaMapDomain()
+            d = EastAsiaMapTemplate()
         elif domain == "cemc.cn_area":
-            d = CnAreaMapDomain()
+            d = CnAreaMapTemplate()
         else:
             raise ValueError(f"invalid domain: {domain}")
     else:

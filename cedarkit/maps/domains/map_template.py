@@ -5,10 +5,10 @@ import cartopy.crs as ccrs
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
-from .xy_domin import XYDomain
+from .xy_template import XYTemplate
 
 
-class MapDomain(XYDomain):
+class MapTemplate(XYTemplate):
     def __init__(
             self,
             projection: ccrs.Projection,

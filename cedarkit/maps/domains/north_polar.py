@@ -22,13 +22,13 @@ from cedarkit.maps.util import (
     add_map_box_colorbar,
 )
 
-from .map_domain import MapDomain
+from .map_template import MapTemplate
 
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-class NorthPolarMapDomain(MapDomain):
+class NorthPolarMapTemplate(MapTemplate):
     def __init__(
             self,
             area: Optional[List[float]] = None,
