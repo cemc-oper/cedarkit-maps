@@ -1,4 +1,4 @@
-from typing import Union, List, TYPE_CHECKING
+from typing import Union, List, Optional, TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -6,7 +6,7 @@ from cartopy import crs as ccrs
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
-from cedarkit.maps.map import get_map_loader_class, MapType
+from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
     draw_map_box,
     set_map_box_axis,
@@ -19,6 +19,7 @@ from cedarkit.maps.util import (
     GraphColorbar,
     add_map_box_colorbar,
 )
+from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig
 
 from .map_template import MapTemplate
 
@@ -56,10 +57,10 @@ class EastAsiaMapTemplate(MapTemplate):
         self.sub_height = 0.14
         self.sub_aspect = 0.1 / 0.14
 
-        self.cn_features = None
-        self.nine_features = None
-        self.main_map = None
-        self.sub_map = None
+        self.main_map_loader: Optional[MapLoader] = None
+        self.main_map_painter: Optional[MapPainter] = None
+        self.sub_map_loader: Optional[MapLoader] = None
+        self.sub_map_painter: Optional[MapPainter] = None
 
         self.map_box_bottom_left_point = (-0.06, -0.05)
         self.map_box_top_right_point = (1.03, 1.03)
@@ -67,7 +68,7 @@ class EastAsiaMapTemplate(MapTemplate):
         self.main_xticks_interval = 10
         self.main_yticks_interval = 5
 
-        self.map_class = get_map_loader_class()
+        self.map_loader_class = get_map_loader_class()
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
@@ -84,10 +85,6 @@ class EastAsiaMapTemplate(MapTemplate):
             bottom_left_point=self.map_box_bottom_left_point,
             top_right_point=self.map_box_top_right_point,
         )
-
-    def load_map(self):
-        self.main_map = self.map_class(map_type=MapType.Portrait)
-        self.sub_map = self.map_class(map_type=MapType.SouthChinaSea)
 
     def render_main_layer(self, chart: "Chart") -> Layer:
         """
@@ -112,48 +109,7 @@ class EastAsiaMapTemplate(MapTemplate):
         layer = Layer(projection=self.projection, chart=chart)
         layer.set_axes(ax)
 
-        features = []
-        # coastline
-        fs = self.main_map.coastline(scale="50m", style=dict(
-            linewidth=0.5,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        # lakes
-        fs = self.main_map.lakes(scale="50m", style=dict(
-            linewidth=0.25,
-            facecolor='none',
-            edgecolor="black",
-            alpha=0.5
-        ))
-        features.extend(fs)
-
-        # china coastline
-        fs = self.main_map.china_coastline()
-        features.extend(fs)
-
-        # china borders
-        fs = self.main_map.china_borders()
-        features.extend(fs)
-
-        # china provinces
-        fs = self.main_map.china_provinces()
-        features.extend(fs)
-
-        # china rivers
-        fs = self.main_map.china_rivers()
-        features.extend(fs)
-
-        # south china sea
-        fs = self.main_map.china_nine_lines()
-        features.extend(fs)
-
-        for f in features:
-            ax.add_feature(
-                f,
-                # zorder=100
-            )
+        self.main_map_painter.render_layer(layer=layer)
 
         #   坐标轴
         # area = self.default_area
@@ -228,54 +184,7 @@ class EastAsiaMapTemplate(MapTemplate):
         layer = Layer(chart=chart, projection=self.projection)
         layer.set_axes(ax)
 
-        features = []
-        # coastline
-        fs = self.sub_map.coastline(scale="50m", style=dict(
-            linewidth=0.25,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        # lakes
-
-        # china coastline
-        fs = self.sub_map.china_coastline()
-        features.extend(fs)
-
-        # china borders
-        fs = self.sub_map.china_borders()
-        features.extend(fs)
-
-        # china provinces
-        fs = self.sub_map.china_provinces()
-        features.extend(fs)
-
-        # china rivers
-        fs = self.sub_map.china_rivers()
-        features.extend(fs)
-
-        # south china sea
-        fs = self.sub_map.china_nine_lines()
-        features.extend(fs)
-
-        for f in features:
-            ax.add_feature(
-                f,
-                # zorder=100
-            )
-
-        # for f in self.cn_features:
-        #     ax.add_feature(
-        #         f,
-        #         linewidth=0.5,
-        #         # zorder=100
-        #     )
-        # for f in self.nine_features:
-        #     ax.add_feature(
-        #         f,
-        #         linewidth=1,
-        #         # zorder=100
-        #     )
+        self.sub_map_painter.render_layer(layer=layer)
 
         #   区域：南海子图
         set_map_box_area(
@@ -303,6 +212,59 @@ class EastAsiaMapTemplate(MapTemplate):
         add_map_info_text(ax=ax, x=x, y=y, text=text)
 
         return layer
+
+    def load_map(self):
+        self.main_map_loader = self.map_loader_class(map_type=MapType.Portrait)
+        self.sub_map_loader = self.map_loader_class(map_type=MapType.SouthChinaSea)
+
+        self.main_map_painter = MapPainter(
+            map_loader=self.main_map_loader,
+            coastline_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        linewidth=0.5,
+                        # zorder=50
+                    )
+                ),
+                render=True,
+            ),
+            lakes_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        linewidth=0.25,
+                        facecolor='none',
+                        edgecolor="black",
+                        alpha=0.5
+                    )
+                ),
+                render=True,
+            ),
+            china_coastline_config=MapFeatureConfig(render=True),
+            china_borders_config=MapFeatureConfig(render=True),
+            china_provinces_config=MapFeatureConfig(render=True),
+            china_rivers_config=MapFeatureConfig(render=True),
+            china_nine_lines_config=MapFeatureConfig(render=True),
+        )
+        self.sub_map_painter = MapPainter(
+            map_loader=self.sub_map_loader,
+            coastline_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        linewidth=0.25,
+                        # zorder=50
+                    )
+                ),
+                render=True,
+            ),
+            china_coastline_config=MapFeatureConfig(render=True),
+            china_borders_config=MapFeatureConfig(render=True),
+            china_provinces_config=MapFeatureConfig(render=True),
+            china_rivers_config=MapFeatureConfig(render=True),
+            china_nine_lines_config=MapFeatureConfig(render=True),
+        )
 
     def set_title(
             self,

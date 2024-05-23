@@ -102,3 +102,9 @@ class Panel:
             graphs.append(graph)
 
         return graphs
+
+    def set_title(self, *args, **kwargs):
+        return self.domain.set_title(panel=self, *args, **kwargs)
+
+    def add_colorbar(self, *args, **kwargs):
+        return self.domain.add_colorbar(panel=self, *args, **kwargs)
