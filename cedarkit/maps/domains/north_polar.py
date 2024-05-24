@@ -20,6 +20,7 @@ from cedarkit.maps.util import (
     add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
+    AreaRange
 )
 
 from .map_template import MapTemplate
@@ -31,11 +32,16 @@ if TYPE_CHECKING:
 class NorthPolarMapTemplate(MapTemplate):
     def __init__(
             self,
-            area: Optional[List[float]] = None,
+            area: Optional[AreaRange] = None,
     ):
         self.central_longitude = 110
 
-        self.default_area = [-180, 180, 0, 90]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+        self.default_area = AreaRange(
+            start_longitude=-180,
+            end_longitude=180,
+            start_latitude=0,
+            end_latitude=90
+        )
         if area is None:
             area = self.default_area  # [start_longitude, end_longitude, start_latitude, end_latitude]
 

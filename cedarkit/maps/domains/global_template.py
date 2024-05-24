@@ -1,4 +1,4 @@
-from typing import Union, List, TYPE_CHECKING
+from typing import Union, List, Optional, TYPE_CHECKING
 
 import cartopy.mpl.geoaxes
 import numpy as np
@@ -20,6 +20,7 @@ from cedarkit.maps.util import (
     set_map_box_title,
     GraphColorbar,
     add_map_box_colorbar,
+    AreaRange
 )
 
 from .map_template import MapTemplate
@@ -31,11 +32,16 @@ if TYPE_CHECKING:
 class GlobalMapTemplate(MapTemplate):
     def __init__(
             self,
-            area: List[float] = None,
+            area: Optional[AreaRange] = None,
     ):
-        self.default_area = [-180, 180, -90, 90]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+        self.default_area = AreaRange(
+            start_longitude=-180,
+            end_longitude=180,
+            start_latitude=-90,
+            end_latitude=90,
+        )
         if area is None:
-            area = self.default_area  # [start_longitude, end_longitude, start_latitude, end_latitude]
+            area = self.default_area
 
         self.central_longitude = 80
 
@@ -115,19 +121,19 @@ class GlobalMapTemplate(MapTemplate):
         main_xticks = np.concatenate(
             (
                 np.arange(
-                    area[0], 0,
+                    area.start_longitude, 0,
                     self.main_xticks_interval
                 ),
                 np.arange(
-                    0, area[1] + self.main_xticks_interval,
+                    0, area.end_longitude + self.main_xticks_interval,
                     self.main_xticks_interval,
                 )
             ),
             axis=None,
         )
         main_yticks = np.arange(
-            area[2],
-            area[3] + self.main_yticks_interval,
+            area.start_latitude,
+            area.end_latitude + self.main_yticks_interval,
             self.main_yticks_interval
         )
         set_map_box_axis(
@@ -295,7 +301,7 @@ class GlobalMapTemplate(MapTemplate):
 class GlobalAreaMapTemplate(GlobalMapTemplate):
     def __init__(
             self,
-            area: List[float] = None
+            area: Optional[AreaRange] = None
     ):
         super().__init__(area=area)
         self.main_map_type = MapType.Global

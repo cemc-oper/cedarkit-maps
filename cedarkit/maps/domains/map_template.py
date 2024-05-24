@@ -1,22 +1,30 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Union, Tuple, TYPE_CHECKING
 
 import cartopy.crs as ccrs
 
-if TYPE_CHECKING:
-    from cedarkit.maps.chart import Chart, Panel
+from ..util import AreaRange
 
 from .xy_template import XYTemplate
+
+
+if TYPE_CHECKING:
+    from cedarkit.maps.chart import Chart, Panel
 
 
 class MapTemplate(XYTemplate):
     def __init__(
             self,
             projection: ccrs.Projection,
-            area: List[float],
+            area: Union[AreaRange, Tuple[float, float, float, float]],
             map_projection: Optional[ccrs.Projection] = None,
     ):
         super().__init__()
-        self._area = area
+        if isinstance(area, AreaRange):
+            self._area = area
+        elif isinstance(area, tuple):
+            self._area = AreaRange.from_tuple(area)
+        else:
+            raise ValueError("area must be AreaRange or tuple")
         self._projection = projection
         if map_projection is None:
             self._map_projection = self._projection
@@ -30,10 +38,9 @@ class MapTemplate(XYTemplate):
         raise NotImplementedError
 
     @property
-    def area(self) -> List[float]:
+    def area(self) -> AreaRange:
         """
-        Map area, [start_longitude, end_longitude, start_latitude, end_latitude].
-        For example, ``[70, 140, 15, 55]``.
+        Map area range.
         """
         return self._area
 

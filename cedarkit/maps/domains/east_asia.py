@@ -1,5 +1,4 @@
-from typing import Union, List, Optional, Tuple, TYPE_CHECKING
-from dataclasses import dataclass
+from typing import Union, List, Optional, TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -19,6 +18,8 @@ from cedarkit.maps.util import (
     add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
+    AxesRect,
+    AreaRange,
 )
 from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig
 
@@ -28,26 +29,23 @@ if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
 
 
-@dataclass
-class RectSetting:
-    left: float
-    bottom: float
-    width: float
-    height: float
-
-
 class EastAsiaMapTemplate(MapTemplate):
     """
     东亚/中国底图布局，带南海子图
     """
     def __init__(
             self,
-            area: List[float] = None,
+            area: Optional[AreaRange] = None,
             with_sub_area: bool = True,
     ):
-        self.default_area = [70, 140, 15, 55]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+        self.default_area = AreaRange(
+            start_longitude=70,
+            end_longitude=140,
+            start_latitude=15,
+            end_latitude=55,
+        )
         if area is None:
-            area = self.default_area  # [start_longitude, end_longitude, start_latitude, end_latitude]
+            area = self.default_area
 
         projection = ccrs.PlateCarree()
         super().__init__(
@@ -61,7 +59,12 @@ class EastAsiaMapTemplate(MapTemplate):
         self.height = 0.6
         self.main_aspect = 1.25
 
-        self.sub_area = [105, 123, 2, 23]
+        self.sub_area = AreaRange(
+            start_longitude=105,
+            end_longitude=123,
+            start_latitude=2,
+            end_latitude=23,
+        )
         self.sub_width = 0.1
         self.sub_height = 0.14
         self.sub_aspect = 0.1 / 0.14
@@ -174,7 +177,7 @@ class EastAsiaMapTemplate(MapTemplate):
         """
         width = self.width
         height = self.height
-        rect = RectSetting(
+        rect = AxesRect(
             left=(1 - width)/2,
             bottom=(1 - height)/2,
             width=width,
@@ -212,13 +215,13 @@ class EastAsiaMapTemplate(MapTemplate):
         # 坐标轴
         #       area, main_xticks_interval, main_yticks_interval
         xticks = np.arange(
-            area[0],
-            area[1] + xticks_interval,
+            area.start_longitude,
+            area.end_longitude + xticks_interval,
             xticks_interval
         )
         yticks = np.arange(
-            area[2],
-            area[3] + yticks_interval,
+            area.start_latitude,
+            area.end_latitude + yticks_interval,
             yticks_interval
         )
         set_map_box_axis(
@@ -230,11 +233,14 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 网格线
         #       同坐标轴
+        # 边界处是边框，不需要网格线，但需要坐标轴标注
+        xlocator = xticks[1:-1]
+        ylocator = yticks[1:-1]
         draw_map_box_gridlines(
             ax,
             projection=projection,
-            xlocator=xticks[1:-1],
-            ylocator=yticks[1:-1],
+            xlocator=xlocator,
+            ylocator=ylocator,
         )
 
         # 地图信息标注
@@ -267,7 +273,7 @@ class EastAsiaMapTemplate(MapTemplate):
         main_height = self.height
         sub_width = self.sub_width
         sub_height = self.sub_height
-        rect = RectSetting(
+        rect = AxesRect(
             left=(1 - main_width) / 2,
             bottom=(1 - main_height) / 2,
             width=sub_width,
@@ -321,9 +327,6 @@ class EastAsiaMapTemplate(MapTemplate):
         self.plot_map(layer=layer, map_painter=map_painter)
 
         return layer
-
-    def plot_map(self, layer: "Layer", map_painter: MapPainter):
-        map_painter.render_layer(layer=layer)
 
     def set_title(
             self,
@@ -423,7 +426,7 @@ class EastAsiaMapTemplate(MapTemplate):
 
         return color_bars
 
-    def create_layer(self, chart: "Chart", rect: RectSetting, projection: ccrs.Projection) -> Layer:
+    def create_layer(self, chart: "Chart", rect: AxesRect, projection: ccrs.Projection) -> Layer:
         fig = chart.fig
         layout = (rect.left, rect.bottom, rect.width, rect.height)
         ax = fig.add_axes(
@@ -434,6 +437,9 @@ class EastAsiaMapTemplate(MapTemplate):
         layer.set_axes(ax)
         return layer
 
+    def plot_map(self, layer: "Layer", map_painter: MapPainter):
+        map_painter.render_layer(layer=layer)
+
 
 class CnAreaMapTemplate(EastAsiaMapTemplate):
     """
@@ -441,7 +447,7 @@ class CnAreaMapTemplate(EastAsiaMapTemplate):
     """
     def __init__(
             self,
-            area: List[float] = None,
+            area: Optional[AreaRange] = None,
             with_sub_area: bool = False,
     ):
         super().__init__(area=area, with_sub_area=with_sub_area)

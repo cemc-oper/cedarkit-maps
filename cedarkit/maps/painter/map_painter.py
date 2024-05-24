@@ -15,6 +15,9 @@ class MapFeatureConfig:
 
 @dataclass
 class MapPainter:
+    """
+    Paint map features on Layer.
+    """
     map_loader: MapLoader
     coastline_config: MapFeatureConfig = field(default_factory=MapFeatureConfig)
     land_config: MapFeatureConfig = field(default_factory=MapFeatureConfig)

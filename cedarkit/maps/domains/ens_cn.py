@@ -22,6 +22,7 @@ from cedarkit.maps.util import (
     GraphColorbar,
     add_map_box_colorbar,
     clear_axes,
+    AreaRange,
 )
 
 from .map_template import MapTemplate
@@ -33,10 +34,15 @@ if TYPE_CHECKING:
 class EnsCNMapTemplate(MapTemplate):
     def __init__(self, enable_max: bool = False):
         projection = ccrs.PlateCarree()
-        domain = [73, 135, 16, 56]
+        area = AreaRange(
+            start_longitude=73,
+            end_longitude=135,
+            start_latitude=16,
+            end_latitude=56,
+        )
         super().__init__(
             projection=projection,
-            area=domain
+            area=area
         )
 
         self.member_count = 15

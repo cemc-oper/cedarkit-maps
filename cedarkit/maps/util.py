@@ -17,6 +17,29 @@ from cartopy import crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 
+@dataclass
+class AxesRect:
+    left: float
+    bottom: float
+    width: float
+    height: float
+
+
+@dataclass
+class AreaRange:
+    start_longitude: float
+    end_longitude: float
+    start_latitude: float
+    end_latitude: float
+
+    def to_tuple(self) -> Tuple[float, float, float, float]:
+        return self.start_longitude, self.end_longitude, self.start_latitude, self.end_latitude
+
+    @classmethod
+    def from_tuple(cls, area: Tuple[float, float, float, float]) -> 'AreaRange':
+        return cls(area[0], area[1], area[2], area[3])
+
+
 # -----------------
 # Layout
 # -----------------
@@ -716,7 +739,7 @@ def add_colorbar_by_map_type(
 
 def set_map_box_area(
         ax: cartopy.mpl.geoaxes.GeoAxes,
-        area: List[float],
+        area: AreaRange,
         projection: ccrs.Projection,
         aspect: Optional[float] = None
 ) -> cartopy.mpl.geoaxes.GeoAxes:
@@ -734,9 +757,10 @@ def set_map_box_area(
     -------
     cartopy.mpl.geoaxes.GeoAxes
     """
-    east_lon, west_lon, south_lat, north_lat = area
+    area_tuple = area.to_tuple()
+    east_lon, west_lon, south_lat, north_lat = area_tuple
     ax.set_extent(
-        area,
+        area_tuple,
         crs=projection
     )
     if aspect is None:

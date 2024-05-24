@@ -20,6 +20,7 @@ from cedarkit.maps.util import (
     add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
+    AreaRange
 )
 
 from .map_template import MapTemplate
@@ -31,15 +32,20 @@ if TYPE_CHECKING:
 class EuropeAsiaMapTemplate(MapTemplate):
     def __init__(
             self,
-            area: Optional[List[float]] = None,
+            area: Optional[AreaRange] = None,
             with_sub_area: bool = False,
     ):
         self.central_longitude = 95
         self.standard_parallels = (30, 60)
 
-        self.default_area = [20, 170, 0, 70]  # [start_longitude, end_longitude, start_latitude, end_latitude]
+        self.default_area = AreaRange(
+            start_longitude=20,
+            end_longitude=170,
+            start_latitude=0,
+            end_latitude=70,
+        )
         if area is None:
-            area = self.default_area  # [start_longitude, end_longitude, start_latitude, end_latitude]
+            area = self.default_area
 
         projection = ccrs.PlateCarree()
         map_projection = ccrs.LambertConformal(
@@ -58,7 +64,12 @@ class EuropeAsiaMapTemplate(MapTemplate):
         self.height = 0.6
         self.main_aspect = 1.25
 
-        self.sub_area = [105, 123, 2, 23]
+        self.sub_area = AreaRange(
+            start_longitude=105,
+            end_longitude=123,
+            start_latitude=2,
+            end_latitude=23,
+        )
         self.sub_width = 0.1
         self.sub_height = 0.14
         self.sub_aspect = 0.1 / 0.14
