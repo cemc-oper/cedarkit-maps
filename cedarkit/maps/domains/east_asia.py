@@ -204,12 +204,7 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 设置区域范围和长宽比
         #       area
-        self.set_area(
-            layer=layer,
-            area=area,
-            projection=projection,
-            aspect=aspect,
-        )
+        layer.set_area(area=area, aspect=aspect)
 
         # 坐标轴
         #       area, main_xticks_interval, main_yticks_interval
@@ -223,32 +218,25 @@ class EastAsiaMapTemplate(MapTemplate):
             area.end_latitude + yticks_interval,
             yticks_interval
         )
-        set_map_box_axis(
-            ax,
-            xticks=xticks,
-            yticks=yticks,
-            projection=projection
-        )
+        layer.set_axis(xticks=xticks, yticks=yticks)
 
         # 网格线
         #       同坐标轴
         # 边界处是边框，不需要网格线，但需要坐标轴标注
         xlocator = xticks[1:-1]
         ylocator = yticks[1:-1]
-        draw_map_box_gridlines(
-            ax,
-            projection=projection,
+        layer.gridlines(
             xlocator=xlocator,
             ylocator=ylocator,
         )
 
         # 地图信息标注
         #   x, y, text
-        add_map_info_text(
-            ax=ax,
-            x=map_info_x,
-            y=map_info_y,
-            text=map_info_text,
+        self.add_map_info(
+            layer=layer,
+            map_info_x=map_info_x,
+            map_info_y=map_info_y,
+            map_info_text=map_info_text,
         )
 
         #   地图
@@ -297,28 +285,21 @@ class EastAsiaMapTemplate(MapTemplate):
         ax = layer.ax
 
         # 区域：南海子图
-        self.set_area(
-            layer=layer,
-            area=area,
-            projection=projection,
-            aspect=aspect,
-        )
+        layer.set_area(area=area, aspect=aspect)
 
         # 网格线
-        draw_map_box_gridlines(
-            ax,
-            projection=projection,
+        layer.gridlines(
             xlocator=xlocator,
             ylocator=ylocator,
             linewidth=0.2,
         )
 
         # 地图信息标注
-        add_map_info_text(
-            ax=ax,
-            x=map_info_x,
-            y=map_info_y,
-            text=map_info_text,
+        self.add_map_info(
+            layer=layer,
+            map_info_x=map_info_x,
+            map_info_y=map_info_y,
+            map_info_text=map_info_text,
         )
 
         # 地图
@@ -424,16 +405,16 @@ class EastAsiaMapTemplate(MapTemplate):
 
         return color_bars
 
-    def render_map(self, layer: "Layer", map_painter: MapPainter):
+    def render_map(self, layer: Layer, map_painter: MapPainter):
         map_painter.render_layer(layer=layer)
 
-    def set_area(self, layer: "Layer", area: AreaRange, projection: ccrs.Projection, aspect: Optional[float] = None):
+    def add_map_info(self, layer: Layer, map_info_x, map_info_y, map_info_text):
         ax = layer.ax
-        set_map_box_area(
-            ax,
-            area=area,
-            projection=projection,
-            aspect=aspect,
+        add_map_info_text(
+            ax=ax,
+            x=map_info_x,
+            y=map_info_y,
+            text=map_info_text,
         )
 
 

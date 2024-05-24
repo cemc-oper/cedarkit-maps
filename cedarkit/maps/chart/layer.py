@@ -1,6 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 
 import xarray as xr
+import numpy as np
 import matplotlib.axes
 import matplotlib.contour
 import matplotlib.quiver
@@ -12,6 +13,12 @@ from cedarkit.maps.graph import (
     add_contour,
     add_contour_label,
     add_barb,
+)
+from cedarkit.maps.util import (
+    AreaRange,
+    set_map_box_area,
+    set_map_box_axis,
+    draw_map_box_gridlines,
 )
 
 if TYPE_CHECKING:
@@ -57,6 +64,51 @@ class Layer:
         """
         self.chart = chart
         self.chart.add_layer(self)
+
+    def set_area(self, area: AreaRange, aspect: Optional[float] = None):
+        """
+        Set map area range and aspect of width and height
+
+        Parameters
+        ----------
+        area
+        aspect
+        """
+        ax = self.ax
+        set_map_box_area(
+            ax,
+            area=area,
+            projection=self.projection,
+            aspect=aspect,
+        )
+
+    def set_axis(self, xticks: np.ndarray, yticks: np.ndarray):
+        ax = self.ax
+        set_map_box_axis(
+            ax,
+            xticks=xticks,
+            yticks=yticks,
+            projection=self.projection
+        )
+
+    def gridlines(
+            self,
+            xlocator: Optional[np.ndarray] = None,
+            ylocator: Optional[np.ndarray] = None,
+            **kwargs
+    ):
+        ax = self.ax
+        draw_map_box_gridlines(
+            ax,
+            projection=self.projection,
+            xlocator=xlocator,
+            ylocator=ylocator,
+            **kwargs
+        )
+
+    # ---------------
+    # Plot methods
+    # ---------------
 
     def contourf(self, data: xr.DataArray, style: ContourStyle, **kwargs) -> matplotlib.contour.QuadContourSet:
         contour = add_contourf(
