@@ -196,8 +196,7 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 创建 Layer
         #       width, height
-        layer = self.create_layer(
-            chart=chart,
+        layer = chart.create_layer(
             rect=rect,
             projection=projection,
         )
@@ -205,11 +204,11 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 设置区域范围和长宽比
         #       area
-        set_map_box_area(
-            ax,
+        self.set_area(
+            layer=layer,
             area=area,
             projection=projection,
-            aspect=aspect
+            aspect=aspect,
         )
 
         # 坐标轴
@@ -253,7 +252,7 @@ class EastAsiaMapTemplate(MapTemplate):
         )
 
         #   地图
-        self.plot_map(layer=layer, map_painter=map_painter)
+        self.render_map(layer=layer, map_painter=map_painter)
 
         return layer
 
@@ -291,19 +290,18 @@ class EastAsiaMapTemplate(MapTemplate):
         map_painter = self.sub_map_painter
 
         # 创建 Layer
-        layer = self.create_layer(
-            chart=chart,
+        layer = chart.create_layer(
             rect=rect,
-            projection=self.projection,
+            projection=projection,
         )
         ax = layer.ax
 
         # 区域：南海子图
-        set_map_box_area(
-            ax,
+        self.set_area(
+            layer=layer,
             area=area,
             projection=projection,
-            aspect=aspect
+            aspect=aspect,
         )
 
         # 网格线
@@ -324,7 +322,7 @@ class EastAsiaMapTemplate(MapTemplate):
         )
 
         # 地图
-        self.plot_map(layer=layer, map_painter=map_painter)
+        self.render_map(layer=layer, map_painter=map_painter)
 
         return layer
 
@@ -426,19 +424,17 @@ class EastAsiaMapTemplate(MapTemplate):
 
         return color_bars
 
-    def create_layer(self, chart: "Chart", rect: AxesRect, projection: ccrs.Projection) -> Layer:
-        fig = chart.fig
-        layout = (rect.left, rect.bottom, rect.width, rect.height)
-        ax = fig.add_axes(
-            layout,
-            projection=projection,
-        )
-        layer = Layer(projection=projection, chart=chart)
-        layer.set_axes(ax)
-        return layer
-
-    def plot_map(self, layer: "Layer", map_painter: MapPainter):
+    def render_map(self, layer: "Layer", map_painter: MapPainter):
         map_painter.render_layer(layer=layer)
+
+    def set_area(self, layer: "Layer", area: AreaRange, projection: ccrs.Projection, aspect: Optional[float] = None):
+        ax = layer.ax
+        set_map_box_area(
+            ax,
+            area=area,
+            projection=projection,
+            aspect=aspect,
+        )
 
 
 class CnAreaMapTemplate(EastAsiaMapTemplate):

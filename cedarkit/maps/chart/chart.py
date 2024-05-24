@@ -1,7 +1,9 @@
-from typing import List, Union, Optional, Any, TYPE_CHECKING
+from typing import List, Optional, Any, TYPE_CHECKING
+from cartopy import crs as ccrs
 
 from cedarkit.maps.style import Style, ContourStyle, BarbStyle
-from cedarkit.maps.domains import MapTemplate, XYTemplate
+from cedarkit.maps.domains import XYTemplate
+from cedarkit.maps.util import AxesRect
 
 from .layer import Layer
 
@@ -27,15 +29,59 @@ class Chart:
 
         self.layers: List["Layer"] = []
 
-        # NOTE: XPDomain creates axes.
-        # self.domain.render_chart(chart=self)
-
     @property
     def fig(self):
         return self.panel.fig
 
-    def add_layer(self, layer: "Layer"):
+    def add_layer(self, layer: Layer) -> Layer:
+        """
+        add an existing layer to Chart. 
+        
+        Parameters
+        ----------
+        layer
+
+        Returns
+        -------
+        Layer
+        """
         self.layers.append(layer)
+        return layer
+
+    def create_layer(
+            self,
+            rect: AxesRect,
+            projection: Optional[ccrs.Projection] = None,
+            map_projection: Optional[ccrs.Projection] = None,
+    ) -> Layer:
+        """
+        Create a GeoAxes layer and add it to chart.
+
+        Parameters
+        ----------
+        rect
+            layer axes rect, using in ``Figure.add_axes``.
+        projection
+            data projection, default is None.
+        map_projection
+            map projection, default is same as projection.
+
+        Returns
+        -------
+        Layer
+            a new created layer.
+        """
+        if map_projection is None:
+            map_projection = projection
+        fig = self.fig
+        layout = (rect.left, rect.bottom, rect.width, rect.height)
+        ax = fig.add_axes(
+            layout,
+            projection=map_projection,
+        )
+        layer = Layer(projection=projection, chart=self)
+        layer.set_axes(ax)
+        return layer
 
     def plot(self, data, style: "Style", layer: Optional[List[Any]] = None) -> List[Any]:
         """
