@@ -8,20 +8,16 @@ from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
+    AxesRect,
+    AreaRange,
     draw_map_box,
-    set_map_box_axis,
-    draw_map_box_gridlines,
-    set_map_box_area,
     GraphTitle,
     fill_graph_title,
     set_map_box_title,
-    add_map_info_text,
     GraphColorbar,
     add_map_box_colorbar,
-    AxesRect,
-    AreaRange,
 )
-from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig
+from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
 
 from .map_template import MapTemplate
 
@@ -83,14 +79,6 @@ class EastAsiaMapTemplate(MapTemplate):
         self.sub_xlocator = [110, 120]
         self.sub_ylocator = [10, 20]
 
-        self.main_map_info_x = 0.998
-        self.main_map_info_y = 0.0022
-        self.main_map_info_text = "Scale 1:20000000 No:GS (2019) 1786"
-
-        self.sub_map_info_x = 0.99
-        self.sub_map_info_y = 0.01
-        self.sub_map_info_text = "Scale 1:40000000"
-
         self.map_loader_class = get_map_loader_class()
 
     def render_panel(self, panel: "Panel"):
@@ -131,6 +119,11 @@ class EastAsiaMapTemplate(MapTemplate):
             china_provinces_config=MapFeatureConfig(render=True),
             china_rivers_config=MapFeatureConfig(render=True),
             china_nine_lines_config=MapFeatureConfig(render=True),
+            map_info=MapInfo(
+                x=0.998,
+                y=0.0022,
+                text="Scale 1:20000000 No:GS (2019) 1786",
+            ),
         )
 
         self.sub_map_painter = MapPainter(
@@ -150,6 +143,11 @@ class EastAsiaMapTemplate(MapTemplate):
             china_provinces_config=MapFeatureConfig(render=True),
             china_rivers_config=MapFeatureConfig(render=True),
             china_nine_lines_config=MapFeatureConfig(render=True),
+            map_info=MapInfo(
+                x=0.99,
+                y=0.01,
+                text="Scale 1:40000000",
+            ),
         )
 
     def render_chart(self, chart: "Chart"):
@@ -189,9 +187,6 @@ class EastAsiaMapTemplate(MapTemplate):
         aspect = self.main_aspect  # 0.75/0.6
         xticks_interval = self.main_xticks_interval
         yticks_interval = self.main_yticks_interval
-        map_info_x = self.main_map_info_x
-        map_info_y = self.main_map_info_y
-        map_info_text = self.main_map_info_text
         map_painter = self.main_map_painter
 
         # 创建 Layer
@@ -232,12 +227,7 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 地图信息标注
         #   x, y, text
-        self.add_map_info(
-            layer=layer,
-            map_info_x=map_info_x,
-            map_info_y=map_info_y,
-            map_info_text=map_info_text,
-        )
+        self.add_map_info(layer=layer, map_painter=map_painter)
 
         #   地图
         self.render_map(layer=layer, map_painter=map_painter)
@@ -272,9 +262,6 @@ class EastAsiaMapTemplate(MapTemplate):
         aspect = self.sub_aspect
         xlocator = self.sub_xlocator
         ylocator = self.sub_ylocator
-        map_info_x = self.sub_map_info_x
-        map_info_y = self.sub_map_info_y
-        map_info_text = self.sub_map_info_text
         map_painter = self.sub_map_painter
 
         # 创建 Layer
@@ -295,12 +282,7 @@ class EastAsiaMapTemplate(MapTemplate):
         )
 
         # 地图信息标注
-        self.add_map_info(
-            layer=layer,
-            map_info_x=map_info_x,
-            map_info_y=map_info_y,
-            map_info_text=map_info_text,
-        )
+        self.add_map_info(layer=layer, map_painter=map_painter)
 
         # 地图
         self.render_map(layer=layer, map_painter=map_painter)
@@ -408,14 +390,8 @@ class EastAsiaMapTemplate(MapTemplate):
     def render_map(self, layer: Layer, map_painter: MapPainter):
         map_painter.render_layer(layer=layer)
 
-    def add_map_info(self, layer: Layer, map_info_x, map_info_y, map_info_text):
-        ax = layer.ax
-        add_map_info_text(
-            ax=ax,
-            x=map_info_x,
-            y=map_info_y,
-            text=map_info_text,
-        )
+    def add_map_info(self, layer: Layer, map_painter: MapPainter):
+        map_painter.add_map_info(layer=layer)
 
 
 class CnAreaMapTemplate(EastAsiaMapTemplate):
