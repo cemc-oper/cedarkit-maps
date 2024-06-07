@@ -16,7 +16,9 @@ from cedarkit.maps.util import (
     add_map_box_colorbar,
 )
 from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
-from cedarkit.maps.painter.axes_component_painter import AxesComponentPainter, MapBoxOption
+from cedarkit.maps.painter.axes_component_painter import (
+    AxesComponentPainter, MapBoxOption, ColorBarOption,
+)
 
 from .map_template import MapTemplate
 
@@ -74,6 +76,11 @@ class EastAsiaMapTemplate(MapTemplate):
                 bottom_left_point=(-0.06, -0.05),
                 top_right_point=(1.03, 1.03),
             ),
+            color_bar_option=ColorBarOption(
+                orientation="vertical",
+                bottom_left_point=(1.05, -0.02),
+                top_right_point=(1.07, 1.02),
+            )
         )
 
         self.main_xticks_interval = 10
@@ -90,6 +97,9 @@ class EastAsiaMapTemplate(MapTemplate):
         self.render_chart(chart=chart)
 
     def load_map(self):
+        """
+        create map loader and map painter.
+        """
         self.main_map_loader = self.map_loader_class(map_type=MapType.Portrait)
         self.sub_map_loader = self.map_loader_class(map_type=MapType.SouthChinaSea)
 
@@ -196,7 +206,6 @@ class EastAsiaMapTemplate(MapTemplate):
             rect=rect,
             projection=projection,
         )
-        ax = layer.ax
 
         # 设置区域范围和长宽比
         #       area
@@ -314,69 +323,10 @@ class EastAsiaMapTemplate(MapTemplate):
         )
 
     def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
-        """
-                                 |  | left_padding_to_map_box_right_bound
-                                    ---
-        --------------------------  | |
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |   colorbar
-        |                        |  | |
-        |                        |  | |
-        |                        |  | |
-        --------------------------  | |  --
-               map box              ---  -- bottom_padding_to_map_box_bottom_bound
-
-
-        """
-        if isinstance(style, ContourStyle):
-            style = [style]
-        count = len(style)
-
-        left_padding_to_map_box_right_bound = 0.02
-        bottom_padding_to_map_box_bottom_bound = -0.02
-        width = 0.02
-        total_height = 1 + 2*abs(bottom_padding_to_map_box_bottom_bound)
-
-        if count > 0:
-            height_padding = 0.02
-        else:
-            height_padding = 0
-
-        height = total_height / count
-
-        color_bars = []
-
-        for index, current_style in enumerate(style):
-            colorbar_box = [
-                self.map_box_top_right_point[0] + left_padding_to_map_box_right_bound,  # 1.03 + 0.02 = 1.05
-                bottom_padding_to_map_box_bottom_bound + index * height,
-                width, height - height_padding
-            ]
-
-            graph_colorbar = GraphColorbar(
-                colormap=current_style.colors,
-                levels=current_style.levels,
-                box=colorbar_box,
-            )
-
-            colorbar_style = current_style.colorbar_style
-            if colorbar_style is not None:
-                if colorbar_style.label is not None:
-                    graph_colorbar.label = colorbar_style.label
-                if colorbar_style.loc is not None:
-                    graph_colorbar.label_loc = colorbar_style.loc
-                if colorbar_style.label_levels is not None:
-                    graph_colorbar.label_levels = colorbar_style.label_levels
-
-            color_bar = add_map_box_colorbar(
-                graph_colorbar=graph_colorbar,
-                ax=panel.charts[0].layers[0].ax,
-            )
-
-            color_bars.append(color_bar)
-
+        color_bars = self.axes_component_painter.add_colorbar(
+            layer=panel.charts[0].layers[0],
+            style=style,
+        )
         return color_bars
 
     def render_map(self, layer: Layer, map_painter: MapPainter):

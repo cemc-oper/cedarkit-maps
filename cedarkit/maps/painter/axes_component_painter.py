@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from typing import Tuple, Union, List
+from typing import Tuple, Union, List, Literal
 
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.util import (
     draw_map_box,
     GraphTitle,
     set_map_box_title,
+    GraphColorbar,
+    add_map_box_colorbar,
 )
 from cedarkit.maps.style import ContourStyle
 
@@ -17,8 +19,16 @@ class MapBoxOption:
 
 
 @dataclass
+class ColorBarOption:
+    orientation: Literal["vertical", "horizontal"]
+    bottom_left_point: Tuple[float, float]
+    top_right_point: Tuple[float, float]
+
+
+@dataclass
 class AxesComponentPainter:
     map_box_option: MapBoxOption
+    color_bar_option: ColorBarOption
 
     def draw_map_box(self, layer: Layer):
         ax = layer.ax
@@ -40,5 +50,72 @@ class AxesComponentPainter:
             graph_title=graph_title,
         )
 
-    def add_colorbar(self, style: Union[ContourStyle, List[ContourStyle]]):
-        pass
+    def add_colorbar(self, layer: Layer, style: Union[ContourStyle, List[ContourStyle]]):
+        """
+                                 |  | left_padding_to_map_box_right_bound
+                                    ---
+        --------------------------  | |
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |   colorbar
+        |                        |  | |
+        |                        |  | |
+        |                        |  | |
+        --------------------------  | |  --
+               map box              ---  -- bottom_padding_to_map_box_bottom_bound
+
+
+        """
+
+        ax = layer.ax
+        color_bar_option = self.color_bar_option
+
+        if isinstance(style, ContourStyle):
+            style = [style]
+        count = len(style)
+
+        if color_bar_option.orientation == "horizontal":
+            raise NotImplemented("horizontal is not supported")
+
+        total_height = color_bar_option.top_right_point[1] - color_bar_option.bottom_left_point[1]
+        width = color_bar_option.top_right_point[0] - color_bar_option.bottom_left_point[0]
+
+        if count > 0:
+            height_padding = 0.02
+        else:
+            height_padding = 0
+
+        height = total_height / count
+
+        color_bars = []
+
+        for index, current_style in enumerate(style):
+            colorbar_box = [
+                color_bar_option.bottom_left_point[0],
+                color_bar_option.bottom_left_point[1] + index * height,
+                width, height - height_padding
+            ]
+
+            graph_colorbar = GraphColorbar(
+                colormap=current_style.colors,
+                levels=current_style.levels,
+                box=colorbar_box,
+            )
+
+            colorbar_style = current_style.colorbar_style
+            if colorbar_style is not None:
+                if colorbar_style.label is not None:
+                    graph_colorbar.label = colorbar_style.label
+                if colorbar_style.loc is not None:
+                    graph_colorbar.label_loc = colorbar_style.loc
+                if colorbar_style.label_levels is not None:
+                    graph_colorbar.label_levels = colorbar_style.label_levels
+
+            color_bar = add_map_box_colorbar(
+                graph_colorbar=graph_colorbar,
+                ax=ax,
+            )
+
+            color_bars.append(color_bar)
+        return color_bars
