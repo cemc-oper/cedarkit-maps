@@ -10,14 +10,13 @@ from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
     AxesRect,
     AreaRange,
-    draw_map_box,
     GraphTitle,
     fill_graph_title,
-    set_map_box_title,
     GraphColorbar,
     add_map_box_colorbar,
 )
 from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
+from cedarkit.maps.painter.axes_component_painter import AxesComponentPainter, MapBoxOption
 
 from .map_template import MapTemplate
 
@@ -70,8 +69,12 @@ class EastAsiaMapTemplate(MapTemplate):
         self.sub_map_loader: Optional[MapLoader] = None
         self.sub_map_painter: Optional[MapPainter] = None
 
-        self.map_box_bottom_left_point = (-0.06, -0.05)
-        self.map_box_top_right_point = (1.03, 1.03)
+        self.axes_component_painter = AxesComponentPainter(
+            map_box_option=MapBoxOption(
+                bottom_left_point=(-0.06, -0.05),
+                top_right_point=(1.03, 1.03),
+            ),
+        )
 
         self.main_xticks_interval = 10
         self.main_yticks_interval = 5
@@ -155,10 +158,8 @@ class EastAsiaMapTemplate(MapTemplate):
         if self.with_sub_area:
             self.render_sub_layer(chart=chart)
 
-        rect = draw_map_box(
-            chart.layers[0].ax,
-            bottom_left_point=self.map_box_bottom_left_point,
-            top_right_point=self.map_box_top_right_point,
+        self.axes_component_painter.draw_map_box(
+            layer=chart.layers[0]
         )
 
     def render_main_layer(self, chart: "Chart") -> Layer:
@@ -297,16 +298,7 @@ class EastAsiaMapTemplate(MapTemplate):
             start_time: pd.Timestamp,
             forecast_time: pd.Timedelta
     ):
-        left = self.map_box_bottom_left_point[0]
-        bottom = self.map_box_bottom_left_point[1] - 0.005
-        top = self.map_box_top_right_point[1]
-        right = self.map_box_top_right_point[0]
-        graph_title = GraphTitle(
-            left=left,
-            bottom=bottom,
-            top=top,
-            right=right,
-        )
+        graph_title = GraphTitle()
 
         fill_graph_title(
             graph_title=graph_title,
@@ -316,9 +308,9 @@ class EastAsiaMapTemplate(MapTemplate):
             forecast_time=forecast_time,
         )
 
-        set_map_box_title(
-            panel.charts[0].layers[0].ax,
-            graph_title=graph_title,
+        self.axes_component_painter.add_title(
+            layer=panel.charts[0].layers[0],
+            graph_title=graph_title
         )
 
     def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
