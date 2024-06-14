@@ -12,8 +12,6 @@ from cedarkit.maps.util import (
     AreaRange,
     GraphTitle,
     fill_graph_title,
-    GraphColorbar,
-    add_map_box_colorbar,
 )
 from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
 from cedarkit.maps.painter.axes_component_painter import (
