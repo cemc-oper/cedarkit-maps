@@ -1,26 +1,22 @@
 from typing import Union, List, Optional, TYPE_CHECKING
 
-import cartopy.mpl.geoaxes
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.ticker as mticker
 
 from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
-from cedarkit.maps.map import get_map_loader_class, MapType
+from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
-    draw_map_box,
-    set_map_box_axis,
-    draw_map_box_gridlines,
-    set_map_box_area,
+    AxesRect,
     GraphTitle,
-    fill_graph_title,
-    set_map_box_title,
-    GraphColorbar,
-    add_map_box_colorbar,
     AreaRange
+)
+from cedarkit.maps.painter.map_painter import (
+    MapPainter, MapFeatureConfig, MapInfo
+)
+from cedarkit.maps.painter.axes_component_painter import (
+    AxesComponentPainter, MapBoxOption, ColorBarOption,
 )
 
 from .map_template import MapTemplate
@@ -57,15 +53,25 @@ class GlobalMapTemplate(MapTemplate):
         self.width = 0.8
         self.height = 0.6
 
-        self.main_map = None
+        self.main_map_loader: Optional[MapLoader] = None
+        self.main_map_painter: Optional[MapPainter] = None
 
-        self.map_box_bottom_left_point = (0, 0)
-        self.map_box_top_right_point = (1, 1)
+        self.axes_component_painter = AxesComponentPainter(
+            map_box_option=MapBoxOption(
+                bottom_left_point=(0, 0),
+                top_right_point=(1, 1),
+            ),
+            color_bar_option=ColorBarOption(
+                orientation="horizontal",
+                bottom_left_point=(0.1, -0.12),
+                top_right_point=(0.9, -0.1),
+            )
+        )
 
         self.main_xticks_interval = 30
         self.main_yticks_interval = 30
 
-        self.map_class = get_map_loader_class()
+        self.map_loader_class = get_map_loader_class()
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
@@ -82,7 +88,34 @@ class GlobalMapTemplate(MapTemplate):
         # )
 
     def load_map(self):
-        self.main_map = self.map_class(map_type=MapType.Portrait)
+        self.main_map_loader = self.map_loader_class(map_type=MapType.Portrait)
+
+        self.main_map_painter = MapPainter(
+            map_loader=self.main_map_loader,
+            coastline_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        linewidth=0.5,
+                        # zorder=50
+                    )
+                ),
+                render=True,
+            ),
+            land_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        zorder=-1
+                    )
+                )
+            ),
+            map_info=MapInfo(
+                x=0.998,
+                y=0.0022,
+                text="Scale 1:20000000 No:GS (2019) 1786",
+            ),
+        )
 
     def render_main_layer(self, chart: "Chart"):
         """
@@ -96,24 +129,24 @@ class GlobalMapTemplate(MapTemplate):
         -------
 
         """
-        fig = chart.fig
         width = self.width
         height = self.height
-        layout = [(1 - width) / 2, (1 - height) / 2, width, height]
-        ax = fig.add_axes(
-            layout,
-            projection=self.map_projection,
+        projection = self.projection
+        map_painter = self.main_map_painter
+
+        rect = AxesRect(
+            left=(1 - width)/2,
+            bottom=(1 - height)/2,
+            width=width,
+            height=height,
         )
-        layer = Layer(projection=self.projection, chart=chart)
-        layer.set_axes(ax)
+        layer = chart.create_layer(
+            rect=rect,
+            projection=projection,
+        )
 
-        features = self.get_main_map_features()
-
-        for f in features:
-            ax.add_feature(
-                f,
-                # zorder=100
-            )
+        # 地图
+        self.render_map(layer=layer, map_painter=map_painter)
 
         #   坐标轴
         # area = self.default_area
@@ -136,13 +169,24 @@ class GlobalMapTemplate(MapTemplate):
             area.end_latitude + self.main_yticks_interval,
             self.main_yticks_interval
         )
-        set_map_box_axis(
-            ax,
-            xticks=main_xticks,
-            yticks=main_yticks,
-            projection=self.projection
+
+        layer.set_axis(xticks=main_xticks, yticks=main_yticks)
+        self.set_axis_tick_params(layer=layer)
+
+        #   网格线
+        layer.gridlines(
+            xlocator=main_xticks[1:-1],
+            ylocator=main_yticks[1:-1],
         )
 
+        #   设置区域范围和长宽比
+        # ax.set_global()
+        layer.set_area(area=area)
+
+        return layer
+
+    def set_axis_tick_params(self, layer: Layer):
+        ax = layer.ax
         ax.tick_params(
             axis='both',
             which='major',
@@ -157,44 +201,6 @@ class GlobalMapTemplate(MapTemplate):
             left=True,
         )
 
-        #   网格线
-        draw_map_box_gridlines(
-            ax,
-            projection=self.projection,
-            xlocator=main_xticks[1:-1],
-            ylocator=main_yticks[1:-1],
-        )
-
-        #   设置区域范围和长宽比
-        # ax.set_global()
-        set_map_box_area(
-            ax,
-            area=self.area,
-            projection=self.projection,
-        )
-
-        # x = 0.998
-        # y = 0.0022
-        # text = "Scale 1:20000000 No:GS (2019) 1786"
-        # self.add_map_info(ax=ax, x=x, y=y, text=text)
-        return layer
-
-    def get_main_map_features(self) -> List[cfeature.ShapelyFeature]:
-        features = []
-        # coastline
-        fs = self.main_map.coastline(scale="50m", style=dict(
-            linewidth=0.5,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        # land
-        fs = self.main_map.land(scale="50m", style=dict(
-            zorder=-1
-        ))
-        features.extend(fs)
-        return features
-
     def set_title(
             self,
             panel: "Panel",
@@ -203,99 +209,28 @@ class GlobalMapTemplate(MapTemplate):
             start_time: pd.Timestamp,
             forecast_time: pd.Timedelta
     ):
-        left = self.map_box_bottom_left_point[0]
-        bottom = self.map_box_bottom_left_point[1] - 0.005
-        top = self.map_box_top_right_point[1]
-        right = self.map_box_top_right_point[0]
-        graph_title = GraphTitle(
-            left=left,
-            bottom=bottom,
-            top=top,
-            right=right,
-        )
+        graph_title = GraphTitle()
 
         graph_title.top_right_label = system_name
         start_time_label = start_time.strftime("%Y%m%d%H")
         forecat_hour = int(forecast_time / pd.Timedelta(hours=1))
         graph_title.top_left_label = f"{start_time_label} UTC Forecast t+{forecat_hour:03d}"
         graph_title.main_title_label = graph_name
-        graph_title.main_pos = (0.5, 1.05)
 
-        ax = panel.charts[0].layers[0].ax
-        set_map_box_title(
-            ax,
-            graph_title=graph_title,
+        self.axes_component_painter.add_title(
+            layer=panel.charts[0].layers[0],
+            graph_title=graph_title
         )
 
     def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
-        """
-                                 |  | left_padding_to_map_box_right_bound
-
-        --------------------------
-        |                        |
-        |                        |
-        |                        |
-        |                        |  map box
-        |                        |
-        |                        |
-        |                        |
-        --------------------------  -- top_padding_to_map_box_bottom_bound
-           ---------------------    --
-           |                   |
-           ---------------------
-        | | left_padding_to_map_box_left_bound
-
-
-        """
-        if isinstance(style, ContourStyle):
-            style = [style]
-        count = len(style)
-
-        left_padding_to_map_box_left_bound = 0.1
-        top_padding_to_map_box_bottom_bound = -0.1
-        height = 0.02
-        total_width = 1 - 2*abs(top_padding_to_map_box_bottom_bound)
-
-        if count > 0:
-            width_padding = 0.02
-        else:
-            width_padding = 0
-
-        width = total_width / count
-
-        color_bars = []
-
-        for index, current_style in enumerate(style):
-            colorbar_box = [
-                self.map_box_bottom_left_point[0] + left_padding_to_map_box_left_bound + index * width,  # 1.03 + 0.02 = 1.05
-                self.map_box_bottom_left_point[1] + top_padding_to_map_box_bottom_bound,
-                width - width_padding, height
-            ]
-
-            graph_colorbar = GraphColorbar(
-                colormap=current_style.colors,
-                levels=current_style.levels,
-                box=colorbar_box,
-                orientation="horizontal",
-            )
-
-            colorbar_style = current_style.colorbar_style
-            if colorbar_style is not None:
-                if colorbar_style.label is not None:
-                    graph_colorbar.label = colorbar_style.label
-                if colorbar_style.loc is not None:
-                    graph_colorbar.label_loc = colorbar_style.loc
-                if colorbar_style.label_levels is not None:
-                    graph_colorbar.label_levels = colorbar_style.label_levels
-
-            color_bar = add_map_box_colorbar(
-                graph_colorbar=graph_colorbar,
-                ax=panel.charts[0].layers[0].ax,
-            )
-
-            color_bars.append(color_bar)
-
+        color_bars = self.axes_component_painter.add_colorbar(
+            layer=panel.charts[0].layers[0],
+            style=style,
+        )
         return color_bars
+
+    def render_map(self, layer: Layer, map_painter: MapPainter):
+        map_painter.render_layer(layer=layer)
 
 
 class GlobalAreaMapTemplate(GlobalMapTemplate):
@@ -310,20 +245,27 @@ class GlobalAreaMapTemplate(GlobalMapTemplate):
         self.main_yticks_interval = 10
 
     def load_map(self):
-        self.main_map = self.map_class(map_type=self.main_map_type)
-        self.china_map = self.map_class(map_type=MapType.Portrait)
+        self.main_map_loader = self.map_loader_class(map_type=self.main_map_type)
+        self.china_map = self.map_loader_class(map_type=MapType.Portrait)
 
-    def get_main_map_features(self) -> List[cfeature.ShapelyFeature]:
-        features = []
-        # coastline
-        fs = self.main_map.coastline(scale="50m", style=dict(
-            linewidth=0.5,
-            # zorder=50
-        ))
-        features.extend(fs)
-
-        # borders
-        fs = self.main_map.global_borders()
-        features.extend(fs)
-
-        return features
+        self.main_map_painter = MapPainter(
+            map_loader=self.main_map_loader,
+            coastline_config=MapFeatureConfig(
+                loader=dict(
+                    scale="50m",
+                    style=dict(
+                        linewidth=0.5,
+                        # zorder=50
+                    )
+                ),
+                render=True,
+            ),
+            global_borders_config=MapFeatureConfig(
+                render=True,
+            ),
+            map_info=MapInfo(
+                x=0.998,
+                y=0.0022,
+                text="Scale 1:20000000 No:GS (2019) 1786",
+            ),
+        )

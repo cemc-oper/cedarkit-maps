@@ -13,7 +13,9 @@ from cedarkit.maps.util import (
     GraphTitle,
     fill_graph_title,
 )
-from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
+from cedarkit.maps.painter.map_painter import (
+    MapPainter, MapFeatureConfig, MapInfo
+)
 from cedarkit.maps.painter.axes_component_painter import (
     AxesComponentPainter, MapBoxOption, ColorBarOption,
 )
