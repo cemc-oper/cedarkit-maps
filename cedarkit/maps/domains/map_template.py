@@ -44,6 +44,12 @@ class MapTemplate(XYTemplate):
         """
         return self._area
 
+    def total_area(self) -> AreaRange:
+        """
+        Total map area range including sub area.
+        """
+        return self._area
+
     @property
     def projection(self) -> ccrs.Projection:
         return self._projection

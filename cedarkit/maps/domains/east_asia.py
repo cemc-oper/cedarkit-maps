@@ -91,6 +91,19 @@ class EastAsiaMapTemplate(MapTemplate):
 
         self.map_loader_class = get_map_loader_class()
 
+    def total_area(self) -> AreaRange:
+        main_area = self.area
+        sub_area = self.sub_area
+
+        total = AreaRange(
+            start_longitude=min(main_area.start_longitude, sub_area.start_longitude),
+            end_longitude=max(main_area.end_longitude, sub_area.end_longitude),
+            start_latitude=min(main_area.start_latitude, sub_area.start_latitude),
+            end_latitude=max(main_area.end_latitude, sub_area.end_latitude),
+        )
+
+        return total
+
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
         self.load_map()
