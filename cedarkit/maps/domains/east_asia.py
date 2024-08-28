@@ -226,23 +226,27 @@ class EastAsiaMapTemplate(MapTemplate):
 
         # 坐标轴
         #       area, main_xticks_interval, main_yticks_interval
+        # NOTE: 需要将边界点包含在内。
+        # 当前方式存在问题，会将整形标签变为浮点类型
         xticks = np.arange(
             area.start_longitude,
-            area.end_longitude + xticks_interval,
+            area.end_longitude + xticks_interval/10,
             xticks_interval
         )
         yticks = np.arange(
             area.start_latitude,
-            area.end_latitude + yticks_interval,
+            area.end_latitude + yticks_interval/10,
             yticks_interval
         )
         layer.set_axis(xticks=xticks, yticks=yticks)
 
         # 网格线
         #       同坐标轴
-        # 边界处是边框，不需要网格线，但需要坐标轴标注
-        xlocator = xticks[1:-1]
-        ylocator = yticks[1:-1]
+        # 边界处是边框，不需要网格线，但需要坐标轴标注。边框会覆盖网格线，所以直接使用标签列表即可
+        # xlocator = xticks[1:-1]
+        # ylocator = yticks[1:-1]
+        xlocator = xticks
+        ylocator = yticks
         layer.gridlines(
             xlocator=xlocator,
             ylocator=ylocator,
