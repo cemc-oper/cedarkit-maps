@@ -42,7 +42,6 @@ def calculate_levels_automatic(min_value: float, max_value: float, max_count: in
 
     # 计算得到一个合适的系数，与表中数值相乘作为可选步长
     d = math.pow(10.0, math.floor(math.log10(max_value - min_value)) - 2)
-    print(d)
 
     max_float = sys.float_info.max
     step_size = sys.float_info.max
