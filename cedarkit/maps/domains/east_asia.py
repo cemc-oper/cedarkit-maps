@@ -95,6 +95,9 @@ class EastAsiaMapTemplate(MapTemplate):
         main_area = self.area
         sub_area = self.sub_area
 
+        if not self.with_sub_area:
+            return main_area
+
         total = AreaRange(
             start_longitude=min(main_area.start_longitude, sub_area.start_longitude),
             end_longitude=max(main_area.end_longitude, sub_area.end_longitude),
