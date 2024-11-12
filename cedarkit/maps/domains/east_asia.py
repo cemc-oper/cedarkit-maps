@@ -5,7 +5,7 @@ import pandas as pd
 from cartopy import crs as ccrs
 
 from cedarkit.maps.style import ContourStyle
-from cedarkit.maps.chart import Layer
+from cedarkit.maps.chart.layer import Layer
 from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
     AxesRect,

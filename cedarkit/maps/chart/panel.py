@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union, List, Any, Iterable, Type
+from typing import Optional, Tuple, Union, List, Any, Iterable, TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import xarray as xr
 
 from cedarkit.maps.style import Style
-from cedarkit.maps.domains import MapTemplate, XYTemplate, parse_domain
+from cedarkit.maps.template import XYTemplate
 
 from .chart import Chart
 
@@ -31,7 +31,7 @@ class Panel:
     """
     def __init__(
             self,
-            domain: Union[str, Type[XYTemplate], XYTemplate],
+            domain: "XYTemplate",
             schema: Optional[Schema] = None,
     ):
         if schema is None:
@@ -43,7 +43,8 @@ class Panel:
 
         self.charts = []
 
-        self.domain = parse_domain(domain)
+        # self.domain = parse_domain(domain)
+        self.domain = domain
         self.domain.render_panel(self)
 
     @property

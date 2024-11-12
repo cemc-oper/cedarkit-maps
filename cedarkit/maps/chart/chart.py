@@ -2,8 +2,8 @@ from typing import List, Optional, Any, TYPE_CHECKING
 from cartopy import crs as ccrs
 
 from cedarkit.maps.style import Style, ContourStyle, BarbStyle
-from cedarkit.maps.domains import XYTemplate
 from cedarkit.maps.util import AxesRect
+from cedarkit.maps.template import XYTemplate
 
 from .layer import Layer
 
@@ -23,7 +23,7 @@ class Chart:
     layers : List[Layer]
         layer list. Each layer has a map.
     """
-    def __init__(self, panel: "Panel", domain: XYTemplate):
+    def __init__(self, panel: "Panel", domain: "XYTemplate"):
         self.panel = panel
         self.domain = domain
 

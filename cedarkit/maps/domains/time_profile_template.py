@@ -3,18 +3,10 @@ from typing import TYPE_CHECKING, List, Callable
 import pandas as pd
 import numpy as np
 
-from cedarkit.maps.chart import Layer
+from cedarkit.maps.template import XYTemplate
 
 if TYPE_CHECKING:
-    from cedarkit.maps.chart import Chart, Panel
-
-
-class XYTemplate:
-    def __init__(self):
-        ...
-
-    def render_panel(self, panel: "Panel"):
-        raise NotImplementedError
+    from cedarkit.maps.chart import Panel, Layer
 
 
 class TimeStepAndLevelXYTemplate(XYTemplate):

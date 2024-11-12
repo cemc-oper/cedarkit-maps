@@ -2,10 +2,8 @@ from typing import List, Optional, Union, Tuple, TYPE_CHECKING
 
 import cartopy.crs as ccrs
 
-from ..util import AreaRange
-
-from .xy_template import XYTemplate
-
+from cedarkit.maps.util import AreaRange
+from cedarkit.maps.template import XYTemplate
 
 if TYPE_CHECKING:
     from cedarkit.maps.chart import Chart, Panel
