@@ -1,14 +1,3 @@
-"""
-EastAsiaMapTemplate 集成测试
-
-测试类型: 集成测试 (Integration Test)
-测试目标: 验证 EastAsiaMapTemplate 与 Panel、Chart、Layer 等组件的协同工作
-测试内容:
-    1. 等值线填充图 (contourf) - 温度场
-    2. 等值线图 (contour) - 气压场
-    3. 风羽图 (barb) - 风场
-    4. 组合图 - 多要素叠加
-"""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -16,14 +5,14 @@ import matplotlib.pyplot as plt
 
 from cedarkit.maps.domains import EastAsiaMapTemplate
 from cedarkit.maps.chart import Panel
-from cedarkit.maps.style import ContourStyle, BarbStyle
+from cedarkit.maps.style import ContourStyle
 
 
 class TestEastAsiaMapTemplateContourf:
     
     def test_contourf_temperature(
-        self, 
-        sample_temperature_field, 
+        self,
+        east_asia_temperature_field,
         sample_start_time,
         sample_forecast_time,
         temperature_style,
@@ -32,7 +21,7 @@ class TestEastAsiaMapTemplateContourf:
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
         
-        panel.plot(sample_temperature_field, style=temperature_style)
+        panel.plot(east_asia_temperature_field, style=temperature_style)
 
         domain.set_title(
             panel=panel,
@@ -53,7 +42,7 @@ class TestEastAsiaMapTemplateContourf:
     
     def test_contourf_precipitation(
         self,
-        sample_precipitation_field,
+        east_asia_precipitation_field,
         sample_start_time,
         sample_forecast_time,
         precipitation_style,
@@ -61,7 +50,7 @@ class TestEastAsiaMapTemplateContourf:
     ):
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
-        panel.plot(sample_precipitation_field, style=precipitation_style)
+        panel.plot(east_asia_precipitation_field, style=precipitation_style)
         
         domain.set_title(
             panel=panel,
@@ -84,23 +73,15 @@ class TestEastAsiaMapTemplateContour:
     
     def test_pressure_contour(
         self,
-        sample_pressure_field,
+        east_asia_pressure_field,
         sample_start_time,
         sample_forecast_time,
+        pressure_contour_style,
         output_dir
     ):
-        levels = np.arange(990, 1030, 2.5)
-
-        style = ContourStyle(
-            colors="blue",
-            levels=levels,
-            linewidths=1,
-            fill=False,
-        )
-        
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
-        panel.plot(sample_pressure_field, style=style)
+        panel.plot(east_asia_pressure_field, style=pressure_contour_style)
         
         domain.set_title(
             panel=panel,
@@ -121,24 +102,18 @@ class TestEastAsiaMapTemplateContour:
 class TestEastAsiaMapTemplateBarb:
     def test_wind_barb(
         self,
-        sample_wind_fields,
+        east_asia_wind_fields,
         sample_start_time,
         sample_forecast_time,
+        wind_barb_style,
         output_dir
     ):
-        u_field, v_field = sample_wind_fields
-        
-        style = BarbStyle(
-            length=5,
-            linewidth=0.4,
-            barbcolor="blue",
-            flagcolor="blue",
-        )
+        u_field, v_field = east_asia_wind_fields
         
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
         
-        panel.charts[0].plot([u_field, v_field], style=style, layer=[0])
+        panel.plot([[u_field, v_field]], style=wind_barb_style, layer=[0])
         
         domain.set_title(
             panel=panel,
@@ -159,27 +134,21 @@ class TestEastAsiaMapTemplateBarb:
 class TestEastAsiaMapTemplateCombined:
     def test_temperature_with_wind(
         self,
-        sample_temperature_field,
-        sample_wind_fields,
+        east_asia_temperature_field,
+        east_asia_wind_fields,
         sample_start_time,
         sample_forecast_time,
         temperature_style,
+        wind_barb_style_black,
         output_dir
     ):
-        u_field, v_field = sample_wind_fields
-
-        wind_style = BarbStyle(
-            length=4,
-            linewidth=0.3,
-            barbcolor="black",
-            flagcolor="black",
-        )
+        u_field, v_field = east_asia_wind_fields
         
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
 
-        panel.plot(sample_temperature_field, style=temperature_style)
-        panel.charts[0].plot([u_field, v_field], style=wind_style, layer=[0])
+        panel.plot(east_asia_temperature_field, style=temperature_style)
+        panel.plot([[u_field, v_field]], style=wind_barb_style_black, layer=[0])
         
         domain.set_title(
             panel=panel,
@@ -199,26 +168,19 @@ class TestEastAsiaMapTemplateCombined:
     
     def test_pressure_contour_with_temperature_fill(
         self,
-        sample_temperature_field,
-        sample_pressure_field,
+        east_asia_temperature_field,
+        east_asia_pressure_field,
         sample_start_time,
         sample_forecast_time,
         temperature_style,
+        pressure_contour_style,
         output_dir
     ):
-        pressure_levels = np.arange(990, 1030, 4)
-        pressure_style = ContourStyle(
-            colors="blue",
-            levels=pressure_levels,
-            linewidths=1.0,
-            fill=False,
-        )
-        
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
         
-        panel.plot(sample_temperature_field, style=temperature_style)
-        panel.plot(sample_pressure_field, style=pressure_style)
+        panel.plot(east_asia_temperature_field, style=temperature_style)
+        panel.plot(east_asia_pressure_field, style=pressure_contour_style)
         
         domain.set_title(
             panel=panel,
@@ -240,7 +202,7 @@ class TestEastAsiaMapTemplateCombined:
 class TestEastAsiaMapTemplateOptions:
     def test_without_sub_area(
         self,
-        sample_temperature_field,
+        east_asia_temperature_field,
         sample_start_time,
         sample_forecast_time,
         temperature_style,
@@ -248,7 +210,7 @@ class TestEastAsiaMapTemplateOptions:
     ):
         domain = EastAsiaMapTemplate(with_sub_area=False)
         panel = Panel(domain=domain)
-        panel.plot(sample_temperature_field, style=temperature_style)
+        panel.plot(east_asia_temperature_field, style=temperature_style)
         
         domain.set_title(
             panel=panel,
@@ -263,35 +225,32 @@ class TestEastAsiaMapTemplateOptions:
         panel.save(output_path, dpi=150)
         plt.close()
 
-        # 验证只有一个 layer（无南海子图）
         assert len(panel.charts[0].layers) == 1
-        
         assert output_path.exists(), "image file should be created"
         assert output_path.stat().st_size > 0, "image file should not be empty"
     
     def test_with_sub_area(
         self,
-        sample_temperature_field,
+        east_asia_temperature_field,
         temperature_style,
         output_dir
     ):
         domain = EastAsiaMapTemplate(with_sub_area=True)
         panel = Panel(domain=domain)
-        panel.plot(sample_temperature_field, style=temperature_style)
+        panel.plot(east_asia_temperature_field, style=temperature_style)
         
         output_path = output_dir / "east_asia_with_sub_area.png"
         panel.save(output_path, dpi=150)
         plt.close()
 
         assert len(panel.charts[0].layers) == 2
-        
         assert output_path.exists(), "image file should be created"
         assert output_path.stat().st_size > 0, "image file should not be empty"
 
 
 class TestEastAsiaMapTemplateEdgeCases:
     
-    def test_empty_style_levels(self, sample_temperature_field, output_dir):
+    def test_empty_style_levels(self, east_asia_temperature_field, output_dir):
         """测试空 levels 的处理"""
         style = ContourStyle(
             colors="RdYlBu_r",
@@ -302,7 +261,7 @@ class TestEastAsiaMapTemplateEdgeCases:
         domain = EastAsiaMapTemplate()
         panel = Panel(domain=domain)
         
-        panel.plot(sample_temperature_field, style=style)
+        panel.plot(east_asia_temperature_field, style=style)
         output_path = output_dir / "east_asia_empty_levels.png"
         panel.save(output_path, dpi=150)
         plt.close()
