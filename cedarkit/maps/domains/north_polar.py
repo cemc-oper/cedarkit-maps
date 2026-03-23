@@ -1,18 +1,14 @@
-from typing import Union, List, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 from cartopy import crs as ccrs
 import matplotlib.path as mpath
 
-from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
     AxesRect,
     AreaRange,
-    GraphTitle,
-    fill_graph_title,
 )
 from cedarkit.maps.painter.map_painter import MapPainter, MapFeatureConfig, MapInfo
 from cedarkit.maps.painter.axes_component_painter import (
@@ -70,7 +66,7 @@ class NorthPolarMapTemplate(MapTemplate):
         self.main_xticks_interval = 10
         self.main_yticks_interval = 5
 
-        self.map_class = get_map_loader_class()
+        self.map_loader_class = get_map_loader_class()
 
     def render_panel(self, panel: "Panel"):
         chart = panel.add_chart(domain=self)
@@ -85,7 +81,7 @@ class NorthPolarMapTemplate(MapTemplate):
         )
 
     def load_map(self):
-        self.main_map_loader = self.map_class(map_type=MapType.Portrait)
+        self.main_map_loader = self.map_loader_class(map_type=MapType.Portrait)
 
         self.main_map_painter = MapPainter(
             map_loader=self.main_map_loader,
@@ -125,7 +121,7 @@ class NorthPolarMapTemplate(MapTemplate):
 
     def render_main_layer(self, chart: "Chart"):
         """
-        绘制主地图
+        绑定主地图
 
         Parameters
         ----------
@@ -183,36 +179,6 @@ class NorthPolarMapTemplate(MapTemplate):
 
         return layer
 
-    def set_title(
-            self,
-            panel: "Panel",
-            graph_name: str,
-            system_name: str,
-            start_time: pd.Timestamp,
-            forecast_time: pd.Timedelta
-    ):
-        graph_title = GraphTitle()
-
-        fill_graph_title(
-            graph_title=graph_title,
-            graph_name=graph_name,
-            system_name=system_name,
-            start_time=start_time,
-            forecast_time=forecast_time,
-        )
-
-        self.axes_component_painter.add_title(
-            layer=panel.charts[0].layers[0],
-            graph_title=graph_title
-        )
-
-    def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
-        color_bars = self.axes_component_painter.add_colorbar(
-            layer=panel.charts[0].layers[0],
-            style=style,
-        )
-        return color_bars
-
     def set_boundary(self, layer: Layer):
         ax = layer.ax
         theta = np.linspace(0, 2 * np.pi, 100)
@@ -252,9 +218,3 @@ class NorthPolarMapTemplate(MapTemplate):
                     verticalalignment='center',
                     transform=ccrs.Geodetic()
                 )
-
-    def render_map(self, layer: Layer, map_painter: MapPainter):
-        map_painter.render_layer(layer=layer)
-
-    def add_map_info(self, layer: Layer, map_painter: MapPainter):
-        map_painter.add_map_info(layer=layer)

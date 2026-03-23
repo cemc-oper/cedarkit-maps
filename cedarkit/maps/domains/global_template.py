@@ -1,10 +1,9 @@
-from typing import Union, List, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
 
-from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
@@ -119,7 +118,7 @@ class GlobalMapTemplate(MapTemplate):
 
     def render_main_layer(self, chart: "Chart"):
         """
-        绘制主地图
+        绑定主地图
 
         Parameters
         ----------
@@ -209,28 +208,20 @@ class GlobalMapTemplate(MapTemplate):
             start_time: pd.Timestamp,
             forecast_time: pd.Timedelta
     ):
+        """
+        设置图表标题。
+        
+        GlobalMapTemplate 使用不同的标题格式，重写基类方法。
+        """
         graph_title = GraphTitle()
 
         graph_title.top_right_label = system_name
         start_time_label = start_time.strftime("%Y%m%d%H")
-        forecat_hour = int(forecast_time / pd.Timedelta(hours=1))
-        graph_title.top_left_label = f"{start_time_label} UTC Forecast t+{forecat_hour:03d}"
+        forecast_hour = int(forecast_time / pd.Timedelta(hours=1))
+        graph_title.top_left_label = f"{start_time_label} UTC Forecast t+{forecast_hour:03d}"
         graph_title.main_title_label = graph_name
 
-        self.axes_component_painter.add_title(
-            layer=panel.charts[0].layers[0],
-            graph_title=graph_title
-        )
-
-    def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
-        color_bars = self.axes_component_painter.add_colorbar(
-            layer=panel.charts[0].layers[0],
-            style=style,
-        )
-        return color_bars
-
-    def render_map(self, layer: Layer, map_painter: MapPainter):
-        map_painter.render_layer(layer=layer)
+        self._add_title_to_panel(panel=panel, graph_title=graph_title)
 
 
 class GlobalAreaMapTemplate(GlobalMapTemplate):

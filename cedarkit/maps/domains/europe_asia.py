@@ -1,18 +1,14 @@
-from typing import Union, List, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 from cartopy import crs as ccrs
 import matplotlib.path as mpath
 
-from cedarkit.maps.style import ContourStyle
 from cedarkit.maps.chart import Layer
 from cedarkit.maps.map import get_map_loader_class, MapType, MapLoader
 from cedarkit.maps.util import (
     AxesRect,
     AreaRange,
-    GraphTitle,
-    fill_graph_title,
 )
 from cedarkit.maps.painter.map_painter import (
     MapPainter, MapFeatureConfig, MapInfo
@@ -173,7 +169,7 @@ class EuropeAsiaMapTemplate(MapTemplate):
 
     def render_main_layer(self, chart: "Chart") -> Layer:
         """
-        绘制主地图
+        绑定主地图
 
         Parameters
         ----------
@@ -195,7 +191,6 @@ class EuropeAsiaMapTemplate(MapTemplate):
             width=width,
             height=height,
         )
-        print(rect)
 
         layer = chart.create_layer(
             rect=rect,
@@ -231,7 +226,7 @@ class EuropeAsiaMapTemplate(MapTemplate):
 
     def render_sub_layer(self, chart: "Chart") -> Layer:
         """
-        绘制南海子图
+        绑定南海子图
 
         Parameters
         ----------
@@ -251,7 +246,6 @@ class EuropeAsiaMapTemplate(MapTemplate):
             width=sub_width,
             height=sub_height,
         )
-        print(rect)
 
         area = self.sub_area
         projection = self.projection
@@ -287,36 +281,6 @@ class EuropeAsiaMapTemplate(MapTemplate):
 
         return layer
 
-    def set_title(
-            self,
-            panel: "Panel",
-            graph_name: str,
-            system_name: str,
-            start_time: pd.Timestamp,
-            forecast_time: pd.Timedelta
-    ):
-        graph_title = GraphTitle()
-
-        fill_graph_title(
-            graph_title=graph_title,
-            graph_name=graph_name,
-            system_name=system_name,
-            start_time=start_time,
-            forecast_time=forecast_time,
-        )
-
-        self.axes_component_painter.add_title(
-            layer=panel.charts[0].layers[0],
-            graph_title=graph_title
-        )
-
-    def add_colorbar(self, panel: "Panel", style: Union[ContourStyle, List[ContourStyle]]):
-        color_bars = self.axes_component_painter.add_colorbar(
-            layer=panel.charts[0].layers[0],
-            style=style,
-        )
-        return color_bars
-
     def set_boundary(self, layer: Layer):
         ax = layer.ax
         lon_range = (20, 170)
@@ -336,9 +300,3 @@ class EuropeAsiaMapTemplate(MapTemplate):
         path = mpath.Path(vertices)
         proj_to_data = ccrs.PlateCarree()._as_mpl_transform(ax) - ax.transData
         ax.set_boundary(proj_to_data.transform_path(path))
-
-    def render_map(self, layer: Layer, map_painter: MapPainter):
-        map_painter.render_layer(layer=layer)
-
-    def add_map_info(self, layer: Layer, map_painter: MapPainter):
-        map_painter.add_map_info(layer=layer)

@@ -23,15 +23,14 @@ class TestEastAsiaMapTemplateContourf:
         
         panel.plot(east_asia_temperature_field, style=temperature_style)
 
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="2m Temperature (°C)",
             system_name="Test-Model",
             start_time=sample_start_time,
             forecast_time=sample_forecast_time,
         )
         
-        domain.add_colorbar(panel=panel, style=temperature_style)
+        panel.add_colorbar(style=temperature_style)
         
         output_path = output_dir / "east_asia_temperature_contourf.png"
         panel.save(output_path, dpi=150)
@@ -52,14 +51,13 @@ class TestEastAsiaMapTemplateContourf:
         panel = Panel(domain=domain)
         panel.plot(east_asia_precipitation_field, style=precipitation_style)
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="24h Precipitation (mm)",
             system_name="Test-Model",
             start_time=sample_start_time,
             forecast_time=sample_forecast_time,
         )
-        domain.add_colorbar(panel=panel, style=precipitation_style)
+        panel.add_colorbar(style=precipitation_style)
         
         output_path = output_dir / "east_asia_precipitation_contourf.png"
         panel.save(output_path, dpi=150)
@@ -83,8 +81,7 @@ class TestEastAsiaMapTemplateContour:
         panel = Panel(domain=domain)
         panel.plot(east_asia_pressure_field, style=pressure_contour_style)
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="MSLP (hPa)",
             system_name="Test-Model",
             start_time=sample_start_time,
@@ -115,8 +112,7 @@ class TestEastAsiaMapTemplateBarb:
         
         panel.plot([[u_field, v_field]], style=wind_barb_style, layer=[0])
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="10m Wind (m/s)",
             system_name="Test-Model",
             start_time=sample_start_time,
@@ -150,14 +146,13 @@ class TestEastAsiaMapTemplateCombined:
         panel.plot(east_asia_temperature_field, style=temperature_style)
         panel.plot([[u_field, v_field]], style=wind_barb_style_black, layer=[0])
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="2m Temperature (°C) & 10m Wind",
             system_name="Test-Model",
             start_time=sample_start_time,
             forecast_time=sample_forecast_time,
         )
-        domain.add_colorbar(panel=panel, style=temperature_style)
+        panel.add_colorbar(style=temperature_style)
         
         output_path = output_dir / "east_asia_temperature_wind_combined.png"
         panel.save(output_path, dpi=150)
@@ -182,14 +177,13 @@ class TestEastAsiaMapTemplateCombined:
         panel.plot(east_asia_temperature_field, style=temperature_style)
         panel.plot(east_asia_pressure_field, style=pressure_contour_style)
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="MSLP (hPa) & 2m Temperature (°C)",
             system_name="Test-Model",
             start_time=sample_start_time,
             forecast_time=sample_forecast_time,
         )
-        domain.add_colorbar(panel=panel, style=temperature_style)
+        panel.add_colorbar(style=temperature_style)
         
         output_path = output_dir / "east_asia_pressure_temperature_combined.png"
         panel.save(output_path, dpi=150)
@@ -212,14 +206,13 @@ class TestEastAsiaMapTemplateOptions:
         panel = Panel(domain=domain)
         panel.plot(east_asia_temperature_field, style=temperature_style)
         
-        domain.set_title(
-            panel=panel,
+        panel.set_title(
             graph_name="2m Temperature (°C)",
             system_name="Test-Model",
             start_time=sample_start_time,
             forecast_time=sample_forecast_time,
         )
-        domain.add_colorbar(panel=panel, style=temperature_style)
+        panel.add_colorbar(style=temperature_style)
         
         output_path = output_dir / "east_asia_without_sub_area.png"
         panel.save(output_path, dpi=150)
